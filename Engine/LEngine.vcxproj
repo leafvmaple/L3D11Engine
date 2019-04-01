@@ -84,8 +84,6 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Src\IO\LFileReader.cpp" />
-    <ClCompile Include="Src\IO\LIniReader.cpp" />
     <ClCompile Include="Src\L3DEngine.cpp" />
     <ClCompile Include="Src\L3DInterface.cpp" />
   </ItemGroup>
@@ -95,9 +93,6 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib"</Command>
     <ClInclude Include="..\Include\L3DEngine.h" />
     <ClInclude Include="..\Include\L3DInterface.h" />
     <ClInclude Include="..\Include\LExports.h" />
-    <ClInclude Include="Src\IO\LFileReader.h" />
-    <ClInclude Include="Src\IO\LFileStruct.h" />
-    <ClInclude Include="Src\IO\LIniReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
