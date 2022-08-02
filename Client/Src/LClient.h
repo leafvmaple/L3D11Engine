@@ -9,20 +9,21 @@ class L3DENGINE_CLASS IL3DEngine;
 class LClient
 {
 public:
-	LClient();
-	~LClient();
+    LClient();
+    ~LClient();
 
-	HRESULT Init(HINSTANCE hInstance);
-	HRESULT Update();
-	void Uninit();
+    HRESULT Init(HINSTANCE hInstance);
+    HRESULT Update();
+    void Uninit();
 
-	BOOL IsActive();
+    BOOL IsActive();
 
-	HRESULT ShowFPS(float fDeltaTime);
+    HRESULT ShowFPS(float fDeltaTime);
 protected:
 private:
-	float m_fLastTime;
-	float m_fTimeElapsed;
-	int m_nFrame;
-	LObjectMgr* m_pObjectMgr;
+    float m_fLastTime;
+    float m_fTimeElapsed;
+    int m_nFrame;
+
+    LObjectMgr* m_pObjectMgr;
 };

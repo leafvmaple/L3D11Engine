@@ -4,44 +4,44 @@
 
 LObjectMgr::LObjectMgr()
 {
-	m_ObjectList.clear();
+    m_ObjectList.clear();
 }
 
 LObjectMgr::~LObjectMgr()
 {
-	LModel* pObject = NULL;
-	std::list<LModel*>::iterator it;
+    LModel* pObject = NULL;
+    std::list<LModel*>::iterator it;
 
-	for (it = m_ObjectList.begin(); it != m_ObjectList.end(); it++)
-	{
-		pObject = *it;
-		SAFE_DELETE(pObject);
-	}
+    for (it = m_ObjectList.begin(); it != m_ObjectList.end(); it++)
+    {
+        pObject = *it;
+        SAFE_DELETE(pObject);
+    }
 }
 
 HRESULT LObjectMgr::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
 
     hr = IL3DEngine::Instance()->Init(hInstance, WindowParam);
     HRESULT_ERROR_EXIT(hr);
 
 Exit0:
-	return S_OK;
+    return S_OK;
 }
 
 void LObjectMgr::Uninit()
 {
-	IL3DEngine::Instance()->Uninit();
+    IL3DEngine::Instance()->Uninit();
 }
 
 HRESULT LObjectMgr::Update(float fDeltaTime)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
-	LModel* pObject = NULL;
-	std::list<LModel*>::iterator it;
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+    LModel* pObject = NULL;
+    std::list<LModel*>::iterator it;
 
     for (it = m_ObjectList.begin(); it != m_ObjectList.end(); it++)
     {
@@ -55,10 +55,10 @@ HRESULT LObjectMgr::Update(float fDeltaTime)
 
     hResult = S_OK;
 Exit0:
-	return hResult;
+    return hResult;
 }
 
 BOOL LObjectMgr::IsActive()
 {
-	return IL3DEngine::Instance()->IsActive();
+    return IL3DEngine::Instance()->IsActive();
 }

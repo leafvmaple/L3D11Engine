@@ -24,8 +24,8 @@ extern ID3D11Device* g_p3DDevice = nullptr;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	L3DEngine* pEngine = dynamic_cast<L3DEngine*>(L3DEngine::Instance());
-	return pEngine->MsgProc(hWnd, msg, wParam, lParam);
+    L3DEngine* pEngine = dynamic_cast<L3DEngine*>(L3DEngine::Instance());
+    return pEngine->MsgProc(hWnd, msg, wParam, lParam);
 }
 
 L3DEngine::L3DEngine()
@@ -34,8 +34,8 @@ L3DEngine::L3DEngine()
 , m_bActive(false)
 , m_CurSampFilter(m_SampFilter[GRAPHICS_LEVEL_MAX])
 {
-	memset(&m_SampFilter, 0, sizeof(m_SampFilter));
-	memset(&m_WindowParam, 0, sizeof(m_WindowParam));
+    memset(&m_SampFilter, 0, sizeof(m_SampFilter));
+    memset(&m_WindowParam, 0, sizeof(m_WindowParam));
     memset(&m_Viewport, 0, sizeof(m_Viewport));
 }
 
@@ -46,9 +46,9 @@ L3DEngine::~L3DEngine()
 
 HRESULT L3DEngine::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
-	HWND hWnd = NULL;
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+    HWND hWnd = NULL;
     UINT uCreateDeviceFlag = 0;
 
     m_WindowParam = WindowParam;
@@ -92,16 +92,16 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
 
     hResult = S_OK;
 Exit0:
-	return hResult;
+    return hResult;
 }
 
 HRESULT L3DEngine::Update(float fDeltaTime)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
 
-	hr = UpdateMessage();
-	HRESULT_ERROR_EXIT(hr);
+    hr = UpdateMessage();
+    HRESULT_ERROR_EXIT(hr);
 
     float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     m_Device.piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, clearColor);
@@ -109,37 +109,37 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     hr = m_piSwapChain->Present(0, 0);
     HRESULT_ERROR_EXIT(hr);
 
-	hResult = S_OK;
+    hResult = S_OK;
 Exit0:
-	return hResult;
+    return hResult;
 }
 
 BOOL L3DEngine::IsActive()
 {
-	return m_bActive;
+    return m_bActive;
 }
 
 HRESULT L3DEngine::Uninit()
 {
-	return S_OK;
+    return S_OK;
 }
 
 LRESULT L3DEngine::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	switch (uMsg)  
-	{
-	case WM_DESTROY:
-		PostQuitMessage(0);  
-		break;
-	case WM_MOUSEWHEEL:
-		break;
-	case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE)
-			DestroyWindow(hWnd);
-		break;
-	}  
+    switch (uMsg)  
+    {
+    case WM_DESTROY:
+        PostQuitMessage(0);  
+        break;
+    case WM_MOUSEWHEEL:
+        break;
+    case WM_KEYDOWN:
+        if (wParam == VK_ESCAPE)
+            DestroyWindow(hWnd);
+        break;
+    }  
 
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 
@@ -280,23 +280,23 @@ HRESULT L3DEngine::InitSamplerFilter()
         HRESULT_ERROR_CONTINUE(hr);
     }
 
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT L3DEngine::UpdateMessage()
 {
-	MSG Msg;
+    MSG Msg;
 
-	::ZeroMemory(&Msg, sizeof(MSG));
+    ::ZeroMemory(&Msg, sizeof(MSG));
 
-	while(::PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
-	{
-		::TranslateMessage(&Msg);
-		::DispatchMessage(&Msg);
-	}
+    while(::PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
+    {
+        ::TranslateMessage(&Msg);
+        ::DispatchMessage(&Msg);
+    }
 
-	if (Msg.message == WM_QUIT)
-		m_bActive = FALSE;
+    if (Msg.message == WM_QUIT)
+        m_bActive = FALSE;
 
-	return S_OK;
+    return S_OK;
 }

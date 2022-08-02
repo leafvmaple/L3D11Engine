@@ -7,18 +7,18 @@
 
 class L3DEngine : public IL3DEngine
 {
-	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 public:
-	L3DEngine();
-	virtual ~L3DEngine();
+    L3DEngine();
+    virtual ~L3DEngine();
 
-	virtual HRESULT Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam);
-	virtual HRESULT Uninit();
-	
-	virtual HRESULT Update(float fDeltaTime);
+    virtual HRESULT Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam);
+    virtual HRESULT Uninit();
+    
+    virtual HRESULT Update(float fDeltaTime);
 
-	virtual BOOL IsActive();
+    virtual BOOL IsActive();
 
 private:
     struct _DEVICE
@@ -31,7 +31,7 @@ private:
     IDXGISwapChain *m_piSwapChain;
     ID3D11RenderTargetView  *m_piRenderTargetView;
 
-	L3DWINDOWPARAM m_WindowParam;
+    L3DWINDOWPARAM m_WindowParam;
     D3D11_SAMPLER_DESC m_SampFilter[GRAPHICS_LEVEL_COUNT] = {
         {
             D3D11_FILTER_MIN_MAG_MIP_LINEAR,   //D3D11_FILTER Filter;
@@ -63,15 +63,15 @@ private:
 
     ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT];
 
-	BOOL m_bActive;
+    BOOL m_bActive;
 
 private:
-	LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     HRESULT InitL3DWindow(HWND* pWnd, HINSTANCE hInstance);
     HRESULT InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd);
     HRESULT InitRenderTargetView(ID3D11Device *piDevice, IDXGISwapChain* piSwapChain);
     HRESULT InitViewport(unsigned uWidth, unsigned uHeight);
-	HRESULT InitSamplerFilter();
+    HRESULT InitSamplerFilter();
 
-	HRESULT UpdateMessage();
+    HRESULT UpdateMessage();
 };

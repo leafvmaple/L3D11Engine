@@ -12,37 +12,37 @@ class IL3DEngine;
 class LObjectMgr
 {
 public:
-	LObjectMgr();
-	~LObjectMgr();
+    LObjectMgr();
+    ~LObjectMgr();
 
-	HRESULT Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam);
-	void Uninit();
+    HRESULT Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam);
+    void Uninit();
 
-	template<typename T>
-	T* CreateModel(TCHAR* pwcsMeshPath)
-	{
-		T* pObject = NULL;
-		pObject = new T(pwcsMeshPath);
-		m_ObjectList.push_back(pObject);
-		pObject->Create(IL3DEngine::Instance(), m_p3DDevice);
-		return pObject;
-	}
+    template<typename T>
+    T* CreateModel(TCHAR* pwcsMeshPath)
+    {
+        T* pObject = NULL;
+        pObject = new T(pwcsMeshPath);
+        m_ObjectList.push_back(pObject);
+        pObject->Create(IL3DEngine::Instance(), m_p3DDevice);
+        return pObject;
+    }
 
-	template<typename T>
-	T* CreateModel()
-	{
-		T* pObject = NULL;
-		pObject = new T;
-		m_ObjectList.push_back(pObject);
-		pObject->Create(IL3DEngine::Instance(), m_p3DDevice);
-		return pObject;
-	}
+    template<typename T>
+    T* CreateModel()
+    {
+        T* pObject = NULL;
+        pObject = new T;
+        m_ObjectList.push_back(pObject);
+        pObject->Create(IL3DEngine::Instance(), m_p3DDevice);
+        return pObject;
+    }
 
-	HRESULT Update(float fDeltaTime);
+    HRESULT Update(float fDeltaTime);
 
-	BOOL IsActive();
+    BOOL IsActive();
 
 private:
-	std::list<LModel*> m_ObjectList;
-	std::list<LScene*> m_SceneList;
+    std::list<LModel*> m_ObjectList;
+    std::list<LScene*> m_SceneList;
 };
