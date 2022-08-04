@@ -48,10 +48,15 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
+    BOOL nRetCode = false;
     HWND hWnd = NULL;
     UINT uCreateDeviceFlag = 0;
 
     m_WindowParam = WindowParam;
+
+    // Check support for SSE2
+    nRetCode = XMVerifyCPUSupport();
+    BOOL_ERROR_EXIT(nRetCode);
 
 #if defined(DEBUG) || defined(_DEBUG)  
     uCreateDeviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
@@ -77,9 +82,6 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
     HRESULT_ERROR_EXIT(hr);
 
     hr = InitSwapChain(m_Device.piDevice, m_WindowParam.Width, m_WindowParam.Height, hWnd);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = InitRenderTargetView(m_Device.piDevice, m_piSwapChain);
     HRESULT_ERROR_EXIT(hr);
 
     hr = InitViewport(m_WindowParam.Width, m_WindowParam.Height);
@@ -197,7 +199,7 @@ HRESULT L3DEngine::InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsign
     hr = piDXGIAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&piDXGIFactory);
     HRESULT_ERROR_EXIT(hr);
 
-    SwapChainDesc.BufferCount = 1; // TODO: why 2? SDK:In full-screen mode, there is a dedicated front buffer; in windowed mode, the desktop is the front buffer.;
+    SwapChainDesc.BufferCount = 1;
     SwapChainDesc.BufferDesc.Width = uWidth;
     SwapChainDesc.BufferDesc.Height = uHeight;
     SwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
@@ -214,6 +216,9 @@ HRESULT L3DEngine::InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsign
     SwapChainDesc.Flags = 0;
 
     hr = piDXGIFactory->CreateSwapChain(piDevice, &SwapChainDesc, &m_piSwapChain);
+    HRESULT_ERROR_EXIT(hr);
+
+    hr = InitRenderTargetView(piDevice, m_piSwapChain);
     HRESULT_ERROR_EXIT(hr);
 
     SAFE_RELEASE(piDXGIDevice);

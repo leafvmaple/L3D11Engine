@@ -7,7 +7,7 @@
 #include "LExports.h"
 using namespace DirectX;
 
-#define L3DX_2PI    ((FLOAT)  6.283185308f)
+#define L3DX_2PI                XM_PI
 #define LENGIEN_FILENAME_MAX    260
 #define LENGIEN_FONT_STRING_MAX 260
 
