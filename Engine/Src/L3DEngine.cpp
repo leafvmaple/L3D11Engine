@@ -190,6 +190,25 @@ HRESULT L3DEngine::InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsign
     IDXGIFactory *piDXGIFactory = nullptr;
     DXGI_SWAP_CHAIN_DESC SwapChainDesc;
 
+    // DXGI_MODE_DESC
+    SwapChainDesc.BufferCount = 1;
+    SwapChainDesc.BufferDesc.Width = uWidth;
+    SwapChainDesc.BufferDesc.Height = uHeight;
+    SwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+    SwapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+    SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    SwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    SwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    // DXGI_SAMPLE_DESC
+    SwapChainDesc.SampleDesc.Count = 1;
+    SwapChainDesc.SampleDesc.Quality = 0;
+
+    SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    SwapChainDesc.OutputWindow = hWnd;
+    SwapChainDesc.Windowed = TRUE; // from SDK: should not create a full-screen swap chain
+    SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    SwapChainDesc.Flags = 0;
+
     hr = piDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&piDXGIDevice);
     HRESULT_ERROR_EXIT(hr);
 
@@ -199,31 +218,15 @@ HRESULT L3DEngine::InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsign
     hr = piDXGIAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&piDXGIFactory);
     HRESULT_ERROR_EXIT(hr);
 
-    SwapChainDesc.BufferCount = 1;
-    SwapChainDesc.BufferDesc.Width = uWidth;
-    SwapChainDesc.BufferDesc.Height = uHeight;
-    SwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-    SwapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    SwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    SwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-    SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    SwapChainDesc.SampleDesc.Count = 1;
-    SwapChainDesc.SampleDesc.Quality = 0;
-    SwapChainDesc.OutputWindow = hWnd;
-    SwapChainDesc.Windowed = TRUE; // from SDK: should not create a full-screen swap chain
-    SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    SwapChainDesc.Flags = 0;
-
     hr = piDXGIFactory->CreateSwapChain(piDevice, &SwapChainDesc, &m_piSwapChain);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = InitRenderTargetView(piDevice, m_piSwapChain);
     HRESULT_ERROR_EXIT(hr);
 
     SAFE_RELEASE(piDXGIDevice);
     SAFE_RELEASE(piDXGIAdapter);
     SAFE_RELEASE(piDXGIFactory);
+
+    hr = InitRenderTargetView(piDevice, m_piSwapChain);
+    HRESULT_ERROR_EXIT(hr);
 
     hResult = S_OK;
 Exit0:
@@ -237,6 +240,7 @@ HRESULT L3DEngine::InitRenderTargetView(ID3D11Device *piDevice, IDXGISwapChain* 
     ID3D11Texture2D *piSwapChainBuffer = nullptr;
 
     BOOL_ERROR_EXIT(piDevice);
+    BOOL_ERROR_EXIT(m_Device.piImmediateContext);
 
     hr = piSwapChain->GetBuffer(0, __uuidof(piSwapChainBuffer), reinterpret_cast<void**>(&piSwapChainBuffer));
     HRESULT_ERROR_EXIT(hr);
@@ -262,12 +266,13 @@ HRESULT L3DEngine::InitViewport(unsigned uWidth, unsigned uHeight)
 
     BOOL_ERROR_EXIT(m_Device.piImmediateContext);
 
+    m_Viewport.TopLeftX = 0;
+    m_Viewport.TopLeftY = 0;
     m_Viewport.Width = (FLOAT)uWidth;
     m_Viewport.Height = (FLOAT)uHeight;
     m_Viewport.MinDepth = 0.0f;
     m_Viewport.MaxDepth = 1.0f;
-    m_Viewport.TopLeftX = 0;
-    m_Viewport.TopLeftY = 0;
+
     m_Device.piImmediateContext->RSSetViewports(1, &m_Viewport);
 
     hResult = S_OK;
