@@ -5,6 +5,8 @@
 #include <list>
 #include "L3DInterface.h"
 
+#include "Component/LShader.h"
+
 class L3DEngine : public IL3DEngine
 {
     friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -13,7 +15,7 @@ public:
     L3DEngine();
     virtual ~L3DEngine();
 
-    virtual HRESULT Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam);
+    virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam);
     virtual HRESULT Uninit();
     
     virtual HRESULT Update(float fDeltaTime);
@@ -31,7 +33,9 @@ private:
     IDXGISwapChain *m_piSwapChain;
     ID3D11RenderTargetView  *m_piRenderTargetView;
 
-    L3DWINDOWPARAM m_WindowParam;
+    L3D_SHADER_TABLE* m_pShaderTable;
+    L3D_WINDOW_PARAM m_WindowParam;
+
     D3D11_SAMPLER_DESC m_SampFilter[GRAPHICS_LEVEL_COUNT] = {
         {
             D3D11_FILTER_MIN_MAG_MIP_LINEAR,   //D3D11_FILTER Filter;
@@ -70,7 +74,8 @@ private:
     HRESULT InitL3DWindow(HWND* pWnd, HINSTANCE hInstance);
     HRESULT InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd);
     HRESULT InitRenderTargetView(ID3D11Device *piDevice, IDXGISwapChain* piSwapChain);
-    HRESULT InitViewport(unsigned uWidth, unsigned uHeight);
+    HRESULT InitShaderTable(ID3D11Device* piDevice);
+    HRESULT InitViewport(unsigned uWidth, unsigned urHeight);
     HRESULT InitSamplerFilter();
 
     HRESULT UpdateMessage();

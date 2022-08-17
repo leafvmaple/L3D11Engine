@@ -19,6 +19,18 @@
     <Filter Include="Header Files\Common">
       <UniqueIdentifier>{1eb6cb3e-5235-43c2-9fdf-498a02ff661a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Component">
+      <UniqueIdentifier>{4a86bfd9-d399-4096-b4fa-8de3fec9e121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IO">
+      <UniqueIdentifier>{016e469e-3f48-4a66-8711-acc7b704a82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IO">
+      <UniqueIdentifier>{3d0740da-61e4-4c8a-938d-46bd6e133417}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component">
+      <UniqueIdentifier>{2931d9a5-dc69-4abf-be2b-03b30785d465}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\L3DEngine.cpp">
@@ -26,6 +38,12 @@
     </ClCompile>
     <ClCompile Include="Src\L3DInterface.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Component\LShader.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\IO\LFileReader.cpp">
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -43,6 +61,15 @@
     </ClInclude>
     <ClInclude Include="..\Include\LExports.h">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Component\LShader.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\IO\LFileReader.h">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\IO\LFileStruct.h">
+      <Filter>Header Files\IO</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@ LObjectMgr::~LObjectMgr()
     }
 }
 
-HRESULT LObjectMgr::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
+HRESULT LObjectMgr::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;

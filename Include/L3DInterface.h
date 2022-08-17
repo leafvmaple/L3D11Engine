@@ -84,7 +84,7 @@ struct ADAPTERMODE
     UINT uRefreshRates[32];
 };
 
-struct L3DWINDOWPARAM
+struct L3D_WINDOW_PARAM
 {
     int x;
     int y;
@@ -108,7 +108,7 @@ class L3DENGINE_CLASS IL3DEngine
 public:
     virtual ~IL3DEngine() {};
 
-    virtual HRESULT Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam) = 0;
+    virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam) = 0;
     virtual HRESULT Uninit() = 0;
 
     virtual HRESULT Update(float fDeltaTime) = 0;

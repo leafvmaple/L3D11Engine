@@ -19,7 +19,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-    L3DWINDOWPARAM WindowParam;
+    L3D_WINDOW_PARAM WindowParam;
     LScene* pCurScene = NULL;
 
     WindowParam.x = 100;

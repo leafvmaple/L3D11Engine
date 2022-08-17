@@ -44,7 +44,7 @@ L3DEngine::~L3DEngine()
 
 }
 
-HRESULT L3DEngine::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
+HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -83,6 +83,9 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3DWINDOWPARAM& WindowParam)
 
     hr = InitSwapChain(m_Device.piDevice, m_WindowParam.Width, m_WindowParam.Height, hWnd);
     HRESULT_ERROR_EXIT(hr);
+
+	hr = InitShaderTable(m_Device.piDevice);
+	HRESULT_ERROR_EXIT(hr);
 
     hr = InitViewport(m_WindowParam.Width, m_WindowParam.Height);
     HRESULT_ERROR_EXIT(hr);
@@ -257,6 +260,19 @@ Exit0:
     {
         SAFE_RELEASE(m_piRenderTargetView);
     }
+    return hResult;
+}
+
+
+HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
+{
+    HRESULT hResult = E_FAIL;
+    
+    m_pShaderTable = CreateShaderTable(piDevice);
+    BOOL_ERROR_EXIT(m_pShaderTable);
+
+    hResult = S_OK;
+Exit0:
     return hResult;
 }
 
