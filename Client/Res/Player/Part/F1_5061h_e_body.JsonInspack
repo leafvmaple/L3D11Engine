@@ -1,0 +1,3670 @@
+{
+    "UseDX9Lighting": 1,
+    "UseDX9Detail": 0,
+    "LOD": [
+        {
+            "Group": [
+                {
+                    "Subset": [
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 128,
+                                "AlphaRef2": 128,
+                                "TwoSide": 0,
+                                "CreatShadow": 1,
+                                "BlendMode": 0,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_1000_b_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 180,
+                                "AlphaRef2": 0,
+                                "TwoSide": 1,
+                                "CreatShadow": 1,
+                                "BlendMode": 5,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body_l.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Subset": [
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 128,
+                                "AlphaRef2": 128,
+                                "TwoSide": 0,
+                                "CreatShadow": 1,
+                                "BlendMode": 0,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_1000_b_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 180,
+                                "AlphaRef2": 0,
+                                "TwoSide": 1,
+                                "CreatShadow": 1,
+                                "BlendMode": 5,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body_l.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\texture\\纯白.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.9908000230789185
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.1485999971628189
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        0.9686274528503418,
+                                        0.956038773059845,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        0.9835202693939209,
+                                        0.9686274528503418,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Subset": [
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 128,
+                                "AlphaRef2": 128,
+                                "TwoSide": 0,
+                                "CreatShadow": 1,
+                                "BlendMode": 0,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_1000_b_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 200,
+                                "AlphaRef2": 0,
+                                "TwoSide": 1,
+                                "CreatShadow": 1,
+                                "BlendMode": 5,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body_l.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\texture\\渐变花纹00.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.6000000238418579
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.37560001015663149
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.6226000189781189
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 0.9829000234603882
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.3228999972343445
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.9142900705337524,
+                                        0.9142900705337524,
+                                        0.9142900705337524,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.923079252243042,
+                                        0.9208972454071045,
+                                        0.8875715136528015,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.7428549528121948,
+                                        0.7428549528121948,
+                                        0.7428549528121948,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.616357684135437,
+                                        0.695109486579895,
+                                        0.7542839646339417,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Subset": [
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 128,
+                                "AlphaRef2": 128,
+                                "TwoSide": 0,
+                                "CreatShadow": 1,
+                                "BlendMode": 0,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_1000_b_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 200,
+                                "AlphaRef2": 0,
+                                "TwoSide": 1,
+                                "CreatShadow": 1,
+                                "BlendMode": 5,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body_l.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\texture\\渐变花纹00.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.5
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.588100016117096
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.2012999951839447
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 0.314300000667572
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.033799998462200168
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.9890134930610657,
+                                        0.5882353186607361,
+                                        0.6705882549285889,
+                                        0.8999999761581421
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        0.9254902005195618,
+                                        0.9065995216369629,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.8981765508651733,
+                                        0.9027389883995056,
+                                        0.9085679650306702,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.8980392217636108,
+                                        0.4901960790157318,
+                                        0.6538490653038025,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.737148106098175,
+                                        0.4315861761569977,
+                                        0.4891279339790344,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Subset": [
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 128,
+                                "AlphaRef2": 128,
+                                "TwoSide": 0,
+                                "CreatShadow": 1,
+                                "BlendMode": 0,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_1000_b_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std_colorcastcharacter_sd_chs_modify.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 0,
+                                "AlphaRef": 200,
+                                "AlphaRef2": 0,
+                                "TwoSide": 1,
+                                "CreatShadow": 1,
+                                "BlendMode": 5,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0,
+                                "DistortionMode": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body.tga"
+                                },
+                                {
+                                    "Name": "花纹反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "流光贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\material\\texture\\yanwu_03.tga"
+                                },
+                                {
+                                    "Name": "偏色区域mask贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\player\\f1\\部件\\texture\\f1_5061h_e_body_l.tga"
+                                },
+                                {
+                                    "Name": "贴花1_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\nulltex.tga"
+                                },
+                                {
+                                    "Name": "贴花2_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\texture\\渐变花纹00.tga"
+                                },
+                                {
+                                    "Name": "贴花3_albedo",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\texture\\渐变花纹07.tga"
+                                },
+                                {
+                                    "Name": "主体反射贴图",
+                                    "Type": "Texture",
+                                    "Value": "data\\public\\detail_evn.dds"
+                                },
+                                {
+                                    "Name": "LightnessMax",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "LightnessMin",
+                                    "Type": "Float",
+                                    "Value": 0.6000000238418579
+                                },
+                                {
+                                    "Name": "LightnessScale",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "ReflectionIntensity_classic",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "addReflectionInt_classic",
+                                    "Type": "Float",
+                                    "Value": 0.10000000149011612
+                                },
+                                {
+                                    "Name": "maskAlphaPower",
+                                    "Type": "Float",
+                                    "Value": 0.75
+                                },
+                                {
+                                    "Name": "反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光密度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "流光速度_U",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光速度_V",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "流光颜色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色1_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.25429999828338625
+                                },
+                                {
+                                    "Name": "偏色2_Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "偏色3_Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.32330000400543215
+                                },
+                                {
+                                    "Name": "偏色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_反射强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_高光强度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花1四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_UV缩放",
+                                    "Type": "Float",
+                                    "Value": 1.5
+                                },
+                                {
+                                    "Name": "贴花2_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花2_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.32429999113082888
+                                },
+                                {
+                                    "Name": "贴花2_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花2四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（10倍）",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_UV缩放（1倍）",
+                                    "Type": "Float",
+                                    "Value": 0.9829000234603882
+                                },
+                                {
+                                    "Name": "贴花3_UV旋转",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_反射强度",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花3_高光强度",
+                                    "Type": "Float",
+                                    "Value": 0.42739999294281008
+                                },
+                                {
+                                    "Name": "贴花3_花纹偏色Alpha",
+                                    "Type": "Float",
+                                    "Value": 0.6080999970436096
+                                },
+                                {
+                                    "Name": "贴花3_着色力度",
+                                    "Type": "Float",
+                                    "Value": 1.0
+                                },
+                                {
+                                    "Name": "贴花3四方连续/只出现一次(0或1)",
+                                    "Type": "Float",
+                                    "Value": 0.0
+                                },
+                                {
+                                    "Name": "贴花1_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_UV平移",
+                                    "Type": "Float2",
+                                    "Value": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "PlayerLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "SceneLight",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part01_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        0.8651712536811829,
+                                        0.48570993542671206,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part02_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.9028610587120056,
+                                        0.8812237977981567,
+                                        0.8203097581863403,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "part03_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.9028610587120056,
+                                        0.8812237977981567,
+                                        0.8203097581863403,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "流光偏色",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        0.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花1_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花2_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.9828641414642334,
+                                        0.8599832057952881,
+                                        0.688532829284668,
+                                        1.0
+                                    ]
+                                },
+                                {
+                                    "Name": "贴花3_color",
+                                    "Type": "Color",
+                                    "Value": [
+                                        0.5529412031173706,
+                                        0.4274509847164154,
+                                        0.0,
+                                        1.0
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

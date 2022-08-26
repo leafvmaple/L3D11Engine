@@ -34,5 +34,6 @@
 *.suo
 
 .vs
+*.user
 
 Debug

@@ -3,9 +3,12 @@
 #include <d3d11.h>
 #include <vector>
 #include <list>
+
 #include "L3DInterface.h"
 
-#include "Component/LShader.h"
+#include "Component/L3DMesh.h"
+
+struct L3D_SHADER_TABLE;
 
 class L3DEngine : public IL3DEngine
 {
@@ -31,9 +34,10 @@ private:
     } m_Device;
 
     IDXGISwapChain *m_piSwapChain;
-    ID3D11RenderTargetView  *m_piRenderTargetView;
+    ID3D11RenderTargetView *m_piRenderTargetView;
+    ID3D11DepthStencilView *m_piDepthStencilView;
 
-    L3D_SHADER_TABLE* m_pShaderTable;
+    L3D_SHADER_TABLE *m_pShaderTable;
     L3D_WINDOW_PARAM m_WindowParam;
 
     D3D11_SAMPLER_DESC m_SampFilter[GRAPHICS_LEVEL_COUNT] = {
@@ -66,6 +70,7 @@ private:
     D3D11_VIEWPORT      m_Viewport;
 
     ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT];
+	std::vector<RENDER_STAGE_INPUT_ASSEMBLER> m_IAStage;
 
     BOOL m_bActive;
 
@@ -77,6 +82,9 @@ private:
     HRESULT InitShaderTable(ID3D11Device* piDevice);
     HRESULT InitViewport(unsigned uWidth, unsigned urHeight);
     HRESULT InitSamplerFilter();
+
+    // TODO
+    HRESULT InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);
 
     HRESULT UpdateMessage();
 };

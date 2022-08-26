@@ -1,15 +1,17 @@
 #include "LAssert.h"
-#include "IO/LFileReader.h"
 #include <wtypes.h>
 #include <atlconv.h>
 
-#include "LShader.h"
+#include "L3DShader.h"
+#include "IO/LFileReader.h"
 
 #define FXO_PATH "Res/Shader/Base/FXO/g_%s_%s_ASSEMBLY.fxo"
 
 static const char* VERTEX_SHADER_ID_NAME[] =
 {
 	"VERTEX_SHADER_SRVOLUMETRIC_DRAWCUBESKY",
+	"VERTEX_SHADER_CI_MESH",
+	"VERTEX_SHADER_CI_SKINMESH",
 };
 
 static const char* PIXEL_SHADER_ID_NAME[] =
@@ -30,11 +32,8 @@ HRESULT LoadShader(const char* szFileName, const char* szType, BYTE** ppByteCode
 	nRetCode = sprintf_s(szFilePath, FXO_PATH, szType, szFileName);
 	BOOL_ERROR_EXIT(nRetCode);
 
-	{
-		USES_CONVERSION;
-		hr = LFileReader::Reader(A2CW((LPCSTR)szFilePath), ppByteCode, puSize);
-		HRESULT_ERROR_EXIT(hr);
-	}
+	hr = LFileReader::Reader(szFilePath, ppByteCode, puSize);
+	HRESULT_ERROR_EXIT(hr);
 
 	*puSize -= sizeof(GUID);
 

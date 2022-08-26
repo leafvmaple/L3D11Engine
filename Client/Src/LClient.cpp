@@ -27,8 +27,8 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     WindowParam.Width = 800;
     WindowParam.Height = 600;
     WindowParam.bWindow = TRUE;
-    WindowParam.lpszClassName = TEXT("LDirectX");
-    WindowParam.lpszWindowName = TEXT("L3D DirectX11 Engine");
+    WindowParam.lpszClassName = TEXT("LDirect3D");
+    WindowParam.lpszWindowName = TEXT("LDirect3D Engine");
 
     m_pObjectMgr = new LObjectMgr;
     BOOL_ERROR_EXIT(m_pObjectMgr);

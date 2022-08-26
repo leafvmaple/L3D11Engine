@@ -3,15 +3,9 @@
 #include "LFileReader.h"
 #include "LAssert.h"
 
-
-LFileReader::LFileReader()
+BOOL LFileReader::IsExist(LPCWSTR cszFileName)
 {
-
-}
-
-LFileReader::~LFileReader()
-{
-
+	return _waccess(cszFileName, 0) != -1;
 }
 
 HRESULT LFileReader::Reader(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen)
@@ -49,7 +43,3 @@ HRESULT LFileReader::Reader(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen)
 	return hResult;
 }
 
-BOOL LFileReader::IsExist(LPCWSTR cszFileName)
-{
-	return _waccess(cszFileName, 0) != -1;
-}

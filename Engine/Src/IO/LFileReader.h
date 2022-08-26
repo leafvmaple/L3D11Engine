@@ -6,12 +6,14 @@
 
 class LFileReader
 {
-	LFileReader();
-	~LFileReader();
-
 public:
-	static HRESULT Reader(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen);
 	static BOOL IsExist(LPCWSTR cszFileName);
+	static HRESULT Reader(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen);
+	static HRESULT Reader(const char* szFileName, BYTE** ppBuffer, size_t* puLen)
+	{
+		USES_CONVERSION;
+		return Reader(A2CW((LPCSTR)szFileName), ppBuffer, puLen);
+	}
 
 	template<typename Model>
 	static BYTE* Convert(BYTE* pBuffer, Model*& pModel, size_t nCount = 1)

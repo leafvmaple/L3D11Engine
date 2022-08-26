@@ -2,23 +2,29 @@
 #include <process.h>
 #include <d3dcommon.h>
 #include <strsafe.h>
+#include <d3d11.h>
+
 #include "LAssert.h"
 #include "L3DEngine.h"
 
-static const D3D_FEATURE_LEVEL FEATURE_LEVEL_ARRAY_0[] =
-{
-    D3D_FEATURE_LEVEL_11_0,
-};
-
-static const D3D_FEATURE_LEVEL FEATURE_LEVEL_ARRAY_1[] =
-{
-    D3D_FEATURE_LEVEL_11_1,
-};
+#include "Component/L3DShader.h"
+#include "Component/L3DMesh.h"
+#include "Demo/L3DBox.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+
+static const D3D_FEATURE_LEVEL FEATURE_LEVEL_ARRAY_0[] =
+{
+	D3D_FEATURE_LEVEL_11_0,
+};
+
+static const D3D_FEATURE_LEVEL FEATURE_LEVEL_ARRAY_1[] =
+{
+	D3D_FEATURE_LEVEL_11_1,
+};
 
 extern ID3D11Device* g_p3DDevice = nullptr;
 
@@ -31,6 +37,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 L3DEngine::L3DEngine()
 : m_piSwapChain(nullptr)
 , m_piRenderTargetView(nullptr)
+, m_piDepthStencilView(nullptr)
 , m_bActive(false)
 , m_CurSampFilter(m_SampFilter[GRAPHICS_LEVEL_MAX])
 {
@@ -105,11 +112,60 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
+    ID3D11InputLayout* piInputLayout = nullptr;
+
+    float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float mRadius = 5.f;
+    float mTheta = 1.5f * XM_PI;
+    float mPhi = 0.25f * XM_PI;
+
+	float x = mRadius * sinf(mPhi) * cosf(mTheta);
+	float z = mRadius * sinf(mPhi) * sinf(mTheta);
+	float y = mRadius * cosf(mPhi);
+
+	XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
+	XMVECTOR target = XMVectorZero();
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	XMFLOAT4X4 mView;
+	XMFLOAT4X4 mWorld;
+	XMFLOAT4X4 mProj;
+
+	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * XM_PI, (float)m_Viewport.Width / m_Viewport.Height, 1.0f, 1000.0f);
+	XMStoreFloat4x4(&mProj, P);
+
+
+	XMMATRIX I = XMMatrixIdentity();
+	XMStoreFloat4x4(&mWorld, I);
+
+	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
+	XMStoreFloat4x4(&mView, V);
+
+	XMMATRIX world = XMLoadFloat4x4(&mWorld);
+	XMMATRIX view = XMLoadFloat4x4(&mView);
+	XMMATRIX proj = XMLoadFloat4x4(&mProj);
+	XMMATRIX worldViewProj = world * view * proj;
+
     hr = UpdateMessage();
     HRESULT_ERROR_EXIT(hr);
+    
+    m_Device.piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::LightSteelBlue));
+    m_Device.piImmediateContext->ClearDepthStencilView(m_piDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-    float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    m_Device.piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, clearColor);
+    for (auto stage : m_IAStage)
+    {
+        piInputLayout = stage.piInputLayout ? stage.piInputLayout : m_pShaderTable->Layout[stage.eInputLayer];
+
+        m_Device.piImmediateContext->IASetInputLayout(piInputLayout);
+        m_Device.piImmediateContext->IASetPrimitiveTopology(stage.eTopology);
+
+        m_Device.piImmediateContext->IASetVertexBuffers(0, 1, &stage.VertexBuffer.piBuffer, &stage.VertexBuffer.uStride, &stage.VertexBuffer.uOffset);
+        m_Device.piImmediateContext->IASetIndexBuffer(stage.IndexBuffer.piBuffer, stage.IndexBuffer.eFormat, stage.IndexBuffer.uOffset);
+
+        stage.pUnit->Draw(m_Device.piImmediateContext, &worldViewProj);
+
+        m_Device.piImmediateContext->DrawIndexed(stage.Draw.Indexed.uIndexCount, stage.Draw.Indexed.uStartIndexLocation, stage.Draw.Indexed.nBaseVertexLocation);
+    }
 
     hr = m_piSwapChain->Present(0, 0);
     HRESULT_ERROR_EXIT(hr);
@@ -228,6 +284,10 @@ HRESULT L3DEngine::InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsign
     SAFE_RELEASE(piDXGIAdapter);
     SAFE_RELEASE(piDXGIFactory);
 
+    // TODO
+    hr = InitStencilView(piDevice, uWidth, uHeight);
+    HRESULT_ERROR_EXIT(hr);
+
     hr = InitRenderTargetView(piDevice, m_piSwapChain);
     HRESULT_ERROR_EXIT(hr);
 
@@ -251,7 +311,7 @@ HRESULT L3DEngine::InitRenderTargetView(ID3D11Device *piDevice, IDXGISwapChain* 
     hr = piDevice->CreateRenderTargetView(piSwapChainBuffer, nullptr, &m_piRenderTargetView);
     HRESULT_ERROR_EXIT(hr);
 
-    m_Device.piImmediateContext->OMSetRenderTargets(1, &m_piRenderTargetView, nullptr);
+    m_Device.piImmediateContext->OMSetRenderTargets(1, &m_piRenderTargetView, m_piDepthStencilView);
 
     hResult = S_OK;
 Exit0:
@@ -267,9 +327,18 @@ Exit0:
 HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
 {
     HRESULT hResult = E_FAIL;
+    L3DMesh* p3DMesh = new L3DMesh;
+    L3DBox* pBox = new L3DBox;
     
     m_pShaderTable = CreateShaderTable(piDevice);
     BOOL_ERROR_EXIT(m_pShaderTable);
+
+    // TODO
+    // p3DMesh->LoadMesh(m_Device.piDevice, "Res/Player/Part/F1_5061h_e_body.mesh");
+    // p3DMesh->PushRenderUnit(m_IAStage);
+
+    pBox->Create(piDevice);
+    pBox->PushRenderUnit(m_IAStage);
 
     hResult = S_OK;
 Exit0:
@@ -307,6 +376,39 @@ HRESULT L3DEngine::InitSamplerFilter()
     }
 
     return S_OK;
+}
+
+
+HRESULT L3DEngine::InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight)
+{
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+    ID3D11Texture2D *pDepthStencilBuffer = nullptr;
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+
+	depthStencilDesc.Width = uWidth;
+	depthStencilDesc.Height = uHeight;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+    hr = piDevice->CreateTexture2D(&depthStencilDesc, 0, &pDepthStencilBuffer);
+    HRESULT_ERROR_EXIT(hr);
+
+    hr = piDevice->CreateDepthStencilView(pDepthStencilBuffer, 0, &m_piDepthStencilView);
+    HRESULT_ERROR_EXIT(hr);
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
 }
 
 HRESULT L3DEngine::UpdateMessage()

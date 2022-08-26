@@ -5,31 +5,21 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\Engine">
-      <UniqueIdentifier>{9b39e9f3-7be3-4937-a47a-0e9f4bb40ec4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Common">
-      <UniqueIdentifier>{1eb6cb3e-5235-43c2-9fdf-498a02ff661a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Component">
-      <UniqueIdentifier>{4a86bfd9-d399-4096-b4fa-8de3fec9e121}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\IO">
-      <UniqueIdentifier>{016e469e-3f48-4a66-8711-acc7b704a82b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\IO">
       <UniqueIdentifier>{3d0740da-61e4-4c8a-938d-46bd6e133417}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Component">
       <UniqueIdentifier>{2931d9a5-dc69-4abf-be2b-03b30785d465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Demo">
+      <UniqueIdentifier>{2ae569c8-4118-4ddf-867a-2b8e4db7d41b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{1eb6cb3e-5235-43c2-9fdf-498a02ff661a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,37 +29,52 @@
     <ClCompile Include="Src\L3DInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Component\LShader.cpp">
+    <ClCompile Include="Src\Component\L3DShader.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
     <ClCompile Include="Src\IO\LFileReader.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Component\L3DMesh.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Demo\L3DBox.cpp">
+      <Filter>Source Files\Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\L3DEngine.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\L3DInterface.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\Include\LCommon.h">
-      <Filter>Header Files\Common</Filter>
+      <Filter>Source Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\LAssert.h">
-      <Filter>Header Files\Common</Filter>
+      <Filter>Source Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\LExports.h">
-      <Filter>Header Files\Common</Filter>
+      <Filter>Source Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Component\LShader.h">
-      <Filter>Header Files\Component</Filter>
+    <ClInclude Include="Src\Component\L3DMesh.h">
+      <Filter>Source Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Component\L3DShader.h">
+      <Filter>Source Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\L3DEngine.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\L3DInterface.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\IO\LFileReader.h">
-      <Filter>Header Files\IO</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="Src\IO\LFileStruct.h">
-      <Filter>Header Files\IO</Filter>
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Demo\L3DBox.h">
+      <Filter>Source Files\Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\L3DRenderUnit.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
