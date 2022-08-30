@@ -9,8 +9,7 @@
 
 static const char* VERTEX_SHADER_ID_NAME[] =
 {
-	"VERTEX_SHADER_SRVOLUMETRIC_DRAWCUBESKY",
-	"VERTEX_SHADER_CI_MESH",
+	"VERTEX_SHADER_BOX",
 	"VERTEX_SHADER_CI_SKINMESH",
 };
 
@@ -68,7 +67,7 @@ L3D_SHADER_TABLE* CreateShaderTable(ID3D11Device* piDevice)
 		hr = LoadShader(VERTEX_SHADER_ID_NAME[i], "vs", &ShaderInfo.pByte, &ShaderInfo.nSize);
 		HRESULT_ERROR_EXIT(hr);
 
-		hr = piDevice->CreateVertexShader(ShaderInfo.pByte, ShaderInfo.nSize, NULL, &pShaderTable->Vertex[i]);
+		hr = piDevice->CreateVertexShader(ShaderInfo.pByte, ShaderInfo.nSize, nullptr, &pShaderTable->Vertex[i]);
 		HRESULT_ERROR_EXIT(hr);
 	}
 
@@ -79,7 +78,7 @@ L3D_SHADER_TABLE* CreateShaderTable(ID3D11Device* piDevice)
 		hr = LoadShader(PIXEL_SHADER_ID_NAME[i], "ps", &pByte, &uSize);
 		HRESULT_ERROR_EXIT(hr);
 
-		hr = piDevice->CreatePixelShader(pByte, uSize, NULL, &pShaderTable->Pixel[i]);
+		hr = piDevice->CreatePixelShader(pByte, uSize, nullptr, &pShaderTable->Pixel[i]);
 		HRESULT_ERROR_EXIT(hr);
 	}
 

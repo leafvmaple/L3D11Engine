@@ -65,7 +65,6 @@ HRESULT L3DBox::Create(ID3D11Device* piDevice)
 	D3D11_BUFFER_DESC ibd;
 	D3D11_SUBRESOURCE_DATA vinitData;
 	D3D11_SUBRESOURCE_DATA iinitData;
-	D3DX11_PASS_DESC passDesc;
 
 	HRESULT hr = E_FAIL;
 	HRESULT hResult = E_FAIL;
@@ -123,11 +122,7 @@ HRESULT L3DBox::Create(ID3D11Device* piDevice)
 	m_pWorldViewProj = pEffect->GetVariableByName("gWorldViewProj")->AsMatrix();
 	BOOL_ERROR_EXIT(m_pWorldViewProj);
 
-	m_pEffectTech->GetPassByIndex(0)->GetDesc(&passDesc);
-
-	hr = piDevice->CreateInputLayout(vertexDesc, 2, passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &m_RenderParam.piInputLayout);
-	HRESULT_ERROR_EXIT(hr);
-
+	m_RenderParam.eInputLayer = L3D_INPUT_LAYOUT_BOX;
 	m_RenderParam.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	m_RenderParam.pUnit = this;

@@ -154,7 +154,7 @@ HRESULT L3DEngine::Update(float fDeltaTime)
 
     for (auto stage : m_IAStage)
     {
-        piInputLayout = stage.piInputLayout ? stage.piInputLayout : m_pShaderTable->Layout[stage.eInputLayer];
+        piInputLayout = m_pShaderTable->Layout[stage.eInputLayer];
 
         m_Device.piImmediateContext->IASetInputLayout(piInputLayout);
         m_Device.piImmediateContext->IASetPrimitiveTopology(stage.eTopology);

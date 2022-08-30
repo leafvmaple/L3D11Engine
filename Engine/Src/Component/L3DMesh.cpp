@@ -459,7 +459,6 @@ Exit0:
 HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
 {
 	m_RenderParam.eInputLayer = FillInfo.eInputLayout;
-	m_RenderParam.piInputLayout = nullptr;
 	m_RenderParam.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	return S_OK;
