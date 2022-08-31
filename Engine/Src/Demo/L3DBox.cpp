@@ -110,19 +110,8 @@ HRESULT L3DBox::Create(ID3D11Device* piDevice)
 	dwShaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif
 
-	hr = D3DCompileFromFile(L"Res/Shader/color.fx", 0, 0, 0, "fx_5_0", dwShaderFlags, 0, &pCompiledShader, &pCompilationMsgs);
-	HRESULT_ERROR_EXIT(hr);
-
-	hr = D3DX11CreateEffectFromMemory(pCompiledShader->GetBufferPointer(), pCompiledShader->GetBufferSize(), 0, piDevice, &pEffect);
-	HRESULT_ERROR_EXIT(hr);
-
-	m_pEffectTech = pEffect->GetTechniqueByName("ColorTech");
-	BOOL_ERROR_EXIT(m_pEffectTech);
-
-	m_pWorldViewProj = pEffect->GetVariableByName("gWorldViewProj")->AsMatrix();
-	BOOL_ERROR_EXIT(m_pWorldViewProj);
-
-	m_RenderParam.eInputLayer = L3D_INPUT_LAYOUT_BOX;
+	m_RenderParam.eShaderEffect = L3D_SHADER_EFFECT_BOX;
+	m_RenderParam.bUseEffect = true;
 	m_RenderParam.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	m_RenderParam.pUnit = this;
@@ -136,15 +125,6 @@ Exit0:
 
 HRESULT L3DBox::Draw(ID3D11DeviceContext* pDeviceContext, XMMATRIX *pWorldViewProj)
 {
-	D3DX11_TECHNIQUE_DESC techDesc;
-
-	m_pWorldViewProj->SetMatrix(reinterpret_cast<float*>(pWorldViewProj));
-	m_pEffectTech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		m_pEffectTech->GetPassByIndex(p)->Apply(0, pDeviceContext);
-	}
-
 	return S_OK;
 }
 

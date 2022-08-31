@@ -2,6 +2,7 @@
 
 #include "L3DInterface.h"
 #include "L3DRenderUnit.h"
+#include "Component/L3DEffect.h"
 
 struct ID3DX11EffectTechnique;
 struct ID3DX11EffectMatrixVariable;
@@ -29,8 +30,4 @@ public:
 
 	HRESULT Draw(ID3D11DeviceContext* pDeviceContext, XMMATRIX* pWorldViewProj) override;
 	HRESULT PushRenderUnit(std::vector<RENDER_STAGE_INPUT_ASSEMBLER>& vecRenderUnit) override;
-
-private:
-	ID3DX11EffectTechnique* m_pEffectTech = nullptr;
-	ID3DX11EffectMatrixVariable* m_pWorldViewProj = nullptr;
 };

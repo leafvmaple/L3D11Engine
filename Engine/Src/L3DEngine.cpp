@@ -9,6 +9,7 @@
 
 #include "Component/L3DShader.h"
 #include "Component/L3DMesh.h"
+#include "Component/L3DEffect.h"
 #include "Demo/L3DBox.h"
 
 #pragma comment(lib, "d3d11.lib")
@@ -112,39 +113,6 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
-    ID3D11InputLayout* piInputLayout = nullptr;
-
-    float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    float mRadius = 5.f;
-    float mTheta = 1.5f * XM_PI;
-    float mPhi = 0.25f * XM_PI;
-
-	float x = mRadius * sinf(mPhi) * cosf(mTheta);
-	float z = mRadius * sinf(mPhi) * sinf(mTheta);
-	float y = mRadius * cosf(mPhi);
-
-	XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
-	XMVECTOR target = XMVectorZero();
-	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	XMFLOAT4X4 mView;
-	XMFLOAT4X4 mWorld;
-	XMFLOAT4X4 mProj;
-
-	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * XM_PI, (float)m_Viewport.Width / m_Viewport.Height, 1.0f, 1000.0f);
-	XMStoreFloat4x4(&mProj, P);
-
-
-	XMMATRIX I = XMMatrixIdentity();
-	XMStoreFloat4x4(&mWorld, I);
-
-	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&mView, V);
-
-	XMMATRIX world = XMLoadFloat4x4(&mWorld);
-	XMMATRIX view = XMLoadFloat4x4(&mView);
-	XMMATRIX proj = XMLoadFloat4x4(&mProj);
-	XMMATRIX worldViewProj = world * view * proj;
 
     hr = UpdateMessage();
     HRESULT_ERROR_EXIT(hr);
@@ -154,17 +122,8 @@ HRESULT L3DEngine::Update(float fDeltaTime)
 
     for (auto stage : m_IAStage)
     {
-        piInputLayout = m_pShaderTable->Layout[stage.eInputLayer];
-
-        m_Device.piImmediateContext->IASetInputLayout(piInputLayout);
-        m_Device.piImmediateContext->IASetPrimitiveTopology(stage.eTopology);
-
-        m_Device.piImmediateContext->IASetVertexBuffers(0, 1, &stage.VertexBuffer.piBuffer, &stage.VertexBuffer.uStride, &stage.VertexBuffer.uOffset);
-        m_Device.piImmediateContext->IASetIndexBuffer(stage.IndexBuffer.piBuffer, stage.IndexBuffer.eFormat, stage.IndexBuffer.uOffset);
-
-        stage.pUnit->Draw(m_Device.piImmediateContext, &worldViewProj);
-
-        m_Device.piImmediateContext->DrawIndexed(stage.Draw.Indexed.uIndexCount, stage.Draw.Indexed.uStartIndexLocation, stage.Draw.Indexed.nBaseVertexLocation);
+        hr = DrawEffect(stage);
+        HRESULT_ERROR_EXIT(hr);
     }
 
     hr = m_piSwapChain->Present(0, 0);
@@ -333,6 +292,10 @@ HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
     m_pShaderTable = CreateShaderTable(piDevice);
     BOOL_ERROR_EXIT(m_pShaderTable);
 
+    m_pEffectTable = CreateEffectTable(piDevice);
+    BOOL_ERROR_EXIT(m_pEffectTable);
+
+
     // TODO
     // p3DMesh->LoadMesh(m_Device.piDevice, "Res/Player/Part/F1_5061h_e_body.mesh");
     // p3DMesh->PushRenderUnit(m_IAStage);
@@ -378,6 +341,62 @@ HRESULT L3DEngine::InitSamplerFilter()
     return S_OK;
 }
 
+
+HRESULT L3DEngine::DrawEffect(const RENDER_STAGE_INPUT_ASSEMBLER& stage)
+{
+    L3D_EFFECT_TABLE::_EFFECT_INFO* pEffectInfo = nullptr;
+	D3DX11_TECHNIQUE_DESC techDesc;
+
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float mRadius = 5.f;
+	float mTheta = 1.5f * XM_PI;
+	float mPhi = 0.25f * XM_PI;
+
+	float x = mRadius * sinf(mPhi) * cosf(mTheta);
+	float z = mRadius * sinf(mPhi) * sinf(mTheta);
+	float y = mRadius * cosf(mPhi);
+
+	XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
+	XMVECTOR target = XMVectorZero();
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	XMFLOAT4X4 mView;
+	XMFLOAT4X4 mWorld;
+	XMFLOAT4X4 mProj;
+
+	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * XM_PI, (float)m_Viewport.Width / m_Viewport.Height, 1.0f, 1000.0f);
+	XMStoreFloat4x4(&mProj, P);
+
+	XMMATRIX I = XMMatrixIdentity();
+	XMStoreFloat4x4(&mWorld, I);
+
+	XMMATRIX V = XMMatrixLookAtLH(pos, target, up);
+	XMStoreFloat4x4(&mView, V);
+
+	XMMATRIX world = XMLoadFloat4x4(&mWorld);
+	XMMATRIX view = XMLoadFloat4x4(&mView);
+	XMMATRIX proj = XMLoadFloat4x4(&mProj);
+	XMMATRIX worldViewProj = world * view * proj;
+
+    pEffectInfo = &m_pEffectTable->Table[stage.eShaderEffect];
+
+	m_Device.piImmediateContext->IASetInputLayout(pEffectInfo->pLayout);
+	m_Device.piImmediateContext->IASetPrimitiveTopology(stage.eTopology);
+
+	m_Device.piImmediateContext->IASetVertexBuffers(0, 1, &stage.VertexBuffer.piBuffer, &stage.VertexBuffer.uStride, &stage.VertexBuffer.uOffset);
+	m_Device.piImmediateContext->IASetIndexBuffer(stage.IndexBuffer.piBuffer, stage.IndexBuffer.eFormat, stage.IndexBuffer.uOffset);
+
+	pEffectInfo->pWorldViewProj->SetMatrix(reinterpret_cast<float*>(&worldViewProj));
+	pEffectInfo->pEffectTech->GetDesc(&techDesc);
+	for (UINT p = 0; p < techDesc.Passes; ++p)
+	{
+        pEffectInfo->pEffectTech->GetPassByIndex(p)->Apply(0, m_Device.piImmediateContext);
+	}
+
+	m_Device.piImmediateContext->DrawIndexed(stage.Draw.Indexed.uIndexCount, stage.Draw.Indexed.uStartIndexLocation, stage.Draw.Indexed.nBaseVertexLocation);
+
+    return S_OK;
+}
 
 HRESULT L3DEngine::InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight)
 {

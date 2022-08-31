@@ -41,6 +41,9 @@
     <ClCompile Include="Src\Demo\L3DBox.cpp">
       <Filter>Source Files\Demo</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Component\L3DEffect.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\LCommon.h">
@@ -75,6 +78,9 @@
     </ClInclude>
     <ClInclude Include="Src\L3DRenderUnit.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Component\L3DEffect.h">
+      <Filter>Source Files\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

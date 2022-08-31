@@ -9,6 +9,7 @@
 #include "Component/L3DMesh.h"
 
 struct L3D_SHADER_TABLE;
+struct L3D_EFFECT_TABLE;
 
 class L3DEngine : public IL3DEngine
 {
@@ -38,6 +39,8 @@ private:
     ID3D11DepthStencilView *m_piDepthStencilView;
 
     L3D_SHADER_TABLE *m_pShaderTable;
+    L3D_EFFECT_TABLE *m_pEffectTable;
+
     L3D_WINDOW_PARAM m_WindowParam;
 
     D3D11_SAMPLER_DESC m_SampFilter[GRAPHICS_LEVEL_COUNT] = {
@@ -82,6 +85,8 @@ private:
     HRESULT InitShaderTable(ID3D11Device* piDevice);
     HRESULT InitViewport(unsigned uWidth, unsigned urHeight);
     HRESULT InitSamplerFilter();
+
+    HRESULT DrawEffect(const RENDER_STAGE_INPUT_ASSEMBLER& stage);
 
     // TODO
     HRESULT InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);
