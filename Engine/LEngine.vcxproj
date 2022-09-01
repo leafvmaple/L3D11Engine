@@ -171,6 +171,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\L3DInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\L3DFormat.h" />
     <ClInclude Include="..\Include\LAssert.h" />
     <ClInclude Include="..\Include\LCommon.h" />
     <ClInclude Include="..\Include\L3DEngine.h" />

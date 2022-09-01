@@ -82,5 +82,8 @@
     <ClInclude Include="Src\Component\L3DEffect.h">
       <Filter>Source Files\Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\Include\L3DFormat.h">
+      <Filter>Source Files\Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

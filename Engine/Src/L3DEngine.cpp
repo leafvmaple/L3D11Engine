@@ -298,10 +298,11 @@ HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
 
     // TODO
     // p3DMesh->LoadMesh(m_Device.piDevice, "Res/Player/Part/F1_5061h_e_body.mesh");
-    // p3DMesh->PushRenderUnit(m_IAStage);
+    p3DMesh->LoadMesh(m_Device.piDevice, "Res/Mesh/Box.mesh");
+    p3DMesh->PushRenderUnit(m_IAStage);
 
-    pBox->Create(piDevice);
-    pBox->PushRenderUnit(m_IAStage);
+    // pBox->Create(piDevice);
+    // pBox->PushRenderUnit(m_IAStage);
 
     hResult = S_OK;
 Exit0:

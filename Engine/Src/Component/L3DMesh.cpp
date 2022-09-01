@@ -102,7 +102,16 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
 	// Diffuse
 	if (pHead->MeshHead.Blocks.DiffuseBlock)
 	{
-		LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.DiffuseBlock, pMeshData->pDiffuse, pHead->MeshHead.dwNumVertices);
+		XMCOLOR* pColor = nullptr;
+		LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.DiffuseBlock, pColor, pHead->MeshHead.dwNumVertices);
+
+		// TODO
+		pMeshData->pDiffuse = new XMFLOAT4[pHead->MeshHead.dwNumVertices];
+		for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
+		{
+			XMVECTOR color = DirectX::PackedVector::XMLoadColor(&pColor[i]);
+			DirectX::XMStoreFloat4(&pMeshData->pDiffuse[i], color);
+		}
 		pMeshData->dwVertexFVF |= D3DFVF_DIFFUSE;
 	}
 
@@ -212,12 +221,15 @@ HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO*
 		pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_NORMAL] = uElemId;
 	}
 
+	// TODO
 	if (pFileData->pDiffuse)
 	{
 		++pElem;
 		uElemId++;
-		uSourceStride = sizeof(XMCOLOR);
-		pElem->DestStride = sizeof(XMCOLOR);
+		// uSourceStride = sizeof(XMCOLOR);
+		// pElem->DestStride = sizeof(XMCOLOR);
+		uSourceStride = sizeof(XMFLOAT4);
+		pElem->DestStride = sizeof(XMFLOAT4);
 		pElem->SourceStride = uSourceStride;
 		pElem->SourceData = (byte*)pFileData->pDiffuse;
 
@@ -305,11 +317,12 @@ HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO*
 		if (pFileData->pSkin)
 		{
 			if (pFileData->pUV3) {}
-				//pRetFillInfo->eInputLayout = L3D_DYNAMIC_INPUT_LAYOUT_CI_SKINMESH_UV3;
+			//pRetFillInfo->eInputLayout = L3D_DYNAMIC_INPUT_LAYOUT_CI_SKINMESH_UV3;
 			else if (pFileData->pUV2) {}
-				//pRetFillInfo->eInputLayout = L3D_DYNAMIC_INPUT_LAYOUT_CI_SKINMESH_UV2;
+			//pRetFillInfo->eInputLayout = L3D_DYNAMIC_INPUT_LAYOUT_CI_SKINMESH_UV2;
 			else if (pFileData->pUV1)
-				pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_SKINMESH;
+				pFillInfo->eShaderEffect = L3D_SHADER_EFFECT_CI_SKINMESH;
+			// pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_SKINMESH;
 			else
 				assert(false);
 		}
@@ -317,7 +330,7 @@ HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO*
 			assert(false);
 	}
 	else
-		assert(false);
+		pFillInfo->eShaderEffect = L3D_SHADER_EFFECT_BOX;
 
 	pFillInfo->uElementCount = (unsigned)(pElem - &(pFillInfo->Element[0])) + 1;
 
@@ -425,7 +438,7 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
 	{
 		for (auto index : indexBuff.second.IndexBuffer)
 		{
-			IndexData.push_back(static_cast<DWORD>(index));
+			IndexData.push_back(static_cast<WORD>(index));
 		}
 		m_NormalMesh.Subset[nCount++] = { (DWORD)indexBuff.second.IndexBuffer.size(), nCount, indexBuff.second.IndexMax, indexBuff.second.IndexMin };
 	}
@@ -458,7 +471,9 @@ Exit0:
 
 HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
 {
-	m_RenderParam.eInputLayer = FillInfo.eInputLayout;
+	// m_RenderParam.eInputLayer = FillInfo.eInputLayout;
+	m_RenderParam.eShaderEffect = FillInfo.eShaderEffect;
+	m_RenderParam.bUseEffect = true;
 	m_RenderParam.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	return S_OK;
