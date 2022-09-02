@@ -100,20 +100,24 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
 	}
 
 	// Diffuse
+	XMCOLOR* pColor = nullptr;
 	if (pHead->MeshHead.Blocks.DiffuseBlock)
 	{
-		XMCOLOR* pColor = nullptr;
 		LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.DiffuseBlock, pColor, pHead->MeshHead.dwNumVertices);
-
-		// TODO
-		pMeshData->pDiffuse = new XMFLOAT4[pHead->MeshHead.dwNumVertices];
-		for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
-		{
-			XMVECTOR color = DirectX::PackedVector::XMLoadColor(&pColor[i]);
-			DirectX::XMStoreFloat4(&pMeshData->pDiffuse[i], color);
-		}
-		pMeshData->dwVertexFVF |= D3DFVF_DIFFUSE;
 	}
+	else
+	{
+		pColor = new XMCOLOR[pHead->MeshHead.dwNumVertices];
+		for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
+			pColor[i] = XMCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	pMeshData->pDiffuse = new XMFLOAT4[pHead->MeshHead.dwNumVertices];
+	for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
+	{
+		XMVECTOR color = DirectX::PackedVector::XMLoadColor(&pColor[i]);
+		DirectX::XMStoreFloat4(&pMeshData->pDiffuse[i], color);
+	}
+	pMeshData->dwVertexFVF |= D3DFVF_DIFFUSE;
 
 	// UV1
 	if (pHead->MeshHead.Blocks.TextureUVW1Block)
@@ -207,6 +211,7 @@ HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO*
 	pFillInfo->VertexDesc.bHasPosition = true;
 	pFillInfo->uVertexSize = pElem->DestStride;
 
+#if 0
 	if (pFileData->pNormals)
 	{
 		++pElem;
@@ -220,6 +225,7 @@ HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO*
 		pFillInfo->uVertexSize += pElem->DestStride;
 		pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_NORMAL] = uElemId;
 	}
+#endif
 
 	// TODO
 	if (pFileData->pDiffuse)
@@ -238,6 +244,7 @@ HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO*
 		pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_DIFFUSE] = uElemId;
 	}
 
+#if 0
 	if (pFileData->pUV1)
 	{
 		++pElem;
@@ -311,6 +318,7 @@ HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO*
 		pFillInfo->uVertexSize += pElem->DestStride;
 		pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_TANGENT] = uElemId;
 	}
+#endif
 
 	if (pFileData->pTangent)
 	{

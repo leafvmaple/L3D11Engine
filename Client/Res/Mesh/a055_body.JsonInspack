@@ -1,0 +1,62 @@
+{
+    "UseDX9Detail": 0,
+    "UseDX9Lighting": 1,
+    "LOD": [
+        {
+            "Group": [
+                {
+                    "Subset": [
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 1,
+                                "AlphaRef": 128,
+                                "AlphaRef2": 126,
+                                "BlendMode": 0,
+                                "DistortionMode": 0,
+                                "TwoSide": 0,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\npc_source\\a055\\模型\\texture\\a055.tga"
+                                }
+                            ]
+                        },
+                        {
+                            "Info": {
+                                "Version": 2,
+                                "RefPath": "data\\material\\material\\mtl_std.jsondef"
+                            },
+                            "RenderState": {
+                                "bOverWriteRS": 1,
+                                "nRenderState": 1,
+                                "AlphaRef": 128,
+                                "AlphaRef2": 126,
+                                "BlendMode": 1,
+                                "DistortionMode": 0,
+                                "TwoSide": 0,
+                                "OITWorkflow": 0,
+                                "OITOptimiseOption": 0
+                            },
+                            "Param": [
+                                {
+                                    "Name": "BaseColorMap",
+                                    "Type": "Texture",
+                                    "Value": "data\\source\\npc_source\\a055\\模型\\texture\\a055.tga"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

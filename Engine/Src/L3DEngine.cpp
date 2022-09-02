@@ -298,7 +298,7 @@ HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
 
     // TODO
     // p3DMesh->LoadMesh(m_Device.piDevice, "Res/Player/Part/F1_5061h_e_body.mesh");
-    p3DMesh->LoadMesh(m_Device.piDevice, "Res/Mesh/Box.mesh");
+    p3DMesh->LoadMesh(m_Device.piDevice, "Res/Mesh/A055_body.mesh");
     p3DMesh->PushRenderUnit(m_IAStage);
 
     // pBox->Create(piDevice);
@@ -349,7 +349,7 @@ HRESULT L3DEngine::DrawEffect(const RENDER_STAGE_INPUT_ASSEMBLER& stage)
 	D3DX11_TECHNIQUE_DESC techDesc;
 
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	float mRadius = 5.f;
+	float mRadius = 100.f;
 	float mTheta = 1.5f * XM_PI;
 	float mPhi = 0.25f * XM_PI;
 
