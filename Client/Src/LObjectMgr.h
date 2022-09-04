@@ -19,22 +19,20 @@ public:
     void Uninit();
 
     template<typename T>
-    T* CreateModel(TCHAR* pwcsMeshPath)
+    T* CreateModel(const char* szFileName)
     {
-        T* pObject = NULL;
-        pObject = new T(pwcsMeshPath);
+        T* pObject = new T;
         m_ObjectList.push_back(pObject);
-        pObject->Create(IL3DEngine::Instance(), m_p3DDevice);
+        pObject->Create(IL3DEngine::Instance(), szFileName);
         return pObject;
     }
 
     template<typename T>
     T* CreateModel()
     {
-        T* pObject = NULL;
-        pObject = new T;
+        T* pObject = new T;
         m_ObjectList.push_back(pObject);
-        pObject->Create(IL3DEngine::Instance(), m_p3DDevice);
+        pObject->Create(IL3DEngine::Instance(), nullptr);
         return pObject;
     }
 

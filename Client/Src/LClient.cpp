@@ -1,6 +1,8 @@
 #include "LClient.h"
 #include "L3DInterface.h"
 
+#include "Object/LCharacter.h"
+
 LClient::LClient()
 : m_fLastTime(0.f)
 , m_fTimeElapsed(0.f)
@@ -20,7 +22,8 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     L3D_WINDOW_PARAM WindowParam;
-    LScene* pCurScene = NULL;
+    LScene* pCurScene = nullptr;
+    LCharacter* pCharacter = nullptr;
 
     WindowParam.x = 100;
     WindowParam.y = 100;
@@ -35,6 +38,9 @@ HRESULT LClient::Init(HINSTANCE hInstance)
 
     hr = m_pObjectMgr->Init(hInstance, WindowParam);
     HRESULT_ERROR_EXIT(hr);
+
+    pCharacter = m_pObjectMgr->CreateModel<LCharacter>("Res/Mesh/A055_body.mesh");
+    BOOL_ERROR_EXIT(pCharacter);
 
     m_fLastTime = (float)timeGetTime();
 

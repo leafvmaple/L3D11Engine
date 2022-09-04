@@ -82,10 +82,10 @@ struct NormalMesh
 	} Subset[MAX_NUM_SUBSET_COUNT];
 };
 
-class L3DMesh : public L3DRenderUnit
+class L3DMesh : public L3DRenderUnit, public ILModel
 {
 public:
-	HRESULT LoadMesh(ID3D11Device* piDevice, const char* szFileName);
+	HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
 
 	HRESULT Draw(ID3D11DeviceContext* pDeviceContext, XMMATRIX* pWorldViewProj) override;
 	HRESULT PushRenderUnit(std::vector<RENDER_STAGE_INPUT_ASSEMBLER>& vecRenderUnit) override;

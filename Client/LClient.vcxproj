@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClCompile Include="Src\LClient.cpp" />
     <ClCompile Include="Src\LObjectMgr.cpp" />
+    <ClCompile Include="Src\Object\LCharacter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\LClient.h" />
     <ClInclude Include="Src\LObjectMgr.h" />
+    <ClInclude Include="Src\Object\LCharacter.h" />
     <ClInclude Include="Src\Object\LModel.h" />
   </ItemGroup>
   <ItemGroup>

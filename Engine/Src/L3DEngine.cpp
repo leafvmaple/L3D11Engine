@@ -154,6 +154,20 @@ BOOL L3DEngine::IsActive()
     return m_bActive;
 }
 
+
+ID3D11Device* L3DEngine::GetDevice() const
+{
+    return m_Device.piDevice;
+}
+
+
+HRESULT L3DEngine::AttachObject(L3DRenderUnit* pUnit)
+{
+    pUnit->PushRenderUnit(m_IAStage);
+
+    return S_OK;
+}
+
 HRESULT L3DEngine::Uninit()
 {
     return S_OK;
@@ -303,19 +317,12 @@ Exit0:
 HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
 {
     HRESULT hResult = E_FAIL;
-    L3DMesh* p3DMesh = nullptr;
     
     m_pShaderTable = CreateShaderTable(piDevice);
     BOOL_ERROR_EXIT(m_pShaderTable);
 
     m_pEffectTable = CreateEffectTable(piDevice);
     BOOL_ERROR_EXIT(m_pEffectTable);
-
-    // TODO
-    p3DMesh = new L3DMesh;
-    // p3DMesh->LoadMesh(m_Device.piDevice, "Res/Player/Part/F1_5061h_e_body.mesh");
-    p3DMesh->LoadMesh(m_Device.piDevice, "Res/Mesh/A055_body.mesh");
-    p3DMesh->PushRenderUnit(m_IAStage);
 
     hResult = S_OK;
 Exit0:

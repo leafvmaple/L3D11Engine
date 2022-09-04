@@ -18,7 +18,7 @@ enum VersionNewBit
     VERSION_BIT_MAX
 };
 
-HRESULT L3DMesh::LoadMesh(ID3D11Device* piDevice, const char* szFileName)
+HRESULT L3DMesh::Create(ID3D11Device* piDevice, const char* szFileName)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;

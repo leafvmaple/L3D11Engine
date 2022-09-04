@@ -114,6 +114,7 @@ public:
     virtual HRESULT Update(float fDeltaTime) = 0;
 
     virtual BOOL IsActive() = 0;
+    virtual ID3D11Device* GetDevice() const = 0;
 
     static IL3DEngine* Instance();
 
@@ -122,4 +123,10 @@ protected:
 
 private:
     static IL3DEngine* m_pInstance;
+};
+
+class L3DENGINE_CLASS ILModel
+{
+public:
+    static HRESULT Create(IL3DEngine* pL3DEngine, const char* szFileName, ILModel** ppModel);
 };

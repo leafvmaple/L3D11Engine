@@ -28,6 +28,10 @@ public:
     virtual HRESULT Update(float fDeltaTime);
 
     virtual BOOL IsActive();
+    virtual ID3D11Device* GetDevice() const;
+
+public:
+    HRESULT AttachObject(L3DRenderUnit* pUnit);
 
 private:
     struct _DEVICE
