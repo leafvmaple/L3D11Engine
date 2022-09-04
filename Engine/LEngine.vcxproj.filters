@@ -15,11 +15,14 @@
     <Filter Include="Source Files\Component">
       <UniqueIdentifier>{2931d9a5-dc69-4abf-be2b-03b30785d465}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Demo">
-      <UniqueIdentifier>{2ae569c8-4118-4ddf-867a-2b8e4db7d41b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Common">
       <UniqueIdentifier>{1eb6cb3e-5235-43c2-9fdf-498a02ff661a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Camera">
+      <UniqueIdentifier>{f0db6d4d-5f42-4059-b715-04af63c74171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{389c237f-35c4-449a-904c-582612d16ced}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,11 +41,14 @@
     <ClCompile Include="Src\Component\L3DMesh.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Demo\L3DBox.cpp">
-      <Filter>Source Files\Demo</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Component\L3DEffect.cpp">
       <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Camera\L3DCamera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Input\L3DInput.cpp">
+      <Filter>Source Files\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +79,6 @@
     <ClInclude Include="Src\IO\LFileStruct.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Demo\L3DBox.h">
-      <Filter>Source Files\Demo</Filter>
-    </ClInclude>
     <ClInclude Include="Src\L3DRenderUnit.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -84,6 +87,12 @@
     </ClInclude>
     <ClInclude Include="..\Include\L3DFormat.h">
       <Filter>Source Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Camera\L3DCamera.h">
+      <Filter>Source Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Input\L3DInput.h">
+      <Filter>Source Files\Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

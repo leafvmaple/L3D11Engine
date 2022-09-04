@@ -11,6 +11,9 @@
 struct L3D_SHADER_TABLE;
 struct L3D_EFFECT_TABLE;
 
+class L3DInput;
+class L3DCamera;
+
 class L3DEngine : public IL3DEngine
 {
     friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -40,6 +43,9 @@ private:
 
     L3D_SHADER_TABLE *m_pShaderTable;
     L3D_EFFECT_TABLE *m_pEffectTable;
+
+    L3DInput* m_pInput;
+    L3DCamera* m_pCamera;
 
     L3D_WINDOW_PARAM m_WindowParam;
 
@@ -85,6 +91,8 @@ private:
     HRESULT InitShaderTable(ID3D11Device* piDevice);
     HRESULT InitViewport(unsigned uWidth, unsigned urHeight);
     HRESULT InitSamplerFilter();
+    HRESULT InitInput(HWND hWnd, HINSTANCE hInstance);
+    HRESULT InitCamera(float fWidth, float fHeight);
 
     HRESULT DrawEffect(const RENDER_STAGE_INPUT_ASSEMBLER& stage);
 
@@ -92,4 +100,6 @@ private:
     HRESULT InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);
 
     HRESULT UpdateMessage();
+    HRESULT UpdateInput();
+    HRESULT UpdateCamera(float fDeltaTime);
 };
