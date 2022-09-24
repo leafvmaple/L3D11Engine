@@ -2,7 +2,7 @@
 #include "L3DInterface.h"
 #include "L3DEngine.h"
 
-#include "Component/L3DMesh.h"
+#include "Model/L3DMesh.h"
 
 IL3DEngine* IL3DEngine::m_pInstance = NULL;
 

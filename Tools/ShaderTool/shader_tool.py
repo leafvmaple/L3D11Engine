@@ -56,4 +56,4 @@ def Compiler(path):
         print(len(data))
         f.close()
 
-Compiler("F:\Github\L3D11Engine\Client\Res\Shader\Base")
+Decompiler("F:\Github\L3D11Engine\Client\Res\Shader")

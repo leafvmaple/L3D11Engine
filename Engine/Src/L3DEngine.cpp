@@ -7,9 +7,9 @@
 #include "LAssert.h"
 #include "L3DEngine.h"
 
-#include "Component/L3DShader.h"
-#include "Component/L3DMesh.h"
-#include "Component/L3DEffect.h"
+#include "Model/L3DShader.h"
+#include "Model/L3DMesh.h"
+#include "Model/L3DEffect.h"
 
 #include "Input/L3DInput.h"
 #include "Camera/L3DCamera.h"

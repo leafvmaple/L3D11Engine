@@ -6,7 +6,7 @@
 
 #include "L3DInterface.h"
 
-#include "Component/L3DMesh.h"
+#include "Model/L3DMesh.h"
 
 struct L3D_SHADER_TABLE;
 struct L3D_EFFECT_TABLE;
