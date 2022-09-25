@@ -195,6 +195,13 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Render\L3DRenderUnit.h" />
     <ClInclude Include="Src\stdafx.h" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

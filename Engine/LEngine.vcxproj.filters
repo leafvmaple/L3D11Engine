@@ -27,6 +27,9 @@
     <Filter Include="Source Files\Render">
       <UniqueIdentifier>{abb2d343-3b98-40a5-8c46-42025a8046ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{5c3e849f-3bba-48b0-a996-a580a328e22e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\L3DEngine.cpp">
@@ -115,5 +118,10 @@
     <ClInclude Include="Src\Model\L3DMaterialConfig.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
