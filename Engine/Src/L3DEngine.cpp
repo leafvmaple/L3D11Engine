@@ -10,7 +10,6 @@
 #include "L3DFormat.h"
 
 #include "Model/L3DModel.h"
-#include "Model/L3DEffect.h"
 #include "Model/L3DShader.h"
 
 #include "Input/L3DInput.h"
@@ -329,9 +328,6 @@ HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
     
     m_pShaderTable = CreateShaderTable(piDevice);
     BOOL_ERROR_EXIT(m_pShaderTable);
-
-    //m_pEffectTable = CreateEffectTable(piDevice);
-    //BOOL_ERROR_EXIT(m_pEffectTable);
 
     hResult = S_OK;
 Exit0:

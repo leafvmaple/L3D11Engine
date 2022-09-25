@@ -8,7 +8,6 @@
 #include "Render/L3DRenderUnit.h"
 
 struct L3D_SHADER_TABLE;
-struct L3D_EFFECT_TABLE;
 
 class L3DInput;
 class L3DCamera;
@@ -46,7 +45,6 @@ private:
     ID3D11DepthStencilView *m_piDepthStencilView;
 
     L3D_SHADER_TABLE *m_pShaderTable;
-    L3D_EFFECT_TABLE *m_pEffectTable;
 
     L3DInput* m_pInput;
     L3DCamera* m_pCamera;

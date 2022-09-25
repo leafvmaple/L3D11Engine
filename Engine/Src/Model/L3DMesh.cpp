@@ -320,8 +320,7 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
             else if (pFileData->pUV2) {}
             //pRetFillInfo->eInputLayout = L3D_DYNAMIC_INPUT_LAYOUT_CI_SKINMESH_UV2;
             else if (pFileData->pUV1)
-                pFillInfo->eShaderEffect = L3D_SHADER_EFFECT_CI_SKINMESH;
-            // pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_SKINMESH;
+                pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_SKINMESH;
             else
                 assert(false);
         }
@@ -329,7 +328,7 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
             assert(false);
     }
     else
-        pFillInfo->eShaderEffect = L3D_SHADER_EFFECT_BOX;
+        pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_BOX;
 
     pFillInfo->uElementCount = (unsigned)(pElem - &(pFillInfo->Element[0])) + 1;
 
@@ -470,9 +469,6 @@ Exit0:
 
 HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
 {
-    // m_RenderData.eInputLayer = FillInfo.eInputLayout;
-    m_Stage.eShaderEffect = FillInfo.eShaderEffect;
-    m_Stage.bUseEffect = true;
     m_Stage.eInputLayer = L3D_INPUT_LAYOUT_CI_SKINMESH;
     m_Stage.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 

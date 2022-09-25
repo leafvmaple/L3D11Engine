@@ -51,7 +51,6 @@ struct VERTEX_FILL_INFO
     static const unsigned MAX_ELEMENT = 8;
 
     L3D_INPUT_LAYOUT eInputLayout;
-    L3D_SHADER_EFFECT eShaderEffect;
     NORMAL_MESH_VERTEX_DESC VertexDesc;
     unsigned uVertexSize;
     enum _VERTEX_ADDITIVE_ELEM_TYPE

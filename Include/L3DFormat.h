@@ -124,14 +124,6 @@ enum L3D_INPUT_LAYOUT
     L3D_INPUT_LAYOUT_COUNT,
 };
 
-enum L3D_SHADER_EFFECT
-{
-    L3D_SHADER_EFFECT_BOX,
-    L3D_SHADER_EFFECT_CI_SKINMESH,
-
-    L3D_SHADER_EFFECT_COUNT,
-};
-
 enum L3D_PIXEL_SHADER
 {
     L3D_PIXEL_SHADER_NULL,
@@ -160,11 +152,7 @@ struct RENDER_STATE_DRAW
 
 struct RENDER_STAGE_INPUT_ASSEMBLER
 {
-    union
-    {
-        L3D_INPUT_LAYOUT eInputLayer;
-        L3D_SHADER_EFFECT eShaderEffect;
-    };
+    L3D_INPUT_LAYOUT eInputLayer;
     D3D11_PRIMITIVE_TOPOLOGY eTopology;
 
     struct VERTEX_BUFFER
@@ -182,6 +170,4 @@ struct RENDER_STAGE_INPUT_ASSEMBLER
     } IndexBuffer;
 
     RENDER_STATE_DRAW Draw;
-
-    BOOL bUseEffect;
 };

@@ -118,6 +118,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x86"</Command>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib;$(SolutionDir)3rdParty\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Effects11d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>md "$(SolutionDir)Lib"
@@ -166,7 +167,6 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\IO\LFileReader.cpp" />
     <ClCompile Include="Src\L3DEngine.cpp" />
     <ClCompile Include="Src\L3DInterface.cpp" />
-    <ClCompile Include="Src\Model\L3DEffect.cpp" />
     <ClCompile Include="Src\Model\L3DMaterial.cpp" />
     <ClCompile Include="Src\Model\L3DMesh.cpp" />
     <ClCompile Include="Src\Model\L3DModel.cpp" />
@@ -187,7 +187,6 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Input\L3DInput.h" />
     <ClInclude Include="Src\IO\LFileReader.h" />
     <ClInclude Include="Src\IO\LFileStruct.h" />
-    <ClInclude Include="Src\Model\L3DEffect.h" />
     <ClInclude Include="Src\Model\L3DMaterial.h" />
     <ClInclude Include="Src\Model\L3DMesh.h" />
     <ClInclude Include="Src\Model\L3DModel.h" />
