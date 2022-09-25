@@ -157,10 +157,10 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput Input)
     else
     {
 		float3x3 InvTransposeCustomMatrixBonesX = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.x]);
-		position = mul(Input.Position,       g_CustomMatrixBones[Input.Indices.x])           * Input.Weights.x;
-		normal   = mul(Input.Normal,         InvTransposeCustomMatrixBonesX)					* Input.Weights.x;
+		position = mul(Input.Position,       g_CustomMatrixBones[Input.Indices.x])                  * Input.Weights.x;
+		normal   = mul(Input.Normal,         InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
 	#ifdef NORMALMAP
-		tangent  = mul(Input.Tangent.xyz,    InvTransposeCustomMatrixBonesX)					* Input.Weights.x;
+		tangent  = mul(Input.Tangent.xyz,    InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
 	#endif
 		if (Input.Indices.y != 255)                                              
 		{
@@ -281,8 +281,6 @@ void GetMaterialVertexOutputs(MaterialVertexOutputs Output, out VertexOutput Out
 #endif
 }
 
-
-
 MaterialPixelParameters GetMaterialParameters(VertexOutput Input)
 {
     MaterialPixelParameters Params = (MaterialPixelParameters) 0;
@@ -368,10 +366,6 @@ void VertexShaderMain(VertexInput Input, out VertexOutput OutputImp)
     Output.ModelColorOffset = Params.ModelColorOffset;
     Output.ParticleVertexColor = Params.ParticleVertexColor;
 
-#ifdef USE_CUSTOM_ALPHAREF
-	Output.fAlphaTransition  = Params.fAlphaTransition;
-#endif // USE_CUSTOM_ALPHAREF
-
 #ifdef USE_CUSTOM_LEAF_DISAPPEAR
 	Output.fStartChangeTime  = Params.fStartChangeTime;
 #endif // USE_CUSTOM_LEAF_DISAPPEAR
@@ -418,54 +412,6 @@ float4 PixelShaderMain(VertexOutput Input, uniform bool RenderSoftMask, PixelSys
 #ifdef SIMPLIFY_LIGHTING
     PixelMainNode.Normal = Params.VertexNormal;
 #endif
-   
-	#ifdef USE_CUSTOM_ALPHAREF
-			if (RenderSoftMask)
-			{
-				BRANCH if (EnableAlphaTest)
-				{
-					if (PixelMainNode.Opacity < GetCustomAlphaRef2(Input))
-						discard;
-				}
-			}
-			else
-			{
-				BRANCH if (EnableAlphaTest)
-				{
-					if (GetCustomAlphaRef(PixelMainNode.Opacity,Input))
-						discard;
-				}
-			}
-	#else
-			if (RenderSoftMask)
-			{
-				BRANCH if (EnableAlphaTest)
-				{
-					if (PixelMainNode.Opacity < AlphaReference2)
-						discard;
-        }
-			}
-			else
-			{
-				BRANCH if (EnableAlphaTest)
-				{
-					if (PixelMainNode.Opacity < AlphaReference)
-						discard;
-        }
-			}
-	#endif
-
-	
-	// if (IsUseCovermap())
-    // {
-        // PixelMainNode.Albedo = ConvermapTransform(PixelMainNode.Albedo, Params.WorldPosition);
-    // }
-
-    if (RenderSoftMask)
-    {
-        PixelMainNode.Opacity = PixelMainNode.Opacity / AlphaReference;
-        PixelMainNode.Opacity = saturate(PixelMainNode.Opacity);
-    }
 
 	//Light Func
 	float4 retColor = 0;

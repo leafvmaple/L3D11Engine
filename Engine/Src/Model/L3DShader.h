@@ -2,7 +2,7 @@
 
 #include <d3d11.h>
 
-#include "L3DRenderUnit.h"
+#include "L3DFormat.h"
 
 #define _ID_STR(_ID) _ID, #_ID
 #define IDR_SHADER_SIMPLE 117

@@ -12,7 +12,7 @@ public:
     HRESULT UpdateYawPitchRoll(float fYaw, float fPitch, float fRoll);
     HRESULT UpdateSightDistance(float fSightDis);
 
-    XMMATRIX GetWorldViewProjcetion(const XMMATRIX& world);
+    XMMATRIX GetViewProjcetion();
 
 private:
     XMMATRIX m_Projection;

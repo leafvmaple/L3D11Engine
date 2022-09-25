@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "L3DCamera.h"
 
 HRESULT L3DCamera::Init(float fWidth, float fHeight)
@@ -28,9 +30,9 @@ HRESULT L3DCamera::UpdateSightDistance(float fSightDis)
     return S_OK;
 }
 
-XMMATRIX L3DCamera::GetWorldViewProjcetion(const XMMATRIX& world)
+XMMATRIX L3DCamera::GetViewProjcetion()
 {
-    return world * m_View * m_Projection;
+    return m_View * m_Projection;
 }
 
 HRESULT L3DCamera::ComputeViewMatrix()

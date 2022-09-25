@@ -1,7 +1,9 @@
+#include "stdafx.h"
+
 #include <cstdio>
 #include <io.h>
+
 #include "LFileReader.h"
-#include "LAssert.h"
 
 BOOL LFileReader::IsExist(LPCWSTR cszFileName)
 {

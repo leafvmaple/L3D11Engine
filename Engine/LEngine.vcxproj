@@ -107,8 +107,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x86"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -170,7 +169,12 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\Model\L3DEffect.cpp" />
     <ClCompile Include="Src\Model\L3DMaterial.cpp" />
     <ClCompile Include="Src\Model\L3DMesh.cpp" />
+    <ClCompile Include="Src\Model\L3DModel.cpp" />
     <ClCompile Include="Src\Model\L3DShader.cpp" />
+    <ClCompile Include="Src\Render\L3DRenderUnit.cpp" />
+    <ClCompile Include="Src\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\L3DFormat.h" />
@@ -183,11 +187,14 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Input\L3DInput.h" />
     <ClInclude Include="Src\IO\LFileReader.h" />
     <ClInclude Include="Src\IO\LFileStruct.h" />
-    <ClInclude Include="Src\L3DRenderUnit.h" />
     <ClInclude Include="Src\Model\L3DEffect.h" />
     <ClInclude Include="Src\Model\L3DMaterial.h" />
     <ClInclude Include="Src\Model\L3DMesh.h" />
+    <ClInclude Include="Src\Model\L3DModel.h" />
     <ClInclude Include="Src\Model\L3DShader.h" />
+    <ClInclude Include="Src\Model\L3DMaterialConfig.h" />
+    <ClInclude Include="Src\Render\L3DRenderUnit.h" />
+    <ClInclude Include="Src\stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

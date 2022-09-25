@@ -1,20 +1,21 @@
+#include "stdafx.h"
+
 #include <Windows.h>
 #include <process.h>
 #include <d3dcommon.h>
 #include <strsafe.h>
 #include <d3d11.h>
 
-#include "LAssert.h"
 #include "L3DEngine.h"
+#include "L3DFormat.h"
 
-#include "Model/L3DShader.h"
-#include "Model/L3DMesh.h"
+#include "Model/L3DModel.h"
 #include "Model/L3DEffect.h"
+#include "Model/L3DShader.h"
 
 #include "Input/L3DInput.h"
 #include "Camera/L3DCamera.h"
 
-#include "L3DFormat.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
@@ -123,6 +124,8 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
+    SCENE_RENDER_OPTION RenderOption;
+
     hr = UpdateMessage();
     HRESULT_ERROR_EXIT(hr);
 
@@ -135,9 +138,15 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     m_Device.piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::LightSteelBlue));
     m_Device.piImmediateContext->ClearDepthStencilView(m_piDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-    for (const auto& stage : m_IAStage)
+    RenderOption.piDevice = m_Device.piDevice;
+    RenderOption.piImmediateContext = m_Device.piImmediateContext;
+
+    RenderOption.pShaderTable = m_pShaderTable;
+    RenderOption.pCamera = m_pCamera;
+
+    for (const auto& Unit : m_IAStageArray)
     {
-        hr = DrawEffect(stage);
+        hr = Unit->ApplyProcess(RenderOption);
         HRESULT_ERROR_EXIT(hr);
     }
 
@@ -161,9 +170,9 @@ ID3D11Device* L3DEngine::GetDevice() const
 }
 
 
-HRESULT L3DEngine::AttachObject(L3DRenderUnit* pUnit)
+HRESULT L3DEngine::AttachObject(L3DModel* pUnit)
 {
-    pUnit->PushRenderUnit(m_IAStage);
+    m_IAStageArray.push_back(pUnit->m_pRenderUnit);
 
     return S_OK;
 }
@@ -321,8 +330,8 @@ HRESULT L3DEngine::InitShaderTable(ID3D11Device* piDevice)
     m_pShaderTable = CreateShaderTable(piDevice);
     BOOL_ERROR_EXIT(m_pShaderTable);
 
-    m_pEffectTable = CreateEffectTable(piDevice);
-    BOOL_ERROR_EXIT(m_pEffectTable);
+    //m_pEffectTable = CreateEffectTable(piDevice);
+    //BOOL_ERROR_EXIT(m_pEffectTable);
 
     hResult = S_OK;
 Exit0:
@@ -393,33 +402,6 @@ HRESULT L3DEngine::InitCamera(float fWidth, float fHeight)
     hResult = S_OK;
 Exit0:
     return hResult;
-}
-
-HRESULT L3DEngine::DrawEffect(const RENDER_STAGE_INPUT_ASSEMBLER& stage)
-{
-    L3D_EFFECT_TABLE::_EFFECT_INFO* pEffectInfo = nullptr;
-    D3DX11_TECHNIQUE_DESC techDesc;
-
-    XMMATRIX worldViewProj = m_pCamera->GetWorldViewProjcetion(XMMatrixIdentity());
-
-    pEffectInfo = &m_pEffectTable->Table[stage.eShaderEffect];
-
-    m_Device.piImmediateContext->IASetInputLayout(pEffectInfo->pLayout);
-    m_Device.piImmediateContext->IASetPrimitiveTopology(stage.eTopology);
-
-    m_Device.piImmediateContext->IASetVertexBuffers(0, 1, &stage.VertexBuffer.piBuffer, &stage.VertexBuffer.uStride, &stage.VertexBuffer.uOffset);
-    m_Device.piImmediateContext->IASetIndexBuffer(stage.IndexBuffer.piBuffer, stage.IndexBuffer.eFormat, stage.IndexBuffer.uOffset);
-
-    pEffectInfo->pWorldViewProj->SetMatrix(reinterpret_cast<float*>(&worldViewProj));
-    pEffectInfo->pEffectTech->GetDesc(&techDesc);
-    for (UINT p = 0; p < techDesc.Passes; ++p)
-    {
-        pEffectInfo->pEffectTech->GetPassByIndex(p)->Apply(0, m_Device.piImmediateContext);
-    }
-
-    m_Device.piImmediateContext->DrawIndexed(stage.Draw.Indexed.uIndexCount, stage.Draw.Indexed.uStartIndexLocation, stage.Draw.Indexed.nBaseVertexLocation);
-
-    return S_OK;
 }
 
 HRESULT L3DEngine::InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight)

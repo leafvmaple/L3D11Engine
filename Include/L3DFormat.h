@@ -116,34 +116,72 @@ struct MESH_FILE_BONE_INFO
 	} *pSocket;
 };
 
-struct MESH_FILE_DATA
+enum L3D_INPUT_LAYOUT
 {
-	DWORD dwVertexCount;
-	DWORD dwFacesCount;
-	DWORD dwSubsetCount;
-	DWORD dwVertexFVF;
+    L3D_INPUT_LAYOUT_BOX,
+    L3D_INPUT_LAYOUT_CI_SKINMESH,
 
-	// point to array, element count is dwVertexCount
-	XMFLOAT3* pPos;
-	XMFLOAT3* pNormals;
-	XMFLOAT4* pDiffuse;
-	//XMCOLOR* pDiffuse;
-	XMFLOAT3* pUV1;
-	XMFLOAT3* pUV2;
-	XMFLOAT3* pUV3;
-	XMFLOAT4* pTangent;
-	DWORD* pVertexRemap;
+    L3D_INPUT_LAYOUT_COUNT,
+};
 
-	static const unsigned MAX_BONE_INFLUNCE = 4;
-	struct SKIN
-	{
-		float BoneWeights[MAX_BONE_INFLUNCE];
-		BYTE BoneIndices[MAX_BONE_INFLUNCE];
-	} *pSkin;
+enum L3D_SHADER_EFFECT
+{
+    L3D_SHADER_EFFECT_BOX,
+    L3D_SHADER_EFFECT_CI_SKINMESH,
 
-	DWORD* pIndex;    // element count is dwFacesCount * 3
-	// TODO: Subset may be DWORD
-	WORD* pSubset;   // element count is dwFacesCount,value in [0, dwSubsetCount - 1]
+    L3D_SHADER_EFFECT_COUNT,
+};
 
-	MESH_FILE_BONE_INFO BoneInfo;
+enum L3D_PIXEL_SHADER
+{
+    L3D_PIXEL_SHADER_NULL,
+    L3D_PIXEL_SHADER_UV1_NO_LIGHT,
+
+    L3D_PIXEL_SHADER_COUNT,
+};
+
+enum L3D_VERTEX_SHADER
+{
+    L3D_VERTEX_SHADER_BOX,
+    L3D_VERTEX_SHADER_CI_SKINMESH,
+
+    L3D_VERTEX_SHADER_COUNT,
+};
+
+struct RENDER_STATE_DRAW
+{
+    struct DRAW_INDEXED
+    {
+        UINT uIndexCount;
+        UINT uStartIndexLocation;
+        INT  nBaseVertexLocation;
+    } Indexed;
+};
+
+struct RENDER_STAGE_INPUT_ASSEMBLER
+{
+    union
+    {
+        L3D_INPUT_LAYOUT eInputLayer;
+        L3D_SHADER_EFFECT eShaderEffect;
+    };
+    D3D11_PRIMITIVE_TOPOLOGY eTopology;
+
+    struct VERTEX_BUFFER
+    {
+        ID3D11Buffer* piBuffer;
+        UINT uStride;
+        UINT uOffset;
+    } VertexBuffer;
+
+    struct INDEX_BUFFER
+    {
+        ID3D11Buffer* piBuffer;
+        DXGI_FORMAT eFormat;
+        UINT uOffset;
+    } IndexBuffer;
+
+    RENDER_STATE_DRAW Draw;
+
+    BOOL bUseEffect;
 };

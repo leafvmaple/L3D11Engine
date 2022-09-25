@@ -1,8 +1,9 @@
-#include "LAssert.h"
+#include "stdafx.h"
+
 #include "L3DInterface.h"
 #include "L3DEngine.h"
 
-#include "Model/L3DMesh.h"
+#include "Model/L3DModel.h"
 
 IL3DEngine* IL3DEngine::m_pInstance = NULL;
 
@@ -18,14 +19,14 @@ HRESULT ILModel::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILModel*
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     L3DEngine* pEngine = NULL;
-    L3DMesh* pModel = NULL;
+    L3DModel* pModel = NULL;
 
     BOOL_ERROR_EXIT(pL3DEngine);
 
     pEngine = dynamic_cast<L3DEngine*>(pL3DEngine);
     BOOL_ERROR_EXIT(pEngine);
 
-    pModel = new L3DMesh;
+    pModel = new L3DModel;
     BOOL_ERROR_EXIT(pModel);
 
     hr = pModel->Create(pL3DEngine->GetDevice(), szFileName);

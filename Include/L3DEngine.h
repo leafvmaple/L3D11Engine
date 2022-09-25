@@ -5,14 +5,14 @@
 #include <list>
 
 #include "L3DInterface.h"
-
-#include "Model/L3DMesh.h"
+#include "Render/L3DRenderUnit.h"
 
 struct L3D_SHADER_TABLE;
 struct L3D_EFFECT_TABLE;
 
 class L3DInput;
 class L3DCamera;
+class L3DModel;
 
 class L3DEngine : public IL3DEngine
 {
@@ -31,7 +31,7 @@ public:
     virtual ID3D11Device* GetDevice() const;
 
 public:
-    HRESULT AttachObject(L3DRenderUnit* pUnit);
+    HRESULT AttachObject(L3DModel* pUnit);
 
 private:
     struct _DEVICE
@@ -83,7 +83,7 @@ private:
     D3D11_VIEWPORT      m_Viewport;
 
     ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT];
-	std::vector<RENDER_STAGE_INPUT_ASSEMBLER> m_IAStage;
+	std::vector<L3DRenderUnit*> m_IAStageArray;
 
     BOOL m_bActive;
 
@@ -97,8 +97,6 @@ private:
     HRESULT InitSamplerFilter();
     HRESULT InitInput(HWND hWnd, HINSTANCE hInstance);
     HRESULT InitCamera(float fWidth, float fHeight);
-
-    HRESULT DrawEffect(const RENDER_STAGE_INPUT_ASSEMBLER& stage);
 
     // TODO
     HRESULT InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);

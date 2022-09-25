@@ -1,5 +1,6 @@
+#include "stdafx.h"
+
 #include "L3DInput.h"
-#include "LAssert.h"
 
 L3DInput::L3DInput()
 {

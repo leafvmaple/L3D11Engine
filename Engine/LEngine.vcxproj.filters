@@ -24,6 +24,9 @@
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{2931d9a5-dc69-4abf-be2b-03b30785d465}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{abb2d343-3b98-40a5-8c46-42025a8046ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\L3DEngine.cpp">
@@ -53,6 +56,15 @@
     <ClCompile Include="Src\Model\L3DShader.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Model\L3DModel.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Render\L3DRenderUnit.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\LCommon.h">
@@ -76,9 +88,6 @@
     <ClInclude Include="Src\IO\LFileStruct.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="Src\L3DRenderUnit.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Include\L3DFormat.h">
       <Filter>Source Files\Common</Filter>
     </ClInclude>
@@ -98,6 +107,18 @@
       <Filter>Source Files\Model</Filter>
     </ClInclude>
     <ClInclude Include="Src\Model\L3DShader.h">
+      <Filter>Source Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Model\L3DModel.h">
+      <Filter>Source Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Render\L3DRenderUnit.h">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Model\L3DMaterialConfig.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
   </ItemGroup>

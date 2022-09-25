@@ -1,12 +1,12 @@
+#include "stdafx.h"
+
 #include <algorithm>
 #include <map>
 
 #include "L3DMesh.h"
 
-#include "LAssert.h"
-#include "IO/LFileReader.h"
-
 #include "L3DMaterial.h"
+#include "IO/LFileReader.h"
 
 enum VersionNewBit
 {
@@ -25,7 +25,7 @@ HRESULT L3DMesh::Create(ID3D11Device* piDevice, const char* szFileName)
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
-    MESH_FILE_DATA MeshFileData;
+    _MESH_FILE_DATA MeshFileData;
 
     hr = LoadMeshData(szFileName, &MeshFileData);
     HRESULT_ERROR_EXIT(hr);
@@ -33,28 +33,13 @@ HRESULT L3DMesh::Create(ID3D11Device* piDevice, const char* szFileName)
     hr = CreateMesh(&MeshFileData, piDevice);
     HRESULT_ERROR_EXIT(hr);
 
-    hr = CreateMaterial(&MeshFileData, piDevice);
-    HRESULT_ERROR_EXIT(hr);
-
     hResult = S_OK;
 Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::Draw(ID3D11DeviceContext* pDeviceContext, XMMATRIX* pWorldViewProj)
-{
-    return S_OK;
-}
 
-HRESULT L3DMesh::PushRenderUnit(std::vector<RENDER_STAGE_INPUT_ASSEMBLER>& vecRenderUnit)
-{
-    vecRenderUnit.push_back(m_RenderParam);
-
-    return S_OK;
-}
-
-
-HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
+HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -69,7 +54,7 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
 
     XMCOLOR* pColor = nullptr;
 
-    ZeroMemory(pMeshData, sizeof(MESH_FILE_DATA));
+    ZeroMemory(pMeshData, sizeof(_MESH_FILE_DATA));
 
     hr = LFileReader::Reader(szFileName, &pbyMesh, &uMeshLen);
     HRESULT_ERROR_EXIT(hr);
@@ -175,7 +160,7 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDevice)
+HRESULT L3DMesh::CreateMesh(const _MESH_FILE_DATA* pMeshData, ID3D11Device* piDevice)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -200,19 +185,7 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::CreateMaterial(const MESH_FILE_DATA* pLMeshData, ID3D11Device* piDevice)
-{
-    RUNTIME_MACRO eStaticMacro = RUNTIME_MACRO_MESH;
-
-    if (pLMeshData->BoneInfo.dwBoneCount > 0)
-        eStaticMacro = RUNTIME_MACRO_SKIN_MESH;
-
-    LoadMaterial(piDevice, eStaticMacro, nullptr);
-
-    return S_OK;
-}
-
-HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
+HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
 {
     HRESULT hResult = E_FAIL;
 
@@ -365,7 +338,7 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
+HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -403,18 +376,18 @@ HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* 
     InitData.SysMemPitch = 0;
     InitData.SysMemSlicePitch = 0;
 
-    hr = piDevice->CreateBuffer(&desc, &InitData, &m_RenderParam.VertexBuffer.piBuffer);
+    hr = piDevice->CreateBuffer(&desc, &InitData, &m_Stage.VertexBuffer.piBuffer);
     HRESULT_ERROR_EXIT(hr);
 
-    m_RenderParam.VertexBuffer.uStride = FillInfo.uVertexSize;
-    m_RenderParam.VertexBuffer.uOffset = 0;
+    m_Stage.VertexBuffer.uStride = FillInfo.uVertexSize;
+    m_Stage.VertexBuffer.uOffset = 0;
 
     hResult = S_OK;
 Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
+HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
 {
     struct _INDEX_DATA
     {
@@ -480,15 +453,15 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
     InitData.SysMemPitch = 0;
     InitData.SysMemSlicePitch = 0;
 
-    hr = piDevice->CreateBuffer(&desc, &InitData, &m_RenderParam.IndexBuffer.piBuffer);
+    hr = piDevice->CreateBuffer(&desc, &InitData, &m_Stage.IndexBuffer.piBuffer);
     HRESULT_ERROR_EXIT(hr);
 
-    m_RenderParam.IndexBuffer.eFormat = DXGI_FORMAT_R16_UINT;
-    m_RenderParam.IndexBuffer.uOffset = 0;
+    m_Stage.IndexBuffer.eFormat = DXGI_FORMAT_R16_UINT;
+    m_Stage.IndexBuffer.uOffset = 0;
 
-    m_RenderParam.Draw.Indexed.uIndexCount = IndexData.size();
-    m_RenderParam.Draw.Indexed.nBaseVertexLocation = 0;
-    m_RenderParam.Draw.Indexed.uStartIndexLocation = 0;
+    m_Stage.Draw.Indexed.uIndexCount = IndexData.size();
+    m_Stage.Draw.Indexed.nBaseVertexLocation = 0;
+    m_Stage.Draw.Indexed.uStartIndexLocation = 0;
 
     hResult = S_OK;
 Exit0:
@@ -497,20 +470,20 @@ Exit0:
 
 HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
 {
-    // m_RenderParam.eInputLayer = FillInfo.eInputLayout;
-    m_RenderParam.eShaderEffect = FillInfo.eShaderEffect;
-    m_RenderParam.bUseEffect = true;
-    m_RenderParam.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    // m_RenderData.eInputLayer = FillInfo.eInputLayout;
+    m_Stage.eShaderEffect = FillInfo.eShaderEffect;
+    m_Stage.bUseEffect = true;
+    m_Stage.eInputLayer = L3D_INPUT_LAYOUT_CI_SKINMESH;
+    m_Stage.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     return S_OK;
 }
 
-
-HRESULT L3DMesh::FillSkinData(MESH_FILE_DATA* pMeshData, DWORD nVertexCount)
+HRESULT L3DMesh::FillSkinData(_MESH_FILE_DATA* pMeshData, DWORD nVertexCount)
 {
     HRESULT hResult = E_FAIL;
 
-    pMeshData->pSkin = new MESH_FILE_DATA::SKIN[nVertexCount];
+    pMeshData->pSkin = new _MESH_FILE_DATA::SKIN[nVertexCount];
     memset(pMeshData->pSkin, 0xFF, sizeof(pMeshData->pSkin[0]) * nVertexCount);
 
     for (unsigned i = 0; i < pMeshData->BoneInfo.dwBoneCount; i++)
@@ -527,7 +500,7 @@ HRESULT L3DMesh::FillSkinData(MESH_FILE_DATA* pMeshData, DWORD nVertexCount)
             float* pBoneWeights = pMeshData->pSkin[uVertexIndex].BoneWeights;
             BYTE* pBoneIndices = pMeshData->pSkin[uVertexIndex].BoneIndices;
 
-            for (unsigned k = 0; k < MESH_FILE_DATA::MAX_BONE_INFLUNCE; k++)
+            for (unsigned k = 0; k < _MESH_FILE_DATA::MAX_BONE_INFLUNCE; k++)
             {
                 if (pBoneIndices[k] == 0xFF)
                 {
@@ -547,6 +520,7 @@ Exit0:
 HRESULT L3DMesh::LoadBoneInfo(MESH_FILE_BONE_INFO* pBoneInfo, BYTE* pbySkin, BOOL bHasPxPose, BOOL bHasBoundBox)
 {
     pbySkin = LFileReader::Copy(pbySkin, &pBoneInfo->dwBoneCount);
+    m_dwBoneCount = pBoneInfo->dwBoneCount;
 
     pBoneInfo->pBone = new MESH_FILE_BONE_INFO::BONE[pBoneInfo->dwBoneCount];
 

@@ -1,8 +1,10 @@
+#include "stdafx.h"
+
 #include <d3dcompiler.h>
 #include <atlconv.h>
+#include <cstdio>
 
 #include "L3DEffect.h"
-#include "LAssert.h"
 
 #define FX_PATH "Res/Shader/Base/%s.fx"
 

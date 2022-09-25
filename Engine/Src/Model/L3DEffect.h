@@ -1,8 +1,8 @@
 #pragma once
 
-#include "L3DRenderUnit.h"
-
 #include "FX11/inc/d3dx11effect.h"
+
+#include "L3DFormat.h"
 
 struct L3D_EFFECT_TABLE
 {
