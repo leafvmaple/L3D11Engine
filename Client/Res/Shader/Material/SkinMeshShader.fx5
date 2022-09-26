@@ -19,6 +19,52 @@ struct KG3D_MTLSYS_SKINMESH_SHARED_CB
 	float4 WorldScaling;
 };
 
+struct MaterialVertexParameters
+{
+    float3 VertexPosition;
+    float3 VertexNormal;
+    float4 VertexColor;
+    float4 VertexTangent;
+
+#if NUM_USER_TEXCOORDS
+    float2 TexCoords[NUM_USER_TEXCOORDS];
+#endif
+#if NUM_USER_TEXCOORDS_UVW
+	float3 TexCoordsUVW[NUM_USER_TEXCOORDS_UVW];
+#endif
+   	float4 ModelColor;
+    float3 ModelColorOffset;
+	float4 ParticleVertexColor;
+
+#if defined(INSTANCE_INPUT)
+    float3x3 MatrixInstanceLocal;
+    float3 VertexWorldOffset;
+	float fAlphaTransition;
+#elif  defined(VERTEX_WORLDOFFSET)
+    float3 VertexWorldOffset;
+#endif
+	float3 WorldPosition;
+	float4 ActorParams;
+	float4 FoliageParams;
+
+	float fStartChangeTime;
+
+	float3 WorldMotion;
+	float4 LastWorldPosition;
+	float  MotionPrecision; 
+	float  IsMoving;
+
+	float4x4 MatrixWorld;
+	float4x4 MatrixWorldInverse;
+	float4x4 MatrixWorldInverseTranspose;
+
+#ifndef TESSELLATION_VS
+	float2  SplineUV;
+	float3  SplineDir;
+	float   SplineT;
+#endif
+};
+
 cbuffer ModelSharedParam : register(b2)
 {
     row_major float4x4 g_CustomMatrixBones[MAX_NUM_BONE_PER_SET];// this must be first for RTX Compute vertex.
@@ -85,10 +131,7 @@ struct VertexInput
 
     float4 Weights  : BONEWEIGHTS0;
     uint4  Indices  : BONEINDICES0;
- 
-#ifdef NORMALMAP
     float4 Tangent  : TANGENT0;
-#endif
 };
 
 struct VertexOutput
@@ -115,10 +158,8 @@ struct VertexOutput
     float2 TexCoords[NUM_USER_TEXCOORDS] : TEXCOORD5;
 #endif
 
-#ifdef NORMALMAP
     float3 Tangent              : TANGENT0;
     float3 Binormal             : BINORMAL0;
-#endif
 
     float  ClipDistance         : SV_ClipDistance0;
 
@@ -128,7 +169,6 @@ struct VertexOutput
     bool Needed : NEED;
 #endif
 };
-
 
 struct PixelSystemInput
 {
@@ -148,49 +188,33 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput Input)
     float4 position;
     float3 normal;
     float3 tangent;
-    if (g_Com.Switch.bEnableRTX)
-    {	
-        position = Input.Position;
-        normal = Input.Normal;
-        tangent = Input.Tangent.xyz;
-    }
-    else
+
+    float3x3 InvTransposeCustomMatrixBonesX = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.x]);
+    position = mul(Input.Position,       g_CustomMatrixBones[Input.Indices.x])                  * Input.Weights.x;
+    normal   = mul(Input.Normal,         InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
+    tangent  = mul(Input.Tangent.xyz,    InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
+
+    if (Input.Indices.y != 255)                                              
     {
-		float3x3 InvTransposeCustomMatrixBonesX = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.x]);
-		position = mul(Input.Position,       g_CustomMatrixBones[Input.Indices.x])                  * Input.Weights.x;
-		normal   = mul(Input.Normal,         InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
-	#ifdef NORMALMAP
-		tangent  = mul(Input.Tangent.xyz,    InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
-	#endif
-		if (Input.Indices.y != 255)                                              
-		{
-			float3x3 InvTransposeCustomMatrixBonesY = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.y]);                                                                      
-			position    += mul(Input.Position,      g_CustomMatrixBones[Input.Indices.y])           * Input.Weights.y;
-			normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesY)					* Input.Weights.y;
-	#ifdef NORMALMAP
-			tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesY)					* Input.Weights.y;
-	#endif
-		}                                                                      
-		if (Input.Indices.z != 255)                                              
-		{
-			float3x3 InvTransposeCustomMatrixBonesZ = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.z]);                                                                      
-			position    += mul(Input.Position,      g_CustomMatrixBones[Input.Indices.z])           * Input.Weights.z;
-			normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesZ)					* Input.Weights.z;
-	#ifdef NORMALMAP
-			tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesZ)					* Input.Weights.z;
-	#endif
-		}                                              
-	                        
-	                        
-    	if (Input.Indices.w != 255)                                              
-    	{
-		    float3x3 InvTransposeCustomMatrixBonesW = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.w]);                                                                      
-        	position    += mul(Input.Position,      g_CustomMatrixBones[Input.Indices.w])           * Input.Weights.w;
-        	normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesW)					* Input.Weights.w;
-	#ifdef NORMALMAP
-        	tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesW)					* Input.Weights.w;
-	#endif
-    	}
+        float3x3 InvTransposeCustomMatrixBonesY = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.y]);                                                                      
+        position    += mul(Input.Position,      g_CustomMatrixBones[Input.Indices.y])           * Input.Weights.y;
+        normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesY)					* Input.Weights.y;
+        tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesY)					* Input.Weights.y;
+    }                                                                      
+    if (Input.Indices.z != 255)                                              
+    {
+        float3x3 InvTransposeCustomMatrixBonesZ = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.z]);                                                                      
+        position    += mul(Input.Position,      g_CustomMatrixBones[Input.Indices.z])           * Input.Weights.z;
+        normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesZ)					* Input.Weights.z;
+        tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesZ)					* Input.Weights.z;
+    }                                              
+
+    if (Input.Indices.w != 255)                                              
+    {
+        float3x3 InvTransposeCustomMatrixBonesW = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.w]);                                                                      
+        position    += mul(Input.Position,      g_CustomMatrixBones[Input.Indices.w])           * Input.Weights.w;
+        normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesW)					* Input.Weights.w;
+        tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesW)					* Input.Weights.w;
     }
 
     Params.VertexPosition   = position.xyz;
@@ -206,12 +230,7 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput Input)
 
     Params.ParticleVertexColor = ModelColor;
     Params.ModelColorOffset = ModelColorOffset; 
-
-#ifdef NORMALMAP
     Params.VertexTangent    = float4(tangent, Input.Tangent.w);
-#else
-    Params.VertexTangent    = float4(1.0f, 0.0f, 0.0f, 1.0f);
-#endif
 
 #if NUM_USER_TEXCOORDS
     UNROLL for (int i = 0; i < NUM_USER_TEXCOORDS; i++)

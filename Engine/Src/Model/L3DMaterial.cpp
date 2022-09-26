@@ -54,6 +54,9 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
         m_piModelSharedCB = pEffect->GetConstantBufferByName("ModelSharedParam");
         BOOL_ERROR_EXIT(m_piModelSharedCB);
 
+        m_Variables.pModelParams = m_piModelSharedCB->GetMemberByName("g_ModelParams");
+        BOOL_ERROR_EXIT(m_Variables.pModelParams);
+
 		m_piEffectTech = pEffect->GetTechniqueByName("Color");
 		BOOL_ERROR_EXIT(m_piEffectTech);
     }
@@ -75,14 +78,12 @@ HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext)
 		m_piEffectTech->GetPassByIndex(p)->Apply(0, pDeviceContext);
     }
 
-    m_piModelSharedCB->SetRawValue(m_pData, 0, sizeof(MESH_SHARED_CB));
-
 	return S_OK;
 }
 
-HRESULT L3DMaterial::SetData(MESH_SHARED_CB* pData)
+HRESULT L3DMaterial::SetVariableValue(MESH_SHARED_CB* pData)
 {
-    memcpy(m_pData, pData, sizeof(MESH_SHARED_CB));
+    m_Variables.pModelParams->SetRawValue(pData, 0, sizeof(MESH_SHARED_CB));
 
     return S_OK;
 }

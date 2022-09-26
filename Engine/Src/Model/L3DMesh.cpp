@@ -90,6 +90,12 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     {
         LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.TangentBlock, pMeshData->pTangent, pHead->MeshHead.dwNumVertices);
     }
+    else
+    {
+        pMeshData->pTangent = new XMFLOAT4[pHead->MeshHead.dwNumVertices];
+		for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
+			pMeshData->pTangent[i] = XMFLOAT4(.0f, 1.0f, 0.0f, 1.0f);
+    }
 
     // Diffuse
     if (pHead->MeshHead.Blocks.DiffuseBlock)
@@ -460,7 +466,7 @@ Exit0:
 
 HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
 {
-    m_Stage.eInputLayer = L3D_INPUT_LAYOUT_CI_SKINMESH;
+    m_Stage.eInputLayer = FillInfo.eInputLayout;
     m_Stage.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     return S_OK;

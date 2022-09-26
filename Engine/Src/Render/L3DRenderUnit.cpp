@@ -43,7 +43,7 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param)
     XMMATRIX viewProj = Param.pCamera->GetViewProjcetion();
     XMStoreFloat4x4(&MeshCB.MatrixWorld, m_MatrixWorld * viewProj);
 
-    hr = m_pMaterial->SetData(&MeshCB);
+    hr = m_pMaterial->SetVariableValue(&MeshCB);
     HRESULT_ERROR_EXIT(hr);
 
     hr = m_pMaterial->Apply(Param.piImmediateContext);
