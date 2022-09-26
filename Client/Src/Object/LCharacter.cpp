@@ -14,3 +14,18 @@ HRESULT LCharacter::Create(IL3DEngine* p3DEngine, const char* szPath)
 Exit0:
     return hResult;
 }
+
+HRESULT LCharacter::SetPosition(const XMFLOAT3& Position)
+{
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+
+    BOOL_ERROR_EXIT(m_pObject);
+
+    hr = m_pObject->SetTranslation(Position);
+    HRESULT_ERROR_EXIT(hr);
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
+}

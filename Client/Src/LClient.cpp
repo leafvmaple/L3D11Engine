@@ -42,6 +42,9 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     pCharacter = m_pObjectMgr->CreateModel<LCharacter>("Res/Mesh/A055_body.mesh");
     BOOL_ERROR_EXIT(pCharacter);
 
+    hr = pCharacter->SetPosition(XMFLOAT3(0, -100, 0));
+    HRESULT_ERROR_EXIT(hr);
+
     m_fLastTime = (float)timeGetTime();
 
     hResult = S_OK;

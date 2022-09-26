@@ -119,7 +119,7 @@ struct _MESH_FILE_DATA
     MESH_FILE_BONE_INFO BoneInfo;
 };
 
-class L3DMesh : public ILModel
+class L3DMesh
 {
 public:
     HRESULT Create(ID3D11Device* piDevice, const char* szFileName);

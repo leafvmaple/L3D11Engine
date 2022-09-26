@@ -13,9 +13,9 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
     ID3D11InputLayout* piInputLayout = nullptr;
 
     piInputLayout = Param.pShaderTable->Layout[Stage.eInputLayer];
-
     Param.piImmediateContext->IASetInputLayout(piInputLayout);
-    Param.piImmediateContext->IASetPrimitiveTopology(Stage.eTopology);
+
+	Param.piImmediateContext->IASetPrimitiveTopology(Stage.eTopology);
 
     Param.piImmediateContext->IASetVertexBuffers(0, 1, &Stage.VertexBuffer.piBuffer, &Stage.VertexBuffer.uStride, &Stage.VertexBuffer.uOffset);
     Param.piImmediateContext->IASetIndexBuffer(Stage.IndexBuffer.piBuffer, Stage.IndexBuffer.eFormat, Stage.IndexBuffer.uOffset);
@@ -41,7 +41,7 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param)
     MESH_SHARED_CB MeshCB;
 
     XMMATRIX viewProj = Param.pCamera->GetViewProjcetion();
-    XMStoreFloat4x4(&MeshCB.MatrixWorld, XMMatrixIdentity() * viewProj);
+    XMStoreFloat4x4(&MeshCB.MatrixWorld, m_MatrixWorld * viewProj);
 
     hr = m_pMaterial->SetData(&MeshCB);
     HRESULT_ERROR_EXIT(hr);
@@ -57,7 +57,7 @@ Exit0:
     return hResult;
 }
 
-void L3DRenderUnit::SetWorldMatrix(const XMMATRIX& world)
+void L3DRenderUnit::SetWorldMatrix(const XMFLOAT4X4& World)
 {
-    m_MatrixWorld = world;
+    m_MatrixWorld = XMLoadFloat4x4(&World);
 }

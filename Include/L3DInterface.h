@@ -129,4 +129,9 @@ class L3DENGINE_CLASS ILModel
 {
 public:
     static HRESULT Create(IL3DEngine* pL3DEngine, const char* szFileName, ILModel** ppModel);
+
+	virtual HRESULT ResetTransform() = 0;
+    virtual HRESULT SetTranslation(const XMFLOAT3& Translation) = 0;
+    virtual HRESULT SetRotation(const XMFLOAT4& Rotation) = 0;
+    virtual HRESULT SetScale(const XMFLOAT3& Scale) = 0;
 };

@@ -202,7 +202,6 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
     pFillInfo->VertexDesc.bHasPosition = true;
     pFillInfo->uVertexSize = pElem->DestStride;
 
-#if 0
     if (pFileData->pNormals)
     {
         ++pElem;
@@ -216,7 +215,6 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
         pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_NORMAL] = uElemId;
     }
-#endif
 
     // TODO
     if (pFileData->pDiffuse)
@@ -235,7 +233,7 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_DIFFUSE] = uElemId;
     }
 
-#if 0
+    // TEXCOORD0 float3->float2
     if (pFileData->pUV1)
     {
         ++pElem;
@@ -278,6 +276,7 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV3] = uElemId;
     }
 
+    // BONEWEIGHTS0 && BONEINDICES0
     if (pFileData->pSkin)
     {
         BOOL_ERROR_EXIT(pFileData->pNormals);
@@ -309,7 +308,6 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
         pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_TANGENT] = uElemId;
     }
-#endif
 
     if (pFileData->pTangent)
     {

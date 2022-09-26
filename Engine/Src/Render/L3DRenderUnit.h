@@ -26,7 +26,7 @@ public:
     HRESULT Create(const RENDER_STAGE_INPUT_ASSEMBLER& Stage, L3DMaterial* pMaterial);
     HRESULT ApplyProcess(const SCENE_RENDER_OPTION& Param);
 
-    void SetWorldMatrix(const XMMATRIX& world);
+    void SetWorldMatrix(const XMFLOAT4X4& World);
 
     RENDER_STAGE_INPUT_ASSEMBLER m_IAStage;
 
