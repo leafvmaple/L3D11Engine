@@ -16,13 +16,13 @@ cbuffer ModelSharedParam
 
 struct VertexIn
 {
-    float3 Position : POSITION;
-    float3 Normal   : NORMAL0;
-    float4 Color    : COLOR;
+    float4 Position  : POSITION;
+    float3 Normal    : NORMAL0;
+    float4 Color     : COLOR;
     float2 TexCoords : TEXCOORD0;
-    float4 Weights  : BONEWEIGHTS0;
-    uint4  Indices  : BONEINDICES0;
-    float4 Tangent  : TANGENT0;
+    float4 Weights   : BONEWEIGHTS0;
+    uint4  Indices   : BONEINDICES0;
+    float4 Tangent   : TANGENT0;
 };
 
 struct VertexOut
@@ -36,7 +36,7 @@ VertexOut VS(VertexIn vin)
     VertexOut vout;
     
     // Transform to homogeneous clip space.
-    vout.PosH = mul(float4(vin.Position, 1.0f), g_ModelParams.MatrixWorld);
+    vout.PosH = mul(vin.Position, g_ModelParams.MatrixWorld);
     
     // Just pass vertex color into the pixel shader.
     vout.Color = vin.Color;

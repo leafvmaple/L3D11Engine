@@ -97,8 +97,7 @@ struct _MESH_FILE_DATA
     // point to array, element count is dwVertexCount
     XMFLOAT3* pPos;
     XMFLOAT3* pNormals;
-    XMFLOAT4* pDiffuse;
-    //XMCOLOR* pDiffuse;
+    XMCOLOR*  pDiffuse;
     XMFLOAT3* pUV1;
     XMFLOAT3* pUV2;
     XMFLOAT3* pUV3;

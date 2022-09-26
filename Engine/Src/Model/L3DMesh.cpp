@@ -94,19 +94,13 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     // Diffuse
     if (pHead->MeshHead.Blocks.DiffuseBlock)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.DiffuseBlock, pColor, pHead->MeshHead.dwNumVertices);
+        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.DiffuseBlock, pMeshData->pDiffuse, pHead->MeshHead.dwNumVertices);
     }
     else
     {
-        pColor = new XMCOLOR[pHead->MeshHead.dwNumVertices];
+        pMeshData->pDiffuse = new XMCOLOR[pHead->MeshHead.dwNumVertices];
         for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
-            pColor[i] = XMCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-    pMeshData->pDiffuse = new XMFLOAT4[pHead->MeshHead.dwNumVertices];
-    for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
-    {
-        XMVECTOR color = DirectX::PackedVector::XMLoadColor(&pColor[i]);
-        DirectX::XMStoreFloat4(&pMeshData->pDiffuse[i], color);
+            pMeshData->pDiffuse[i] = XMCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
     }
     pMeshData->dwVertexFVF |= D3DFVF_DIFFUSE;
 
@@ -202,6 +196,7 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
     pFillInfo->VertexDesc.bHasPosition = true;
     pFillInfo->uVertexSize = pElem->DestStride;
 
+    // Auto convert XMFLOAT3->float4
     if (pFileData->pNormals)
     {
         ++pElem;
@@ -216,15 +211,13 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_NORMAL] = uElemId;
     }
 
-    // TODO
+    // Auto convert XMCOLOR->float4
     if (pFileData->pDiffuse)
     {
         ++pElem;
         uElemId++;
-        // uSourceStride = sizeof(XMCOLOR);
-        // pElem->DestStride = sizeof(XMCOLOR);
-        uSourceStride = sizeof(XMFLOAT4);
-        pElem->DestStride = sizeof(XMFLOAT4);
+        uSourceStride = sizeof(XMCOLOR);
+        pElem->DestStride = sizeof(XMCOLOR);
         pElem->SourceStride = uSourceStride;
         pElem->SourceData = (byte*)pFileData->pDiffuse;
 
@@ -233,7 +226,7 @@ HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_DIFFUSE] = uElemId;
     }
 
-    // TEXCOORD0 float3->float2
+    // TEXCOORD0 XMFLOAT3->float2
     if (pFileData->pUV1)
     {
         ++pElem;
