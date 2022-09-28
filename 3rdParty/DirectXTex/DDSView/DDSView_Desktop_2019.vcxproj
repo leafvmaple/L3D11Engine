@@ -27,42 +27,46 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>Effects11</ProjectName>
-    <ProjectGuid>{DF460EAB-570D-4B50-9089-2E2FC801BF38}</ProjectGuid>
-    <RootNamespace>Effects11</RootNamespace>
+    <ProjectName>DDSView</ProjectName>
+    <ProjectGuid>{9D3EDCAD-A800-43F0-B77F-FE6E4DFA3D84}</ProjectGuid>
+    <RootNamespace>DDSView</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|X64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
@@ -88,32 +92,40 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>Effects11d</TargetName>
+    <OutDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DDSView</TargetName>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>$(ProjectName)D</TargetName>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
+    <OutDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DDSView</TargetName>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>Effects11</TargetName>
+    <OutDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DDSView</TargetName>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>Effects11</TargetName>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
+    <OutDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DDSView</TargetName>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
-    <OutDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>Effects11</TargetName>
+    <OutDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DDSView</TargetName>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>Effects11</TargetName>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|X64'">
+    <OutDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DDSView</TargetName>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -122,53 +134,44 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Binary;$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pchfx.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_LIB;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\DirectXTex;$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>5205</DisableSpecificWarnings>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <SupportJustMyCode>false</SupportJustMyCode>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
+      <AdditionalDependencies>d3d11.lib;ole32.lib;windowscodecs.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Manifest>
       <EnableDPIAwareness>false</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Binary;$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pchfx.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_LIB;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\DirectXTex;$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>5205</DisableSpecificWarnings>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <SupportJustMyCode>false</SupportJustMyCode>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
+      <AdditionalDependencies>d3d11.lib;ole32.lib;windowscodecs.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Manifest>
       <EnableDPIAwareness>false</EnableDPIAwareness>
     </Manifest>
-    <PostBuildEvent>
-      <Command>md "$(SolutionDir)Lib"
-md "$(SolutionDir)Lib\x64"
-
-copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -176,39 +179,41 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Binary;$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pchfx.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_LIB;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\DirectXTex;$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>5205</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
+      <AdditionalDependencies>d3d11.lib;ole32.lib;windowscodecs.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Manifest>
       <EnableDPIAwareness>false</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Binary;$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pchfx.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_LIB;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\DirectXTex;$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>5205</DisableSpecificWarnings>
-      <GuardEHContMetadata>true</GuardEHContMetadata>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
+      <AdditionalDependencies>d3d11.lib;ole32.lib;windowscodecs.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -224,39 +229,41 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Binary;$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pchfx.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;PROFILE;_WINDOWS;_LIB;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\DirectXTex;$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;PROFILE;_WINDOWS;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>5205</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
+      <AdditionalDependencies>d3d11.lib;ole32.lib;windowscodecs.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Manifest>
       <EnableDPIAwareness>false</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|X64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Binary;$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>pchfx.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;PROFILE;_WINDOWS;_LIB;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\DirectXTex;$(ProjectDir)Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;PROFILE;_WINDOWS;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>5205</DisableSpecificWarnings>
-      <GuardEHContMetadata>true</GuardEHContMetadata>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
+      <AdditionalDependencies>d3d11.lib;ole32.lib;windowscodecs.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -266,41 +273,37 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
       <EnableDPIAwareness>false</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemGroup />
   <ItemGroup>
-    <CLInclude Include="pchfx.h" />
-    <CLInclude Include=".\Inc\d3dx11effect.h" />
-    <CLInclude Include=".\Inc\d3dxglobal.h" />
-    <CLInclude Include=".\Binary\EffectBinaryFormat.h" />
-    <CLInclude Include=".\Binary\EffectStateBase11.h" />
-    <CLInclude Include=".\Binary\EffectStates11.h" />
-    <CLInclude Include=".\Binary\SOParser.h" />
-    <ClCompile Include="d3dxGlobal.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <CLInclude Include="Effect.h" />
-    <ClCompile Include="EffectAPI.cpp" />
-    <ClCompile Include="EffectLoad.cpp" />
-    <CLInclude Include="EffectLoad.h" />
-    <ClCompile Include="EffectNonRuntime.cpp" />
-    <ClCompile Include="EffectReflection.cpp" />
-    <ClCompile Include="EffectRuntime.cpp" />
-    <None Include="EffectVariable.inl" />
-    <CLInclude Include="IUnknownImp.h" />
+    <ClCompile Include="DDSView.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="DDSView.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DirectXTex\DirectXTex_Desktop_2019.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="ddsview.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
+  <Target Name="ATGEnsureShaders" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <_ATGFXCPath>$(WindowsSDK_ExecutablePath_x64.Split(';')[0])</_ATGFXCPath>
+      <_ATGFXCPath>$(_ATGFXCPath.Replace("x64",""))</_ATGFXCPath>
+      <_ATGFXCPath Condition="'$(_ATGFXCPath)' != '' and !HasTrailingSlash('$(_ATGFXCPath)')">$(_ATGFXCPath)\</_ATGFXCPath>
+    </PropertyGroup>
+    <Exec Condition="!Exists('Shaders/ddsview_vs.inc')" WorkingDirectory="$(ProjectDir)" Command="hlsl" EnvironmentVariables="WindowsSdkVerBinPath=$(_ATGFXCPath)" />
+    <PropertyGroup>
+      <_ATGFXCPath />
+    </PropertyGroup>
+  </Target>
+  <Target Name="ATGDeleteShaders" AfterTargets="Clean">
+    <ItemGroup>
+      <_ATGShaderHeaders Include="$(ProjectDir)Shaders/*.inc" />
+    </ItemGroup>
+    <Delete Files="@(_ATGShaderHeaders)" />
+  </Target>
 </Project>
