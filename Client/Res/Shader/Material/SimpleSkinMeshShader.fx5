@@ -14,6 +14,15 @@ cbuffer ModelSharedParam
     MTLSYS_MESH_SHARED_CB g_ModelParams; 
 };
 
+Texture2D _0_local1_Texture;
+
+SamplerState g_Sampler_0
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+
 struct VertexIn
 {
     float4 Position  : POSITION;
@@ -27,26 +36,30 @@ struct VertexIn
 
 struct VertexOut
 {
-    float4 PosH  : SV_POSITION;
-    float4 Color : COLOR;
+    float4 PosH      : SV_POSITION;
+    float4 Color     : COLOR;
+    float2 TexCoords : TEXCOORD0;
 };
 
 VertexOut VS(VertexIn vin)
 {
     VertexOut vout;
     
-    // Transform to homogeneous clip space.
     vout.PosH = mul(vin.Position, g_ModelParams.MatrixWorld);
     
-    // Just pass vertex color into the pixel shader.
-    vout.Color = vin.Color;
+    vout.Color = float4(vin.Normal, 1.0f);
+    // vout.Color = vin.Color;
+
+    vout.TexCoords = vin.TexCoords;
     
     return vout;
 }
 
 float4 PS(VertexOut pin) : SV_Target
 {
-    return pin.Color;
+    float4 local1 = _0_local1_Texture.Sample(g_Sampler_0, pin.TexCoords.xy);
+
+    return local1;
 }
 
 technique11 Color

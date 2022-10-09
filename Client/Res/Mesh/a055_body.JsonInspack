@@ -9,7 +9,7 @@
                         {
                             "Info": {
                                 "Version": 2,
-                                "RefPath": "data\\material\\material\\mtl_std.jsondef"
+                                "RefPath": "Res\\Shader\\Material\\mtl_std.jsondef"
                             },
                             "RenderState": {
                                 "bOverWriteRS": 1,
@@ -26,14 +26,14 @@
                                 {
                                     "Name": "BaseColorMap",
                                     "Type": "Texture",
-                                    "Value": "data\\source\\npc_source\\a055\\模型\\texture\\a055.tga"
+                                    "Value": "Res/Mesh/A055.tga"
                                 }
                             ]
                         },
                         {
                             "Info": {
                                 "Version": 2,
-                                "RefPath": "data\\material\\material\\mtl_std.jsondef"
+                                "RefPath": "Res\\Shader\\Material\\mtl_std.jsondef"
                             },
                             "RenderState": {
                                 "bOverWriteRS": 1,
@@ -50,7 +50,7 @@
                                 {
                                     "Name": "BaseColorMap",
                                     "Type": "Texture",
-                                    "Value": "data\\source\\npc_source\\a055\\模型\\texture\\a055.tga"
+                                    "Value": "Res/Mesh/A055.tga"
                                 }
                             ]
                         }

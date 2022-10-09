@@ -2,88 +2,108 @@
 
 #include <d3dcompiler.h>
 #include <atlconv.h>
-
 #include <string>
-#include "FX11/inc/d3dx11effect.h"
 
 #include "L3DMaterial.h"
+#include "L3DEffect.h"
+
 #include "L3DInterface.h"
 #include "L3DMaterialConfig.h"
+#include "L3DMaterialDefine.h"
 
-#define MATERIAL_SHADER_ROOT "Res/Shader/Material/"
-
-struct _MacroKeyValue
-{
-	RUNTIME_MACRO key;
-	const char* value;
-};
-
-static _MacroKeyValue gs_ShaderTemplate[] = {
-	{ RUNTIME_MACRO_MESH,        MATERIAL_SHADER_ROOT"MeshShader.fx5" },
-	// { RUNTIME_MACRO_SKIN_MESH,   MATERIAL_SHADER_ROOT"SkinMeshShader.fx5"},
-	{ RUNTIME_MACRO_SKIN_MESH,   MATERIAL_SHADER_ROOT"SimpleSkinMeshShader.fx5"},
-};
-
-HRESULT L3DMaterial::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
+HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-    DWORD dwShaderFlags = 0;
-    ID3DBlob* pCompiledShader = nullptr;
-    ID3DBlob* pCompilationMsgs = nullptr;
-    ID3DX11Effect* pEffect = nullptr;
 
-#if defined( DEBUG ) || defined( _DEBUG )
-    dwShaderFlags |= D3D10_SHADER_DEBUG;
-    dwShaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
-#endif
+    m_pMaterialDefine = new L3DMaterialDefine;
+    BOOL_ERROR_EXIT(m_pMaterialDefine);
 
-    {
-        USES_CONVERSION;
-        hr = D3DCompileFromFile(A2CW((LPCSTR)gs_ShaderTemplate[eMacro].value), 0, D3D_COMPILE_STANDARD_FILE_INCLUDE, 0, "fx_5_0", dwShaderFlags, 0, &pCompiledShader, &pCompilationMsgs);
-        {
-            std::string str;
-            if (pCompilationMsgs)
-                str = static_cast<char*>(pCompilationMsgs->GetBufferPointer());
-        }
+    hr = m_pMaterialDefine->Create(InstanceData.szDefineName);
+    HRESULT_ERROR_EXIT(hr);
+
+    hr = m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
+    HRESULT_ERROR_EXIT(hr);
+
+	for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
+	{
+		hr = _PlaceTextureValue(piDevice, iter->first, iter->second);
         HRESULT_ERROR_EXIT(hr);
+	}
 
-        hr = D3DX11CreateEffectFromMemory(pCompiledShader->GetBufferPointer(), pCompiledShader->GetBufferSize(), 0, piDevice, &pEffect);
-        HRESULT_ERROR_EXIT(hr);
+    m_pEffect = new L3DEffect;
+    BOOL_ERROR_EXIT(m_pEffect);
 
-        m_piModelSharedCB = pEffect->GetConstantBufferByName("ModelSharedParam");
-        BOOL_ERROR_EXIT(m_piModelSharedCB);
-
-        m_Variables.pModelParams = m_piModelSharedCB->GetMemberByName("g_ModelParams");
-        BOOL_ERROR_EXIT(m_Variables.pModelParams);
-
-		m_piEffectTech = pEffect->GetTechniqueByName("Color");
-		BOOL_ERROR_EXIT(m_piEffectTech);
-    }
-
-    m_pData = new MESH_SHARED_CB;
+    hr = m_pEffect->Create(piDevice, InstanceData.eMacro);
+    HRESULT_ERROR_EXIT(hr);
 
     hResult = S_OK;
 Exit0:
     return hResult;
 }
 
+
 HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext)
 {
-	D3DX11_TECHNIQUE_DESC techDesc;
+	std::vector<PASS_TEXTURE> PassTextures;
 
-	m_piEffectTech->GetDesc(&techDesc);
-    for (UINT p = 0; p < techDesc.Passes; ++p)
-    {
-		m_piEffectTech->GetPassByIndex(p)->Apply(0, pDeviceContext);
-    }
+	_UpdateTextures(PassTextures);
+
+    m_pEffect->Apply(pDeviceContext);
 
 	return S_OK;
 }
 
+
 HRESULT L3DMaterial::SetVariableValue(MESH_SHARED_CB* pData)
 {
-    m_Variables.pModelParams->SetRawValue(pData, 0, sizeof(MESH_SHARED_CB));
+    return m_pEffect->SetVariableValue(pData);
+}
 
+HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName)
+{
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+
+    for (auto it = m_vecTextures.begin(); it != m_vecTextures.end(); it++)
+    {
+        if (sName == it->sRepresentName)
+        {
+            SAFE_DELETE(it->pTexture);
+
+            it->pTexture = new L3DTexture;
+            BOOL_ERROR_EXIT(it->pTexture);
+
+            hr = it->pTexture->Create(piDevice, sTextureName.c_str());
+            HRESULT_ERROR_EXIT(hr);
+        }
+    }
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
+}
+
+HRESULT L3DMaterial::_UpdateTextures(std::vector<PASS_TEXTURE>& PassTextures)
+{
+    HRESULT hr = E_FAIL;
+
+    std::vector<EFFECT_SHADER> EffectShader;
+
+    m_pEffect->GetShader(EffectShader);
+
+    for (auto itEffect : EffectShader)
+    {
+        for (auto it : m_vecTextures)
+        {
+            if (it.sRegisterName == itEffect.name)
+            {
+                hr = it.pTexture->Apply(itEffect.pSRVaraible);
+                HRESULT_ERROR_EXIT(hr);
+            }
+        }
+    }
+
+Exit0:
     return S_OK;
 }

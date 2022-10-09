@@ -1,35 +1,48 @@
 #pragma once
 
-struct ID3DX11EffectTechnique;
-struct ID3DX11EffectConstantBuffer;
-struct ID3DX11EffectVariable;
+#include <vector>
+#include <string>
+#include <unordered_map>
 
-struct MESH_SHARED_CB;
+#include <d3d11.h>
 
-enum RUNTIME_MACRO
+#include "L3DTexture.h"
+#include "L3DMaterialConfig.h"
+
+class L3DMaterialDefine;
+class L3DEffect;
+
+struct ID3DX11EffectShaderResourceVariable;
+
+struct MATERIAL_INSTANCE_DATA
 {
-    RUNTIME_MACRO_MESH = 0,
-    RUNTIME_MACRO_SKIN_MESH = 1,
+    char szDefineName[MAX_PATH];
+    RUNTIME_MACRO eMacro;
+
+    std::unordered_map<std::string, std::string> TextureArray;
 };
 
 class L3DMaterial
 {
 public:
-    HRESULT Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro);
+    HRESULT Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext);
-
+    
+    // TODO
     HRESULT SetVariableValue(MESH_SHARED_CB* pData);
 
-    MESH_SHARED_CB* m_pData = nullptr;
-
 private:
-	struct MODEL_FIX_VARIBLES
+	struct PASS_TEXTURE
 	{
-        ID3DX11EffectVariable* pModelParams;
+		ID3DX11EffectShaderResourceVariable* pEffectSRVariable;
+		L3DTexture* pTexture;
 	};
 
-    ID3DX11EffectTechnique* m_piEffectTech = nullptr;
-    ID3DX11EffectConstantBuffer* m_piModelSharedCB = nullptr;
+    HRESULT _PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName);
+    HRESULT _UpdateTextures(std::vector<PASS_TEXTURE>& PassTextures);
 
-    MODEL_FIX_VARIBLES m_Variables;
+    L3DMaterialDefine* m_pMaterialDefine;
+    L3DEffect* m_pEffect;
+
+    std::vector<TEXTURE_DATA> m_vecTextures;
 };

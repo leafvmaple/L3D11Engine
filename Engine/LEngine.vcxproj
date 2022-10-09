@@ -167,10 +167,13 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\IO\LFileReader.cpp" />
     <ClCompile Include="Src\L3DEngine.cpp" />
     <ClCompile Include="Src\L3DInterface.cpp" />
+    <ClCompile Include="Src\Model\L3DEffect.cpp" />
     <ClCompile Include="Src\Model\L3DMaterial.cpp" />
+    <ClCompile Include="Src\Model\L3DMaterialDefine.cpp" />
     <ClCompile Include="Src\Model\L3DMesh.cpp" />
     <ClCompile Include="Src\Model\L3DModel.cpp" />
     <ClCompile Include="Src\Model\L3DShader.cpp" />
+    <ClCompile Include="Src\Model\L3DTexture.cpp" />
     <ClCompile Include="Src\Render\L3DRenderUnit.cpp" />
     <ClCompile Include="Src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -187,11 +190,14 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Input\L3DInput.h" />
     <ClInclude Include="Src\IO\LFileReader.h" />
     <ClInclude Include="Src\IO\LFileStruct.h" />
+    <ClInclude Include="Src\Model\L3DEffect.h" />
     <ClInclude Include="Src\Model\L3DMaterial.h" />
+    <ClInclude Include="Src\Model\L3DMaterialDefine.h" />
     <ClInclude Include="Src\Model\L3DMesh.h" />
     <ClInclude Include="Src\Model\L3DModel.h" />
     <ClInclude Include="Src\Model\L3DShader.h" />
     <ClInclude Include="Src\Model\L3DMaterialConfig.h" />
+    <ClInclude Include="Src\Model\L3DTexture.h" />
     <ClInclude Include="Src\Render\L3DRenderUnit.h" />
     <ClInclude Include="Src\stdafx.h" />
   </ItemGroup>

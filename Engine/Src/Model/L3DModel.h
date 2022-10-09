@@ -1,6 +1,5 @@
 #pragma once
 
-#include <windows.h>
 #include <d3d11.h>
 #include <DirectXPackedVector.h>
 #include <vector>
@@ -10,6 +9,8 @@
 class L3DMesh;
 class L3DMaterial;
 class L3DRenderUnit;
+class L3DTexture;
+struct MATERIAL_INSTANCE_DATA;
 
 class L3DModel : public ILModel
 {
@@ -25,9 +26,11 @@ public:
 
 private:
     void UpdateTransFrom();
+    HRESULT LoadMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
 
     L3DMesh* m_pMesh = nullptr;
-    L3DMaterial* m_pMaterial = nullptr;
+
+    std::vector<L3DMaterial*> m_vecMaterial;
 
     XMFLOAT3 m_Translation;
     XMFLOAT4 m_Rotation;
