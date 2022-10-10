@@ -212,9 +212,6 @@ HRESULT L3DModel::_InitRenderUnits()
 	m_pRenderUnit->m_IAStage = m_pMesh->m_Stage;
 	m_pRenderUnit->m_pMaterial = m_vecMaterial[0];
 
-	hr = m_pRenderUnit->Create(m_pMesh->m_Stage, m_vecMaterial[0]);
-	HRESULT_ERROR_EXIT(hr);
-
 Exit0:
 	return S_OK;
 }
