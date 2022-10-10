@@ -10,6 +10,9 @@ struct L3D_SHADER_TABLE;
 class L3DMaterial;
 class L3DCamera;
 
+struct ID3DX11EffectVariable;
+struct ID3DX11EffectConstantBuffer;
+
 struct SCENE_RENDER_OPTION
 {
     ID3D11Device* piDevice;
@@ -23,12 +26,19 @@ struct SCENE_RENDER_OPTION
 class L3DRenderUnit
 {
 public:
-    HRESULT Create(const RENDER_STAGE_INPUT_ASSEMBLER& Stage, L3DMaterial* pMaterial);
+	struct MODEL_FIX_VARIBLES
+	{
+		ID3DX11EffectVariable* pModelParams;
+	};
+
     HRESULT ApplyProcess(const SCENE_RENDER_OPTION& Param);
 
     void SetWorldMatrix(const XMFLOAT4X4& World);
 
     RENDER_STAGE_INPUT_ASSEMBLER m_IAStage;
+
+	ID3DX11EffectConstantBuffer* m_piModelSharedCB = nullptr;
+	MODEL_FIX_VARIBLES m_ModelVariables;
 
     L3DMaterial* m_pMaterial = nullptr;
 

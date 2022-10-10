@@ -12,7 +12,11 @@ class L3DMesh;
 class L3DMaterial;
 class L3DRenderUnit;
 class L3DTexture;
+
 struct MATERIAL_INSTANCE_DATA;
+
+struct ID3DX11EffectVariable;
+struct ID3DX11EffectConstantBuffer;
 
 class L3DModel : public ILModel
 {
@@ -27,10 +31,22 @@ public:
     L3DRenderUnit* m_pRenderUnit = nullptr;
 
 private:
+	struct MODEL_FIX_VARIBLES
+	{
+		ID3DX11EffectVariable* pModelParams;
+	};
+    struct RENDER_DATA
+    {
+        ID3DX11EffectConstantBuffer* piModelSharedCB;
+        MODEL_FIX_VARIBLES m_ModelVariables;
+    };
+
     void UpdateTransFrom();
     HRESULT _LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName);
     HRESULT _LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
 	HRESULT _LoadSubsetMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
+
+    HRESULT _InitRenderUnits();
 
     L3DMesh* m_pMesh = nullptr;
 

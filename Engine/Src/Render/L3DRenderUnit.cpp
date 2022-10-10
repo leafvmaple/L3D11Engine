@@ -8,6 +8,8 @@
 
 #include "Camera/L3DCamera.h"
 
+#include "FX11/inc/d3dx11effect.h"
+
 HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_ASSEMBLER& Stage)
 {
     ID3D11InputLayout* piInputLayout = nullptr;
@@ -25,14 +27,6 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
     return S_OK;
 }
 
-HRESULT L3DRenderUnit::Create(const RENDER_STAGE_INPUT_ASSEMBLER& Stage, L3DMaterial* pMaterial)
-{
-    m_IAStage = Stage;
-    m_pMaterial = pMaterial;
-
-    return S_OK;
-}
-
 HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param)
 {
     HRESULT hr = E_FAIL;
@@ -43,11 +37,10 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param)
     XMMATRIX viewProj = Param.pCamera->GetViewProjcetion();
     XMStoreFloat4x4(&MeshCB.MatrixWorld, m_MatrixWorld * viewProj);
 
-    hr = m_pMaterial->SetVariableValue(&MeshCB);
-    HRESULT_ERROR_EXIT(hr);
-
     hr = m_pMaterial->Apply(Param.piImmediateContext);
     HRESULT_ERROR_EXIT(hr);
+
+	m_ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
 
     hr = _DrawElement(Param, m_IAStage);
     HRESULT_ERROR_EXIT(hr);

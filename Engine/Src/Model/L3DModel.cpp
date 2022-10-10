@@ -8,6 +8,8 @@
 #include "IO/LFileReader.h"
 #include "LCommon.h"
 
+#include "FX11/inc/d3dx11effect.h"
+
 #include "Render/L3DRenderUnit.h"
 
 HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
@@ -31,11 +33,8 @@ HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 		HRESULT_ERROR_EXIT(hr);
 	}
 
-    m_pRenderUnit = new L3DRenderUnit;
-    BOOL_ERROR_EXIT(m_pRenderUnit);
-
-    hr = m_pRenderUnit->Create(m_pMesh->m_Stage, m_vecMaterial[0]);
-    HRESULT_ERROR_EXIT(hr);
+	hr = _InitRenderUnits();
+	HRESULT_ERROR_EXIT(hr);
 
     hr = ResetTransform();
     HRESULT_ERROR_EXIT(hr);
@@ -194,4 +193,28 @@ Exit0:
 	if (FAILED(hResult))
 		SAFE_DELETE(pMaterial);
 	return hResult;
+}
+
+HRESULT L3DModel::_InitRenderUnits()
+{
+	HRESULT hr = E_FAIL;
+	HRESULT hResult = E_FAIL;
+
+	m_pRenderUnit = new L3DRenderUnit;
+	BOOL_ERROR_EXIT(m_pRenderUnit);
+
+	hr = m_vecMaterial[0]->CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &m_pRenderUnit->m_piModelSharedCB);
+	HRESULT_ERROR_EXIT(hr);
+
+	m_pRenderUnit->m_ModelVariables.pModelParams = m_pRenderUnit->m_piModelSharedCB->GetMemberByName("g_ModelParams");
+	BOOL_ERROR_EXIT(m_pRenderUnit->m_ModelVariables.pModelParams);
+
+	m_pRenderUnit->m_IAStage = m_pMesh->m_Stage;
+	m_pRenderUnit->m_pMaterial = m_vecMaterial[0];
+
+	hr = m_pRenderUnit->Create(m_pMesh->m_Stage, m_vecMaterial[0]);
+	HRESULT_ERROR_EXIT(hr);
+
+Exit0:
+	return S_OK;
 }

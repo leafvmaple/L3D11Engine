@@ -13,7 +13,7 @@ class L3DMaterialDefine;
 class L3DEffect;
 
 struct ID3DX11EffectPass;
-
+struct ID3DX11EffectConstantBuffer;
 struct ID3DX11EffectShaderResourceVariable;
 
 struct MATERIAL_INSTANCE_DATA
@@ -24,14 +24,18 @@ struct MATERIAL_INSTANCE_DATA
     std::unordered_map<std::string, std::string> TextureArray;
 };
 
+enum class MATERIAL_INDIV_CB
+{
+	MODELSHARED,
+};
+
 class L3DMaterial
 {
 public:
     HRESULT Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext);
-    
-    // TODO
-    HRESULT SetVariableValue(MESH_SHARED_CB* pData);
+
+    HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
 
 private:
 	struct PASS_TEXTURE

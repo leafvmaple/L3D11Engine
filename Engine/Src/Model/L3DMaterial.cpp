@@ -78,9 +78,26 @@ Exit0:
 }
 
 
-HRESULT L3DMaterial::SetVariableValue(MESH_SHARED_CB* pData)
+HRESULT L3DMaterial::CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB)
 {
-    return m_pEffect->SetVariableValue(pData);
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+
+    switch (eCBType)
+    {
+    case MATERIAL_INDIV_CB::MODELSHARED:
+    {
+        *pEffectCB = m_pEffect->GetConstantBufferByName("ModelSharedParam");
+        BOOL_ERROR_EXIT(*pEffectCB);
+    }
+        break;
+    default:
+        break;
+    }
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
 }
 
 HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName)
