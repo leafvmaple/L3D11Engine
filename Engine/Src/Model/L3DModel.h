@@ -6,6 +6,8 @@
 
 #include "L3DInterface.h"
 
+#include "rapidjson/include/rapidjson/document.h"
+
 class L3DMesh;
 class L3DMaterial;
 class L3DRenderUnit;
@@ -26,7 +28,9 @@ public:
 
 private:
     void UpdateTransFrom();
-    HRESULT LoadMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
+    HRESULT _LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName);
+    HRESULT _LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
+	HRESULT _LoadSubsetMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
 
     L3DMesh* m_pMesh = nullptr;
 

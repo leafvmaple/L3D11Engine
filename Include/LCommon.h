@@ -58,8 +58,9 @@ namespace L3D
 		nRetCode = sprintf_s(szResult, "%hs%hs%hs%hs", szDriver, szDir, szName, ExtName);
 		BOOL_ERROR_EXIT(nRetCode > 0);
 
-        if (_access(szResult, 0) != -1)
-            strcpy(szFileName, szResult);
+        BOOL_ERROR_EXIT(_access(szResult, 0) != -1);
+
+        strcpy(szFileName, szResult);
 
         hResult = S_OK;
     Exit0:

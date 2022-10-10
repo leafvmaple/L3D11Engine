@@ -10,7 +10,7 @@ BOOL LFileReader::IsExist(LPCWSTR cszFileName)
 	return _waccess(cszFileName, 0) != -1;
 }
 
-HRESULT LFileReader::Reader(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen)
+HRESULT LFileReader::Read(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen)
 {
 	HRESULT hResult = E_FAIL;
 	FILE* pFile = NULL;
@@ -42,6 +42,26 @@ HRESULT LFileReader::Reader(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen)
 	if (pFile)
 		fclose(pFile);
 
+	return hResult;
+}
+
+HRESULT LFileReader::ReadJson(const char* szFileName, rapidjson::Document& JsonDocument)
+{
+	HRESULT hr = E_FAIL;
+	HRESULT hResult = E_FAIL;
+
+	BYTE* pData = nullptr;
+	size_t uSize = 0;
+
+	LFileReader::Read(szFileName, &pData, &uSize);
+	BOOL_ERROR_EXIT(pData);
+
+	JsonDocument.Parse((char*)pData, uSize);
+	BOOL_ERROR_EXIT(!JsonDocument.HasParseError());
+
+	hResult = S_OK;
+Exit0:
+	SAFE_DELETE(pData);
 	return hResult;
 }
 

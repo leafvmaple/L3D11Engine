@@ -4,16 +4,20 @@
 #include <atlconv.h>
 #include <cstdio>
 
+#include "rapidjson/include/rapidjson/document.h"
+
 class LFileReader
 {
 public:
 	static BOOL IsExist(LPCWSTR cszFileName);
-	static HRESULT Reader(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen);
-	static HRESULT Reader(const char* szFileName, BYTE** ppBuffer, size_t* puLen)
+	static HRESULT Read(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen);
+	static HRESULT Read(const char* szFileName, BYTE** ppBuffer, size_t* puLen)
 	{
 		USES_CONVERSION;
-		return Reader(A2CW((LPCSTR)szFileName), ppBuffer, puLen);
+		return Read(A2CW((LPCSTR)szFileName), ppBuffer, puLen);
 	}
+
+	static HRESULT ReadJson(const char* szFileName, rapidjson::Document& JsonDocument);
 
 	template<typename Model>
 	static BYTE* Convert(BYTE* pBuffer, Model*& pModel, size_t nCount = 1)

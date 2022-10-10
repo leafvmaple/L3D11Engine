@@ -6,11 +6,6 @@
 #include "IO/LFileReader.h"
 #include "LCommon.h"
 
-#undef max
-#undef min
-
-#include "rapidjson/include/rapidjson/document.h"
-
 HRESULT L3DMaterialDefine::Create(const char* szFileName)
 {
 	HRESULT hr = E_FAIL;
@@ -21,11 +16,8 @@ HRESULT L3DMaterialDefine::Create(const char* szFileName)
 
 	strcpy(m_szName, szFileName);
 
-	LFileReader::Reader(szFileName, &pData, &uSize);
-	BOOL_ERROR_EXIT(pData);
-
-	JsonDocument.Parse((char*)pData, uSize);
-	BOOL_ERROR_EXIT(!JsonDocument.HasParseError());
+	hr = LFileReader::ReadJson(szFileName, JsonDocument);
+	HRESULT_ERROR_EXIT(hr);
 
 	{
 		auto& InfoObject = JsonDocument["Info"];

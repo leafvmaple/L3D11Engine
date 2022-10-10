@@ -10,45 +10,12 @@
 
 #include "Render/L3DRenderUnit.h"
 
-#undef max
-#undef min
-#include "rapidjson/include/rapidjson/document.h"
-
-HRESULT LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData)
-{
-	auto& InfoObject = JsonObject["Info"];
-
-	LPCSTR szValue = InfoObject["RefPath"].GetString();
-	strcpy_s(InstanceData.szDefineName, szValue);
-
-	auto& ParamArray = JsonObject["Param"];
-	for (auto iter = ParamArray.Begin(); iter != ParamArray.End(); ++iter)
-	{
-		auto ParamObject = iter->GetObjectW();
-
-		LPCSTR szName = ParamObject["Name"].GetString();
-		std::string szType = ParamObject["Type"].GetString();
-
-		if (szType == "Texture")
-		{
-			szValue = ParamObject["Value"].GetString();
-			InstanceData.TextureArray.insert(std::make_pair(szName, szValue));
-		}
-	}
-
-	return S_OK;
-}
-
 HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-    BYTE* pData = nullptr;
-    size_t uSize = 0;
-    rapidjson::Document JsonDocument;
-    char szMaterialName[MAX_PATH];
 
-    RUNTIME_MACRO eStaticMacro = RUNTIME_MACRO_MESH;
+	char szMaterialName[MAX_PATH];
 
 	m_pMesh = new L3DMesh;
 	BOOL_ERROR_EXIT(m_pMesh);
@@ -57,47 +24,12 @@ HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 	HRESULT_ERROR_EXIT(hr);
 
     strcpy(szMaterialName, szFileName);
-
-    L3D::FormatExtName(szMaterialName, ".JsonInspack");
-
-    LFileReader::Reader(szMaterialName, &pData, &uSize);
-    BOOL_ERROR_EXIT(pData);
-
-	JsonDocument.Parse((char*)pData, uSize);
-	BOOL_ERROR_EXIT(!JsonDocument.HasParseError());
-
-    {
-		auto& LODArray = JsonDocument["LOD"];
-
-        unsigned uLODCount = LODArray.Capacity();
-
-        for (int i = 0; i < uLODCount; i++)
-        {
-            auto& GroupArray = LODArray[i]["Group"];
-            unsigned uGroupCount = GroupArray.Capacity();
-
-            for (int j = 0; j < uGroupCount; j++)
-            {
-                auto& SubsetArray = GroupArray[j]["Subset"];
-                unsigned uSubsetCount = SubsetArray.Capacity();
-
-                for (int k = 0; k < uSubsetCount; k++)
-                {
-                    auto& SubsetObject = SubsetArray[k];
-                    MATERIAL_INSTANCE_DATA InstanceData;
-
-                    hr = LoadInstanceFromJson(SubsetObject, InstanceData);
-                    HRESULT_ERROR_EXIT(hr);
-
-					if (m_pMesh->m_dwBoneCount > 0)
-                        InstanceData.eMacro = RUNTIME_MACRO_SKIN_MESH;
-
-                    hr = LoadMaterial(piDevice, InstanceData);
-                    HRESULT_ERROR_EXIT(hr);
-                }
-            }
-        }
-    }
+    hr = L3D::FormatExtName(szMaterialName, ".JsonInspack");
+	if (SUCCEEDED(hr))
+	{
+		hr = _LoadMaterialFromJson(piDevice, szMaterialName);
+		HRESULT_ERROR_EXIT(hr);
+	}
 
     m_pRenderUnit = new L3DRenderUnit;
     BOOL_ERROR_EXIT(m_pRenderUnit);
@@ -169,24 +101,97 @@ void L3DModel::UpdateTransFrom()
     m_pRenderUnit->SetWorldMatrix(m_World);
 }
 
-HRESULT L3DModel::LoadMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData)
+HRESULT L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
+	HRESULT hr = E_FAIL;
+	HRESULT hResult = E_FAIL;
 
-    L3DMaterial* pMaterial = nullptr;
+	rapidjson::Document JsonDocument;
+
+	hr = LFileReader::ReadJson(szFileName, JsonDocument);
+	HRESULT_ERROR_EXIT(hr);
+
+	{
+		auto& LODArray = JsonDocument["LOD"];
+
+		unsigned uLODCount = LODArray.Capacity();
+
+		for (int i = 0; i < uLODCount; i++)
+		{
+			auto& GroupArray = LODArray[i]["Group"];
+			unsigned uGroupCount = GroupArray.Capacity();
+
+			for (int j = 0; j < uGroupCount; j++)
+			{
+				auto& SubsetArray = GroupArray[j]["Subset"];
+				unsigned uSubsetCount = SubsetArray.Capacity();
+
+				for (int k = 0; k < uSubsetCount; k++)
+				{
+					auto& SubsetObject = SubsetArray[k];
+					MATERIAL_INSTANCE_DATA InstanceData;
+
+					hr = _LoadInstanceFromJson(SubsetObject, InstanceData);
+					HRESULT_ERROR_EXIT(hr);
+
+					if (m_pMesh->m_dwBoneCount > 0)
+						InstanceData.eMacro = RUNTIME_MACRO_SKIN_MESH;
+
+					hr = _LoadSubsetMaterial(piDevice, InstanceData);
+					HRESULT_ERROR_EXIT(hr);
+				}
+			}
+		}
+	}
+
+	hResult = S_OK;
+Exit0:
+	return hResult;
+}
+
+HRESULT L3DModel::_LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData)
+{
+	auto& InfoObject = JsonObject["Info"];
+
+	LPCSTR szValue = InfoObject["RefPath"].GetString();
+	strcpy_s(InstanceData.szDefineName, szValue);
+
+	auto& ParamArray = JsonObject["Param"];
+	for (auto iter = ParamArray.Begin(); iter != ParamArray.End(); ++iter)
+	{
+		auto ParamObject = iter->GetObjectW();
+
+		LPCSTR szName = ParamObject["Name"].GetString();
+		std::string szType = ParamObject["Type"].GetString();
+
+		if (szType == "Texture")
+		{
+			szValue = ParamObject["Value"].GetString();
+			InstanceData.TextureArray.insert(std::make_pair(szName, szValue));
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT L3DModel::_LoadSubsetMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData)
+{
+	HRESULT hr = E_FAIL;
+	HRESULT hResult = E_FAIL;
+
+	L3DMaterial* pMaterial = nullptr;
 
 	pMaterial = new L3DMaterial;
-    BOOL_ERROR_EXIT(pMaterial);
+	BOOL_ERROR_EXIT(pMaterial);
 
 	hr = pMaterial->Create(piDevice, InstanceData);
-    HRESULT_ERROR_EXIT(hr);
+	HRESULT_ERROR_EXIT(hr);
 
 	m_vecMaterial.push_back(pMaterial);
 
-    hResult = S_OK;
+	hResult = S_OK;
 Exit0:
-    if (FAILED(hResult))
-        SAFE_DELETE(pMaterial);
-    return hResult;
+	if (FAILED(hResult))
+		SAFE_DELETE(pMaterial);
+	return hResult;
 }

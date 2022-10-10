@@ -32,7 +32,7 @@ HRESULT LoadShader(const char* szFileName, const char* szType, BYTE** ppByteCode
 	nRetCode = sprintf_s(szFilePath, FXO_PATH, szType, szFileName);
 	BOOL_ERROR_EXIT(nRetCode);
 
-	hr = LFileReader::Reader(szFilePath, ppByteCode, puSize);
+	hr = LFileReader::Read(szFilePath, ppByteCode, puSize);
 	HRESULT_ERROR_EXIT(hr);
 
 	*puSize -= sizeof(GUID);

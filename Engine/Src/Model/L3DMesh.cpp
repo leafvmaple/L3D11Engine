@@ -56,7 +56,7 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
 
     ZeroMemory(pMeshData, sizeof(_MESH_FILE_DATA));
 
-    hr = LFileReader::Reader(szFileName, &pbyMesh, &uMeshLen);
+    hr = LFileReader::Read(szFileName, &pbyMesh, &uMeshLen);
     HRESULT_ERROR_EXIT(hr);
 
     pbyBufferHead = pbyMesh;
@@ -415,8 +415,8 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* 
         DWORD nIndex1 = pMeshData->pIndex[i * 3 + 1];
         DWORD nIndex2 = pMeshData->pIndex[i * 3 + 2];
 
-        DWORD IndexMin = min(nIndex0, min(nIndex1, nIndex2));
-        DWORD IndexMax = max(nIndex0, max(nIndex1, nIndex2));
+        DWORD IndexMin = std::min(nIndex0, std::min(nIndex1, nIndex2));
+        DWORD IndexMax = std::max(nIndex0, std::max(nIndex1, nIndex2));
 
         auto SubsetIndex = pMeshData->pSubset[i];
 
@@ -425,8 +425,8 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* 
         IndexData.IndexBuffer.push_back(nIndex1);
         IndexData.IndexBuffer.push_back(nIndex2);
 
-        IndexData.IndexMin = min(IndexData.IndexMin, IndexMin);
-        IndexData.IndexMax = max(IndexData.IndexMax, IndexMax);
+        IndexData.IndexMin = std::min(IndexData.IndexMin, IndexMin);
+        IndexData.IndexMax = std::max(IndexData.IndexMax, IndexMax);
     }
 
     for (auto indexBuff : IndexBufferList)

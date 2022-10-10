@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
+#include <algorithm>
+
 #include "L3DCamera.h"
+
 
 HRESULT L3DCamera::Init(float fWidth, float fHeight)
 {
@@ -23,7 +26,7 @@ HRESULT L3DCamera::UpdateYawPitchRoll(float fYaw, float fPitch, float fRoll)
 HRESULT L3DCamera::UpdateSightDistance(float fSightDis)
 {
     m_fSightDis += fSightDis;
-    m_fSightDis = max(m_fSightDis, 3.f);
+    m_fSightDis = std::max(m_fSightDis, 3.f);
 
     ComputeViewMatrix();
 
