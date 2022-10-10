@@ -59,15 +59,15 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
         hr = D3DX11CreateEffectFromFile(A2CW((LPCSTR)gs_ShaderTemplate[eMacro].value), 0, piDevice, &pEffect);
         HRESULT_ERROR_EXIT(hr);*/
 
-        hr = D3DX11CreateEffectFromMemory(pCompiledShader->GetBufferPointer(), pCompiledShader->GetBufferSize(), 0, piDevice, &pEffect);
+        hr = D3DX11CreateEffectFromMemory(pCompiledShader->GetBufferPointer(), pCompiledShader->GetBufferSize(), 0, piDevice, &m_piEffect);
         HRESULT_ERROR_EXIT(hr);
 
-        hr = pEffect->GetDesc(&desc);
+        hr = m_piEffect->GetDesc(&desc);
         HRESULT_ERROR_EXIT(hr);
 
         for (int i = 0; i < desc.GlobalVariables; i++)
         {
-            pVariable = pEffect->GetVariableByIndex(i);
+            pVariable = m_piEffect->GetVariableByIndex(i);
             BOOL_ERROR_EXIT(pVariable);
 
             pVariable->GetDesc(&variableDesc);
@@ -84,14 +84,11 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
             }
         }
 
-        m_piModelSharedCB = pEffect->GetConstantBufferByName("ModelSharedParam");
+        m_piModelSharedCB = m_piEffect->GetConstantBufferByName("ModelSharedParam");
         BOOL_ERROR_EXIT(m_piModelSharedCB);
 
         m_Variables.pModelParams = m_piModelSharedCB->GetMemberByName("g_ModelParams");
         BOOL_ERROR_EXIT(m_Variables.pModelParams);
-
-        m_piEffectTech = pEffect->GetTechniqueByName("Color");
-        BOOL_ERROR_EXIT(m_piEffectTech);
     }
 
     m_pData = new MESH_SHARED_CB;
@@ -101,17 +98,9 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DEffect::Apply(ID3D11DeviceContext* pDeviceContext)
+ID3DX11EffectTechnique* L3DEffect::GetTechniqueByName(const char* szTechniqueName)
 {
-	D3DX11_TECHNIQUE_DESC techDesc;
-
-	m_piEffectTech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		m_piEffectTech->GetPassByIndex(p)->Apply(0, pDeviceContext);
-	}
-
-	return S_OK;
+    return m_piEffect->GetTechniqueByName(szTechniqueName);
 }
 
 void L3DEffect::GetShader(std::vector<EFFECT_SHADER>& EffectShader)

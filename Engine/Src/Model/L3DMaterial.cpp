@@ -11,6 +11,20 @@
 #include "L3DMaterialConfig.h"
 #include "L3DMaterialDefine.h"
 
+#include "FX11/inc/d3dx11effect.h"
+
+
+struct RENDER_PASS_TABLE
+{
+    RENDER_PASS ePass;
+    LPCSTR      szTechniqueName;
+    unsigned    uPassSlot;
+};
+
+static RENDER_PASS_TABLE g_MaterialPassDeclares[] = {
+    {RENDERPASS_COLOR, "Color", 0},
+};
+
 HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData)
 {
     HRESULT hr = E_FAIL;
@@ -25,11 +39,11 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
     hr = m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
     HRESULT_ERROR_EXIT(hr);
 
-	for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
-	{
-		hr = _PlaceTextureValue(piDevice, iter->first, iter->second);
+    for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
+    {
+        hr = _PlaceTextureValue(piDevice, iter->first, iter->second);
         HRESULT_ERROR_EXIT(hr);
-	}
+    }
 
     m_pEffect = new L3DEffect;
     BOOL_ERROR_EXIT(m_pEffect);
@@ -45,13 +59,22 @@ Exit0:
 
 HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext)
 {
-	std::vector<PASS_TEXTURE> PassTextures;
+    HRESULT hr = E_FAIL;
 
-	_UpdateTextures(PassTextures);
+    ID3DX11EffectPass* pEffectPass = nullptr;
 
-    m_pEffect->Apply(pDeviceContext);
+    // _GetRenderPass
+    hr = _UpdateTechniques(RENDERPASS_COLOR, &pEffectPass);
+    HRESULT_ERROR_EXIT(hr);
 
-	return S_OK;
+    hr = _UpdateTextures();
+    HRESULT_ERROR_EXIT(hr);
+
+    hr = pEffectPass->Apply(0, pDeviceContext);
+    HRESULT_ERROR_EXIT(hr);
+
+Exit0:
+    return S_OK;
 }
 
 
@@ -84,7 +107,31 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DMaterial::_UpdateTextures(std::vector<PASS_TEXTURE>& PassTextures)
+
+HRESULT L3DMaterial::_UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** ppEffectPass)
+{
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+
+    ID3DX11EffectTechnique* pEffectTechnique = nullptr;
+    ID3DX11EffectPass* pEffectPass = nullptr;
+
+    RENDER_PASS_TABLE& passTable = g_MaterialPassDeclares[ePass];
+
+    pEffectTechnique = m_pEffect->GetTechniqueByName(passTable.szTechniqueName);
+    BOOL_ERROR_EXIT(pEffectTechnique);
+
+    pEffectPass = pEffectTechnique->GetPassByIndex(passTable.ePass);
+    BOOL_ERROR_EXIT(pEffectPass);
+
+    *ppEffectPass = pEffectPass;
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
+}
+
+HRESULT L3DMaterial::_UpdateTextures()
 {
     HRESULT hr = E_FAIL;
 

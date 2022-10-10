@@ -58,6 +58,7 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_Target
 {
     float4 local1 = _0_local1_Texture.Sample(g_Sampler_0, pin.TexCoords.xy);
+    local1.a = 1.0f;
 
     return local1;
 }

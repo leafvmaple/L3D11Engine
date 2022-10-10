@@ -6,6 +6,7 @@
 
 #include "L3DMaterialConfig.h"
 
+struct ID3DX11Effect;
 struct ID3DX11EffectTechnique;
 struct ID3DX11EffectConstantBuffer;
 struct ID3DX11EffectVariable;
@@ -23,7 +24,8 @@ class L3DEffect
 {
 public:
 	HRESULT Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro);
-	HRESULT Apply(ID3D11DeviceContext* pDeviceContext);
+
+	ID3DX11EffectTechnique* GetTechniqueByName(const char* szTechniqueName);
 
 	void GetShader(std::vector<EFFECT_SHADER>& EffectShader);
 
@@ -37,7 +39,7 @@ private:
 		ID3DX11EffectVariable* pModelParams;
 	};
 
-	ID3DX11EffectTechnique* m_piEffectTech = nullptr;
+	ID3DX11Effect* m_piEffect = nullptr;
 	ID3DX11EffectConstantBuffer* m_piModelSharedCB = nullptr;
 
 	MODEL_FIX_VARIBLES m_Variables;

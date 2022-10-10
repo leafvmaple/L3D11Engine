@@ -12,6 +12,8 @@
 class L3DMaterialDefine;
 class L3DEffect;
 
+struct ID3DX11EffectPass;
+
 struct ID3DX11EffectShaderResourceVariable;
 
 struct MATERIAL_INSTANCE_DATA
@@ -39,7 +41,9 @@ private:
 	};
 
     HRESULT _PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName);
-    HRESULT _UpdateTextures(std::vector<PASS_TEXTURE>& PassTextures);
+
+    HRESULT _UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** ppEffectPass);
+    HRESULT _UpdateTextures();
 
     L3DMaterialDefine* m_pMaterialDefine;
     L3DEffect* m_pEffect;
