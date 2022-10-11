@@ -113,7 +113,7 @@ struct _MESH_FILE_DATA
 
     DWORD* pIndex;    // element count is dwFacesCount * 3
     // TODO: Subset may be DWORD
-    WORD* pSubset;   // element count is dwFacesCount,value in [0, dwSubsetCount - 1]
+    DWORD* pSubset;   // element count is dwFacesCount,value in [0, dwSubsetCount - 1]
 
     MESH_FILE_BONE_INFO BoneInfo;
 };
@@ -133,6 +133,7 @@ private:
     HRESULT InitFillInfo(const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO* pFillInfo);
 
     HRESULT InitVertexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
+    template<typename _INDEX_TYPE>
     HRESULT InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
 
     HRESULT InitRenderParam(const VERTEX_FILL_INFO& FillInfo);

@@ -51,6 +51,7 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
 
     BOOL bBin = false;
     BOOL bHasPxPose = false;
+    BOOL bSubsetShort = false;
 
     XMCOLOR* pColor = nullptr;
 
@@ -70,6 +71,7 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     
     bBin       = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_TOBIN); // TODO
     bHasPxPose = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_ADDITIVE_PX_POSE); // TODO
+    bSubsetShort = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_SUBSETSHORT);
 
     // Position
     if (pHead->MeshHead.Blocks.PositionBlock)
@@ -142,7 +144,8 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     // Subset Index
     if (pHead->MeshHead.Blocks.SubsetIndexBlock)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.SubsetIndexBlock, pMeshData->pSubset, pHead->MeshHead.dwNumFaces);
+        if (!bSubsetShort)
+            LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.SubsetIndexBlock, pMeshData->pSubset, pHead->MeshHead.dwNumFaces);
     }
 
     // Skin Info
@@ -174,7 +177,7 @@ HRESULT L3DMesh::CreateMesh(const _MESH_FILE_DATA* pMeshData, ID3D11Device* piDe
     hr = InitVertexBuffer(piDevice, pMeshData, FillInfo);
     HRESULT_ERROR_EXIT(hr);
 
-    hr = InitIndexBuffer(piDevice, pMeshData, FillInfo);
+    hr = InitIndexBuffer<WORD>(piDevice, pMeshData, FillInfo);
     HRESULT_ERROR_EXIT(hr);
 
     hr = InitRenderParam(FillInfo);
@@ -383,6 +386,7 @@ Exit0:
     return hResult;
 }
 
+template<typename _INDEX_TYPE>
 HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
 {
     struct _INDEX_DATA
@@ -400,9 +404,10 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* 
 
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-    DWORD nCount = 0;
+    DWORD nSubIndex = 0;
+    size_t nTotalCount = 0;
     std::map<int, _INDEX_DATA> IndexBufferList;
-    std::vector<WORD> IndexData;
+    std::vector<_INDEX_TYPE> arrIndies;
 
     D3D11_BUFFER_DESC desc;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -429,23 +434,28 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* 
         IndexData.IndexMax = std::max(IndexData.IndexMax, IndexMax);
     }
 
+    assert(IndexBufferList.size() == pMeshData->dwSubsetCount);
+
     for (auto indexBuff : IndexBufferList)
     {
+        int nCount = indexBuff.second.IndexBuffer.size();
+
         for (auto index : indexBuff.second.IndexBuffer)
-        {
-            IndexData.push_back(static_cast<WORD>(index));
-        }
-        m_NormalMesh.Subset[nCount++] = { (DWORD)indexBuff.second.IndexBuffer.size(), nCount, indexBuff.second.IndexMax, indexBuff.second.IndexMin };
+            arrIndies.push_back(static_cast<_INDEX_TYPE>(index));
+
+        m_NormalMesh.Subset[nSubIndex++] = { (DWORD)nCount, nSubIndex, indexBuff.second.IndexMin, indexBuff.second.IndexMax - indexBuff.second.IndexMin + 1 };
+
+        nTotalCount += nCount;
     }
 
-    desc.ByteWidth = IndexData.size() * sizeof(WORD);
+    desc.ByteWidth = arrIndies.size() * sizeof(_INDEX_TYPE);
     desc.Usage = D3D11_USAGE_IMMUTABLE;
     desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
     desc.StructureByteStride = 0;
 
-    InitData.pSysMem = IndexData.data();
+    InitData.pSysMem = arrIndies.data();
     InitData.SysMemPitch = 0;
     InitData.SysMemSlicePitch = 0;
 
@@ -455,7 +465,7 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* 
     m_Stage.IndexBuffer.eFormat = DXGI_FORMAT_R16_UINT;
     m_Stage.IndexBuffer.uOffset = 0;
 
-    m_Stage.Draw.Indexed.uIndexCount = IndexData.size();
+    m_Stage.Draw.Indexed.uIndexCount = arrIndies.size();
     m_Stage.Draw.Indexed.nBaseVertexLocation = 0;
     m_Stage.Draw.Indexed.uStartIndexLocation = 0;
 
