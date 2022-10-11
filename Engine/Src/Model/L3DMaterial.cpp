@@ -22,7 +22,7 @@ struct RENDER_PASS_TABLE
 };
 
 static RENDER_PASS_TABLE g_MaterialPassDeclares[] = {
-    {RENDERPASS_COLOR, "Color", 0},
+    {RENDER_PASS::COLOR, "Color", 0},
 };
 
 HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData)
@@ -57,14 +57,14 @@ Exit0:
 }
 
 
-HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext)
+HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass)
 {
     HRESULT hr = E_FAIL;
 
     ID3DX11EffectPass* pEffectPass = nullptr;
 
     // _GetRenderPass
-    hr = _UpdateTechniques(RENDERPASS_COLOR, &pEffectPass);
+    hr = _UpdateTechniques(ePass, &pEffectPass);
     HRESULT_ERROR_EXIT(hr);
 
     hr = _UpdateTextures();
@@ -133,12 +133,14 @@ HRESULT L3DMaterial::_UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** pp
     ID3DX11EffectTechnique* pEffectTechnique = nullptr;
     ID3DX11EffectPass* pEffectPass = nullptr;
 
-    RENDER_PASS_TABLE& passTable = g_MaterialPassDeclares[ePass];
+    uint32_t nPass = static_cast<uint32_t>(ePass);
+
+    RENDER_PASS_TABLE& passTable = g_MaterialPassDeclares[nPass];
 
     pEffectTechnique = m_pEffect->GetTechniqueByName(passTable.szTechniqueName);
     BOOL_ERROR_EXIT(pEffectTechnique);
 
-    pEffectPass = pEffectTechnique->GetPassByIndex(passTable.ePass);
+    pEffectPass = pEffectTechnique->GetPassByIndex(nPass);
     BOOL_ERROR_EXIT(pEffectPass);
 
     *ppEffectPass = pEffectPass;

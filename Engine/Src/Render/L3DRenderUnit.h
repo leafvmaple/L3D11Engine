@@ -31,7 +31,7 @@ public:
 		ID3DX11EffectVariable* pModelParams;
 	};
 
-    HRESULT ApplyProcess(const SCENE_RENDER_OPTION& Param);
+    HRESULT ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass);
 
     void SetWorldMatrix(const XMFLOAT4X4& World);
 

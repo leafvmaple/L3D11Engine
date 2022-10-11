@@ -15,6 +15,7 @@
 #include "Input/L3DInput.h"
 #include "Camera/L3DCamera.h"
 
+#include "L3DFormat.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "winmm.lib")
@@ -145,7 +146,7 @@ HRESULT L3DEngine::Update(float fDeltaTime)
 
     for (const auto& Unit : m_IAStageArray)
     {
-        hr = Unit->ApplyProcess(RenderOption);
+        hr = Unit->ApplyProcess(RenderOption, RENDER_PASS::COLOR);
         HRESULT_ERROR_EXIT(hr);
     }
 

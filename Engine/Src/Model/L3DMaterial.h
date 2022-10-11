@@ -6,6 +6,8 @@
 
 #include <d3d11.h>
 
+#include "L3DFormat.h"
+
 #include "L3DTexture.h"
 #include "L3DMaterialConfig.h"
 
@@ -33,7 +35,7 @@ class L3DMaterial
 {
 public:
     HRESULT Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
-    HRESULT Apply(ID3D11DeviceContext* pDeviceContext);
+    HRESULT Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass);
 
     HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
 

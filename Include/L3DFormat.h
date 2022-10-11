@@ -171,3 +171,8 @@ struct RENDER_STAGE_INPUT_ASSEMBLER
 
     RENDER_STATE_DRAW Draw;
 };
+
+enum class RENDER_PASS
+{
+	COLOR,
+};

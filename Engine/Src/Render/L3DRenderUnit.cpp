@@ -4,7 +4,6 @@
 
 #include "Model/L3DMaterial.h"
 #include "Model/L3DShader.h"
-#include "Model/L3DMaterialConfig.h"
 
 #include "Camera/L3DCamera.h"
 
@@ -27,7 +26,7 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
     return S_OK;
 }
 
-HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param)
+HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -37,7 +36,7 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param)
     XMMATRIX viewProj = Param.pCamera->GetViewProjcetion();
     XMStoreFloat4x4(&MeshCB.MatrixWorld, m_MatrixWorld * viewProj);
 
-    hr = m_pMaterial->Apply(Param.piImmediateContext);
+    hr = m_pMaterial->Apply(Param.piImmediateContext, ePass);
     HRESULT_ERROR_EXIT(hr);
 
 	m_ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
