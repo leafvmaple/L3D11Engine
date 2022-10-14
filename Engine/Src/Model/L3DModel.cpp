@@ -6,7 +6,7 @@
 #include "L3DTexture.h"
 
 #include "IO/LFileReader.h"
-#include "LCommon.h"
+#include "Utility/FilePath.h"
 
 #include "FX11/inc/d3dx11effect.h"
 

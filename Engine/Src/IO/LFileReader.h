@@ -5,6 +5,8 @@
 #include <cstdio>
 
 #include "rapidjson/include/rapidjson/document.h"
+#include "simpleini/SimpleIni.h"
+
 
 class LFileReader
 {
@@ -18,6 +20,8 @@ public:
 	}
 
 	static HRESULT ReadJson(const char* szFileName, rapidjson::Document& JsonDocument);
+
+	static HRESULT ReadIni(const char* szFileName, CSimpleIniA& Ini);
 
 	template<typename Model>
 	static BYTE* Convert(BYTE* pBuffer, Model*& pModel, size_t nCount = 1)

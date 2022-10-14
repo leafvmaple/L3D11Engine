@@ -177,7 +177,7 @@ HRESULT L3DMesh::CreateMesh(const _MESH_FILE_DATA* pMeshData, ID3D11Device* piDe
     hr = InitVertexBuffer(piDevice, pMeshData, FillInfo);
     HRESULT_ERROR_EXIT(hr);
 
-    hr = InitIndexBuffer<WORD>(piDevice, pMeshData, FillInfo);
+    hr = InitIndexBuffer<WORD>(piDevice, pMeshData, DXGI_FORMAT_R16_UINT);
     HRESULT_ERROR_EXIT(hr);
 
     hr = InitRenderParam(FillInfo);
@@ -387,7 +387,7 @@ Exit0:
 }
 
 template<typename _INDEX_TYPE>
-HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
+HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat)
 {
     struct _INDEX_DATA
     {
@@ -462,7 +462,7 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* 
     hr = piDevice->CreateBuffer(&desc, &InitData, &m_Stage.IndexBuffer.piBuffer);
     HRESULT_ERROR_EXIT(hr);
 
-    m_Stage.IndexBuffer.eFormat = DXGI_FORMAT_R16_UINT;
+    m_Stage.IndexBuffer.eFormat = eFormat;
     m_Stage.IndexBuffer.uOffset = 0;
 
     m_Stage.Draw.Indexed.uIndexCount = arrIndies.size();

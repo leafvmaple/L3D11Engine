@@ -4,6 +4,7 @@
 #include "L3DEngine.h"
 
 #include "Model/L3DModel.h"
+#include "Scene/L3DScene.h"
 
 IL3DEngine* IL3DEngine::m_pInstance = NULL;
 
@@ -18,8 +19,8 @@ HRESULT ILModel::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILModel*
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-    L3DEngine* pEngine = NULL;
-    L3DModel* pModel = NULL;
+    L3DEngine* pEngine = nullptr;
+    L3DModel* pModel = nullptr;
 
     BOOL_ERROR_EXIT(pL3DEngine);
 
@@ -32,11 +33,41 @@ HRESULT ILModel::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILModel*
     hr = pModel->Create(pL3DEngine->GetDevice(), szFileName);
     HRESULT_ERROR_EXIT(hr);
 
-    pEngine->AttachObject(pModel);
     *ppModel = pModel;
 
     hResult = S_OK;
 
+Exit0:
+    return hResult;
+}
+
+HRESULT ILScene::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILScene** ppScene)
+{
+	HRESULT hr = E_FAIL;
+	HRESULT hResult = E_FAIL;
+	L3DEngine* pEngine = nullptr;
+	L3DScene* pScene = nullptr;
+
+	BOOL_ERROR_EXIT(pL3DEngine);
+
+	pEngine = dynamic_cast<L3DEngine*>(pL3DEngine);
+	BOOL_ERROR_EXIT(pEngine);
+
+    pScene = new L3DScene;
+    BOOL_ERROR_EXIT(pScene);
+
+    hr = pScene->SetParent(pL3DEngine);
+    HRESULT_ERROR_EXIT(hr);
+
+    hr = pScene->Create(pL3DEngine->GetDevice(), szFileName);
+    HRESULT_ERROR_EXIT(hr);
+
+    hr = pEngine->AttachScene(pScene);
+    HRESULT_ERROR_EXIT(hr);
+
+    *ppScene = pScene;
+
+    hResult = S_OK;
 Exit0:
     return hResult;
 }

@@ -176,3 +176,13 @@ enum class RENDER_PASS
 {
 	COLOR,
 };
+
+struct SCENE_PATH_TABLE
+{
+	char szDir[MAX_PATH];
+	char szSetting[MAX_PATH];
+	char szSceneInfo[MAX_PATH];
+	char szEnvironment[MAX_PATH];
+
+	char szCoverMap[MAX_PATH];
+};

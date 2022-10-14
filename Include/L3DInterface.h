@@ -95,6 +95,15 @@ struct L3D_WINDOW_PARAM
     LPCWSTR lpszWindowName;
 };
 
+struct L3D_SCENE_RECT
+{
+    float fXStart;
+    float fZStart;
+    float fXWidth;
+    float fZWidth;
+};
+
+
 enum LOBJECT_TYPE
 {
     LOBJECT_TYPE_INVALID,
@@ -134,4 +143,12 @@ public:
     virtual HRESULT SetTranslation(const XMFLOAT3& Translation) = 0;
     virtual HRESULT SetRotation(const XMFLOAT4& Rotation) = 0;
     virtual HRESULT SetScale(const XMFLOAT3& Scale) = 0;
+};
+
+class L3DENGINE_CLASS ILScene
+{
+public:
+	static HRESULT Create(IL3DEngine* pL3DEngine, const char* szFileName, ILScene** ppScene);
+
+    virtual HRESULT AddRenderEntity(ILModel* pModel) = 0;
 };

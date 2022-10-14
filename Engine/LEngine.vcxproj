@@ -163,6 +163,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\Camera\L3DCamera.cpp" />
+    <ClCompile Include="Src\Component\L3DWindow.cpp" />
     <ClCompile Include="Src\Input\L3DInput.cpp" />
     <ClCompile Include="Src\IO\LFileReader.cpp" />
     <ClCompile Include="Src\L3DEngine.cpp" />
@@ -175,9 +176,13 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\Model\L3DShader.cpp" />
     <ClCompile Include="Src\Model\L3DTexture.cpp" />
     <ClCompile Include="Src\Render\L3DRenderUnit.cpp" />
+    <ClCompile Include="Src\Scene\L3DEnvironment.cpp" />
+    <ClCompile Include="Src\Scene\L3DScene.cpp" />
+    <ClCompile Include="Src\State\L3DState.cpp" />
     <ClCompile Include="Src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Src\Utility\FilePath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\L3DFormat.h" />
@@ -187,6 +192,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="..\Include\L3DInterface.h" />
     <ClInclude Include="..\Include\LExports.h" />
     <ClInclude Include="Src\Camera\L3DCamera.h" />
+    <ClInclude Include="Src\Component\L3DWindow.h" />
     <ClInclude Include="Src\Input\L3DInput.h" />
     <ClInclude Include="Src\IO\LFileReader.h" />
     <ClInclude Include="Src\IO\LFileStruct.h" />
@@ -199,7 +205,11 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Model\L3DMaterialConfig.h" />
     <ClInclude Include="Src\Model\L3DTexture.h" />
     <ClInclude Include="Src\Render\L3DRenderUnit.h" />
+    <ClInclude Include="Src\Scene\L3DEnvironment.h" />
+    <ClInclude Include="Src\Scene\L3DScene.h" />
+    <ClInclude Include="Src\State\L3DState.h" />
     <ClInclude Include="Src\stdafx.h" />
+    <ClInclude Include="Src\Utility\FilePath.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">

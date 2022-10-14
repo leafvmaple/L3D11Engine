@@ -134,7 +134,7 @@ private:
 
     HRESULT InitVertexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
     template<typename _INDEX_TYPE>
-    HRESULT InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
+    HRESULT InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat);
 
     HRESULT InitRenderParam(const VERTEX_FILL_INFO& FillInfo);
 

@@ -3,7 +3,7 @@
 
 #include "L3DTexture.h"
 
-#include "LCommon.h"
+#include "Utility/FilePath.h"
 
 #include "FX11/inc/d3dx11effect.h"
 #include "DirectXTex/DirectXTex/DirectXTex.h"
@@ -21,16 +21,29 @@ HRESULT L3DTexture::Create(ID3D11Device* piDevice, const char* szFileName)
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
 	char szName[MAX_PATH];
+	char szBaseName[MAX_PATH];
 
 	strcpy(szName, szFileName);
 
 	L3D::FormatExtName(szName, ".dds");
+	L3D::GetExtName(szName, szBaseName, MAX_PATH);
 
 	{
 		USES_CONVERSION;
 
-		hr = LoadFromDDSFile(A2CW(szName), DDS_FLAGS_NONE, nullptr, LoadedImage);
-		HRESULT_ERROR_EXIT(hr);
+		const wchar_t* wzName = A2CW(szName);
+		BOOL_ERROR_EXIT(wzName);
+
+		if (!strcmp(szBaseName, ".dds"))
+		{
+			hr = LoadFromDDSFile(wzName, DDS_FLAGS_NONE, nullptr, LoadedImage);
+			HRESULT_ERROR_EXIT(hr);
+		}
+		else if (!strcmp(szBaseName, ".tga"))
+		{
+			hr = LoadFromTGAFile(wzName, nullptr, LoadedImage);
+			HRESULT_ERROR_EXIT(hr);
+		}
 	}
 
 	hr = CreateTexture(piDevice, LoadedImage.GetImages(), LoadedImage.GetImageCount(), LoadedImage.GetMetadata(), &piResource);

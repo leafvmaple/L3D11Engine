@@ -25,6 +25,8 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     LScene* pCurScene = nullptr;
     LCharacter* pCharacter = nullptr;
 
+    ILScene* piScene = nullptr;
+
     WindowParam.x = 100;
     WindowParam.y = 100;
     WindowParam.Width = 800;
@@ -39,8 +41,14 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     hr = m_pObjectMgr->Init(hInstance, WindowParam);
     HRESULT_ERROR_EXIT(hr);
 
+	hr = ILScene::Create(IL3DEngine::Instance(), "Res/maps/唐门登陆界面/唐门登陆界面.jsonmap", &piScene);
+	HRESULT_ERROR_EXIT(hr);
+
     pCharacter = m_pObjectMgr->CreateModel<LCharacter>("Res/Mesh/A055_body.mesh");
     BOOL_ERROR_EXIT(pCharacter);
+
+    hr = pCharacter->AppendRenderEntity(piScene);
+    HRESULT_ERROR_EXIT(hr);
 
     hr = pCharacter->SetPosition(XMFLOAT3(0, -100, 0));
     HRESULT_ERROR_EXIT(hr);

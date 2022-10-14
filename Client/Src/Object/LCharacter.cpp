@@ -29,3 +29,8 @@ HRESULT LCharacter::SetPosition(const XMFLOAT3& Position)
 Exit0:
     return hResult;
 }
+
+HRESULT LCharacter::AppendRenderEntity(ILScene* piScene)
+{
+    return piScene->AddRenderEntity(m_pObject);
+}

@@ -4,7 +4,7 @@
 #include "L3DTexture.h"
 
 #include "IO/LFileReader.h"
-#include "LCommon.h"
+#include "Utility/FilePath.h"
 
 HRESULT L3DMaterialDefine::Create(const char* szFileName)
 {

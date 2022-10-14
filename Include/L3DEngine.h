@@ -9,9 +9,11 @@
 
 struct L3D_SHADER_TABLE;
 
+class L3DWindow;
 class L3DInput;
 class L3DCamera;
 class L3DModel;
+class L3DScene;
 
 class L3DEngine : public IL3DEngine
 {
@@ -30,7 +32,7 @@ public:
     virtual ID3D11Device* GetDevice() const;
 
 public:
-    HRESULT AttachObject(L3DModel* pUnit);
+    HRESULT AttachScene(L3DScene* pScene);
 
 private:
     struct _DEVICE
@@ -40,14 +42,11 @@ private:
         ID3D11DeviceContext *piImmediateContext;
     } m_Device;
 
-    IDXGISwapChain *m_piSwapChain;
-    ID3D11RenderTargetView *m_piRenderTargetView;
-    ID3D11DepthStencilView *m_piDepthStencilView;
-
     L3D_SHADER_TABLE *m_pShaderTable;
 
-    L3DInput* m_pInput;
-    L3DCamera* m_pCamera;
+    L3DWindow* m_pWindow = nullptr;
+    L3DInput* m_pInput = nullptr;
+    L3DCamera* m_pCamera = nullptr;
 
     L3D_WINDOW_PARAM m_WindowParam;
 
@@ -78,26 +77,21 @@ private:
         }
     };
     D3D11_SAMPLER_DESC& m_CurSampFilter;
-    D3D11_VIEWPORT      m_Viewport;
 
     ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT];
-	std::vector<L3DRenderUnit*> m_IAStageArray;
 
     BOOL m_bActive;
 
 private:
     LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     HRESULT InitL3DWindow(HWND* pWnd, HINSTANCE hInstance);
-    HRESULT InitSwapChain(ID3D11Device *piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd);
-    HRESULT InitRenderTargetView(ID3D11Device *piDevice, IDXGISwapChain* piSwapChain);
-    HRESULT InitShaderTable(ID3D11Device* piDevice);
-    HRESULT InitViewport(unsigned uWidth, unsigned urHeight);
     HRESULT InitSamplerFilter();
     HRESULT InitInput(HWND hWnd, HINSTANCE hInstance);
     HRESULT InitCamera(float fWidth, float fHeight);
 
-    // TODO
-    HRESULT InitStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);
+    HRESULT _SetupD3D();
+    HRESULT _CreateTargetWindow(HWND hWnd);
+    HRESULT _CreateDeivice();
 
     HRESULT UpdateMessage();
     HRESULT UpdateInput();

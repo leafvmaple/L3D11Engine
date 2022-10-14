@@ -65,3 +65,15 @@ Exit0:
 	return hResult;
 }
 
+HRESULT LFileReader::ReadIni(const char* szFileName, CSimpleIniA& Ini)
+{
+	HRESULT hResult = E_FAIL;
+
+	SI_Error rc = Ini.LoadFile(szFileName);
+	BOOL_ERROR_EXIT(rc >= 0);
+
+	hResult = S_OK;
+Exit0:
+	return hResult;
+}
+
