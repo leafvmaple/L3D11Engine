@@ -11,6 +11,7 @@
 
 #include "Model/L3DModel.h"
 #include "Model/L3DShader.h"
+#include "State/L3DState.h"
 
 #include "Input/L3DInput.h"
 #include "Camera/L3DCamera.h"
@@ -109,6 +110,7 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     RenderOption.piImmediateContext = m_Device.piImmediateContext;
 
     RenderOption.pShaderTable = m_pShaderTable;
+    RenderOption.pStateTable = m_pStateTable;
     RenderOption.pCamera = m_pCamera;
 
     hr = m_pWindow->Update(m_Device.piDevice, RenderOption);
@@ -254,6 +256,9 @@ HRESULT L3DEngine::_SetupD3D()
 
     m_pShaderTable = CreateShaderTable(m_Device.piDevice);
     BOOL_ERROR_EXIT(m_pShaderTable);
+
+    m_pStateTable = CreateStateTable(m_Device.piDevice);
+    BOOL_ERROR_EXIT(m_pStateTable);
 
     hReusult = S_OK;
 Exit0:

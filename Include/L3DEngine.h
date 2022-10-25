@@ -8,6 +8,7 @@
 #include "Render/L3DRenderUnit.h"
 
 struct L3D_SHADER_TABLE;
+struct L3D_STATE_TABLE;
 
 class L3DWindow;
 class L3DInput;
@@ -42,7 +43,8 @@ private:
         ID3D11DeviceContext *piImmediateContext;
     } m_Device;
 
-    L3D_SHADER_TABLE *m_pShaderTable;
+    L3D_SHADER_TABLE* m_pShaderTable;
+    L3D_STATE_TABLE* m_pStateTable;
 
     L3DWindow* m_pWindow = nullptr;
     L3DInput* m_pInput = nullptr;

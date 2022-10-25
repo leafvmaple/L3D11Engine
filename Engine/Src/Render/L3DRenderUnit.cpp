@@ -4,6 +4,7 @@
 
 #include "Model/L3DMaterial.h"
 #include "Model/L3DShader.h"
+#include "State/L3DState.h"
 
 #include "Camera/L3DCamera.h"
 
@@ -32,6 +33,8 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PAS
     HRESULT hResult = E_FAIL;
 
     MESH_SHARED_CB MeshCB;
+
+	Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);
 
     XMMATRIX viewProj = Param.pCamera->GetViewProjcetion();
     XMStoreFloat4x4(&MeshCB.MatrixWorld, m_MatrixWorld * viewProj);

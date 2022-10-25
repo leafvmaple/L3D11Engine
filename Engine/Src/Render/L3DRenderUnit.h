@@ -6,6 +6,7 @@
 #include "L3DFormat.h"
 
 struct L3D_SHADER_TABLE;
+struct L3D_STATE_TABLE;
 
 class L3DMaterial;
 class L3DCamera;
@@ -19,6 +20,7 @@ struct SCENE_RENDER_OPTION
     ID3D11DeviceContext* piImmediateContext;
 
     L3D_SHADER_TABLE* pShaderTable;
+    L3D_STATE_TABLE* pStateTable;
 
     L3DCamera* pCamera;
 };
