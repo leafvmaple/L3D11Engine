@@ -26,7 +26,12 @@ HRESULT L3DInput::Init(HWND hWnd, HINSTANCE hInstance, DWORD dwKeyboardCoopFlags
     HRESULT_ERROR_EXIT(hr);
 
     hr = m_KeyboardDevice->Acquire();
-    HRESULT_ERROR_EXIT(hr);
+    // HRESULT_ERROR_EXIT(hr);
+
+	if (FAILED(hr))
+	{
+		MessageBoxW(hWnd, L"DirectInputDevice8::Acquire failed", L"Error", MB_ICONERROR | MB_OK);
+	}
 
     hr = m_KeyboardDevice->Poll();
     HRESULT_ERROR_EXIT(hr);
@@ -41,7 +46,12 @@ HRESULT L3DInput::Init(HWND hWnd, HINSTANCE hInstance, DWORD dwKeyboardCoopFlags
     HRESULT_ERROR_EXIT(hr);
 
     hr = m_MouseDevice->Acquire();
-    HRESULT_ERROR_EXIT(hr);
+    // HRESULT_ERROR_EXIT(hr);
+
+	if (FAILED(hr))
+	{
+		MessageBoxW(hWnd, L"DirectInputDevice8::Acquire failed", L"Error", MB_ICONERROR | MB_OK);
+	}
 
     hr = m_KeyboardDevice->Poll();
     HRESULT_ERROR_EXIT(hr);

@@ -2,6 +2,13 @@
 
 #include <d3d11.h>
 
+enum RASTERIZER_STATE_ID
+{
+	L3D_RASTERIZER_STATE_CULL_CLOCKWISE,
+
+	L3D_RASTERIZER_STATE_COUNT,
+};
+
 enum DEPTHSTENCIL_STATE_ID
 {
 	//Z writing enable state
@@ -12,6 +19,7 @@ enum DEPTHSTENCIL_STATE_ID
 
 struct L3D_STATE_TABLE
 {
+	ID3D11RasterizerState* Rasterizer[L3D_RASTERIZER_STATE_COUNT];
 	ID3D11DepthStencilState* DepthStencilState[L3D_DEPTH_WRITE_COUNT];
 };
 

@@ -34,6 +34,7 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PAS
 
     MESH_SHARED_CB MeshCB;
 
+    Param.piImmediateContext->RSSetState(Param.pStateTable->Rasterizer[L3D_RASTERIZER_STATE_CULL_CLOCKWISE]);
 	Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);
 
     XMMATRIX viewProj = Param.pCamera->GetViewProjcetion();

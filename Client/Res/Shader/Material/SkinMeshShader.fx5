@@ -26,9 +26,8 @@ struct MaterialVertexParameters
     float4 VertexColor;
     float4 VertexTangent;
 
-#if NUM_USER_TEXCOORDS
-    float2 TexCoords[NUM_USER_TEXCOORDS];
-#endif
+    float2 TexCoords[1];
+
 #if NUM_USER_TEXCOORDS_UVW
 	float3 TexCoordsUVW[NUM_USER_TEXCOORDS_UVW];
 #endif
@@ -125,9 +124,7 @@ struct VertexInput
     float3 Normal   : NORMAL0;
     float4 Color    : COLOR0;
 
-#if NUM_USER_TEXCOORDS
-    float2 TexCoords[NUM_USER_TEXCOORDS] : TEXCOORD0;
-#endif
+    float2 TexCoords[1] : TEXCOORD0;
 
     float4 Weights  : BONEWEIGHTS0;
     uint4  Indices  : BONEINDICES0;
@@ -154,32 +151,17 @@ struct VertexOutput
     float4 VertexPosition       : TEXCOORD3;
     float3 VertexNormal         : TEXCOORD4;
 
-#if NUM_USER_TEXCOORDS
-    float2 TexCoords[NUM_USER_TEXCOORDS] : TEXCOORD5;
-#endif
+    float2 TexCoords[1] : TEXCOORD5;
 
     float3 Tangent              : TANGENT0;
     float3 Binormal             : BINORMAL0;
 
     float  ClipDistance         : SV_ClipDistance0;
-
-#ifdef FUR
-    float Opacity : OPACITY0;
-    float2 FinOpacity : OPACITY1;
-    bool Needed : NEED;
-#endif
 };
 
 struct PixelSystemInput
 {
     bool IsFrontFace		    : SV_IsFrontFace;
-};
-
-struct ZOutput
-{
-    float4    ScreenPos : SV_Position;
-    float2    Texcoord  : TEXCOORD0;
-    float2    RawPos    : TEXCOORD1;
 };
 
 MaterialVertexParameters GetMaterialVertexParameters(VertexInput Input)
@@ -232,24 +214,21 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput Input)
     Params.ModelColorOffset = ModelColorOffset; 
     Params.VertexTangent    = float4(tangent, Input.Tangent.w);
 
-#if NUM_USER_TEXCOORDS
-    UNROLL for (int i = 0; i < NUM_USER_TEXCOORDS; i++)
-        Params.TexCoords[i] = Input.TexCoords[i];
-#endif
+    Params.TexCoords[0] = Input.TexCoords[0];
 
 	float3 VertexOffset = position.xyz - Input.Position.xyz;
 	if(length(VertexOffset) > 0.05f)
 	{
-		Params.WorldMotion 		= 0;
-		Params.MotionPrecision 	= 0;
-		Params.LastWorldPosition= mul(float4(position.xyz, 1), g_ModelParams.LastMatrixWorld);
+		Params.WorldMotion         = 0;
+		Params.MotionPrecision     = 0;
+		Params.LastWorldPosition   = mul(float4(position.xyz, 1), g_ModelParams.LastMatrixWorld);
 		Params.LastWorldPosition.w = 1;
 	}
 	else
 	{
-		Params.WorldMotion 		= 0;
-		Params.MotionPrecision 	= 1.f;
-		Params.LastWorldPosition= mul(float4(position.xyz, 1), g_ModelParams.LastMatrixWorld);
+		Params.WorldMotion 		   = 0;
+		Params.MotionPrecision 	   = 1.f;
+		Params.LastWorldPosition   = mul(float4(position.xyz, 1), g_ModelParams.LastMatrixWorld);
 		Params.LastWorldPosition.w = 1;
 	}
 
@@ -272,15 +251,10 @@ void GetMaterialVertexOutputs(MaterialVertexOutputs Output, out VertexOutput Out
     OutputImp.VertexPosition        = Output.VertexPosition;
     OutputImp.VertexNormal          = Output.VertexNormal;
 
-#if NUM_USER_TEXCOORDS
-    UNROLL for (int i = 0; i < NUM_USER_TEXCOORDS; i++)
-        OutputImp.TexCoords[i] = Output.TexCoords[i];
-#endif
+    OutputImp.TexCoords[0] = Output.TexCoords[0];
 
-#ifdef NORMALMAP
     OutputImp.Tangent           = Output.VertexTangent.xyz;
 	OutputImp.Binormal          = cross(Output.VertexNormal, Output.VertexTangent.xyz) * Output.VertexTangent.w;
-#endif
 	
 	OutputImp.MatrixWorld0		= Output.MatrixWorld[0];
 	OutputImp.MatrixWorld1		= Output.MatrixWorld[1];
@@ -304,11 +278,7 @@ MaterialPixelParameters GetMaterialParameters(VertexOutput Input)
 {
     MaterialPixelParameters Params = (MaterialPixelParameters) 0;
 
-#if NUM_USER_TEXCOORDS
-    UNROLL for (int i = 0; i < NUM_USER_TEXCOORDS; i++)
-        Params.TexCoords[i] = Input.TexCoords[i];
-#endif
-
+    Params.TexCoords[0] = Input.TexCoords[0];
     Params.VertexColor      = Input.Color;
 #ifdef PARSYS_MESH
 	Params.ModelColor       = float4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -326,10 +296,8 @@ MaterialPixelParameters GetMaterialParameters(VertexOutput Input)
 	Params.OutPosition		= Input.OutPosition;
     Params.WorldPosition    = Input.WorldPosition.xyz;
 
-#ifdef NORMALMAP
     Params.Tangent          = normalize(Input.Tangent);
     Params.Binormal         = normalize(Input.Binormal);
-#endif
 	
 	Params.MatrixWorld[0]		= Input.MatrixWorld0;
 	Params.MatrixWorld[1]		= Input.MatrixWorld1;
@@ -389,20 +357,15 @@ void VertexShaderMain(VertexInput Input, out VertexOutput OutputImp)
 	Output.fStartChangeTime  = Params.fStartChangeTime;
 #endif // USE_CUSTOM_LEAF_DISAPPEAR
 
-#if NUM_USER_TEXCOORDS
-    UNROLL for (int i = 0; i < NUM_USER_TEXCOORDS; i++)
-        Output.TexCoords[i] = Params.TexCoords[i];
-#endif // NUM_USER_TEXCOORDS
-
+    Output.TexCoords[0] = Params.TexCoords[0];
 
 	Output.FogFactor     = GetFogFactor(Output.ScreenPosition.z);
 	Output.WorldNormal   = normalize(mul(Params.VertexNormal, (float3x3)Params.MatrixWorld));
-#ifdef NORMALMAP
+
     Output.VertexTangent = Params.VertexTangent;
 	//Output.WorldTangent  = normalize(mul(Params.VertexTangent.xyz, WorldMatrixForNormal));
 	//Output.WorldBinormal = cross(Params.VertexNormal, Params.VertexTangent.xyz) * Params.VertexTangent.w;
 	//Output.WorldBinormal = normalize(mul(Output.WorldBinormal, WorldMatrixForNormal));
-#endif // NORMALMAP
 
     BRANCH if (g_Com.Switch.bEnableClip)
         Output.ClipDistance = dot(Output.WorldPosition, g_Com.ClipParam.ClipPlane);
@@ -434,56 +397,6 @@ float4 PixelShaderMain(VertexOutput Input, uniform bool RenderSoftMask, PixelSys
 
 	//Light Func
 	float4 retColor = 0;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef LM_JX3
-    float3 color = 0;
-    color = PixelMainNode.Albedo;//PixelMainNode.Diffuse;
-
-#ifdef SHADOWMAP
-    float shadowMask = 1.0f;
-    // if (shadowMapParam.bShadowMask)
-     {
-         //float2 screenpos = GetScreenpos(screenSpace.xy);
-         //shadowMask = GetShadowMask(screenpos);
-         shadowMask = GetShadowValue_SunLight_FromShadowMap_Classic(Params.WorldPosition) * g_Com.ShadowParam.ShadowDarkValue + (1 - g_Com.ShadowParam.ShadowDarkValue);
-     }
-#endif  
-
-#ifdef SPECULAR
-    float3 specularColor = PixelMainNode.SpecularColor;//PixelMainNode.Specular;
-    float specularPower = 1;//PixelMainNode.Fresnel;//PixelMainNode.SpecularPower;
-    if(specularPower<0.0001)
-        specularPower = 15;
-#endif
-
-    float3 light = ComputeLight(
-                    Params
-#ifdef SPECULAR
-                    ,specularColor,
-                    specularPower,
-                    0.5
-#endif
-#ifdef SSS
-                    ,0.1
-#endif
-#ifdef SHADOWMAP
-                    ,shadowMask
-#endif
-                    );   //use worldnormal inside
-    color *= light;
-    color +=  PixelMainNode.Ambient;
-    color +=  PixelMainNode.Emissive;
-    retColor.rgb = color;
-    retColor.a = PixelMainNode.Opacity;
-#endif    //light mode  
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	
- #ifdef LM_JX3_CLASSICPLAYER
     float3 color = 0;
     color = PixelMainNode.Albedo;//PixelMainNode.Diffuse;
 #ifdef SHADOWMAP
@@ -495,20 +408,15 @@ float4 PixelShaderMain(VertexOutput Input, uniform bool RenderSoftMask, PixelSys
         shadowMask = GetShadowValue_SunLight_FromShadowMap_Classic(Params.WorldPosition);
      }
 #endif  
-#ifdef SPECULAR
+
     float3 specularColor = PixelMainNode.SpecularColor;//PixelMainNode.Specular;
-    float specularPower = 1;//PixelMainNode.Fresnel;//PixelMainNode.SpecularPower;
-    if(specularPower<0.0001)
-        specularPower = 15;
-#endif
+    float specularPower = 1;
     float3 light = ComputeLight_JX3_ClassicPlayer(
                     Params,
 					color
-#ifdef SPECULAR
                     ,specularColor,
                     specularPower,
                     0.5
-#endif
 #ifdef SSS
                     ,0.1
 #endif
