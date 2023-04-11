@@ -50,7 +50,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     hr = pCharacter->AppendRenderEntity(piScene);
     HRESULT_ERROR_EXIT(hr);
 
-    hr = pCharacter->SetPosition(XMFLOAT3(0, -100, 0));
+    hr = pCharacter->SetPosition(XMFLOAT3(0, -45, 0));
     HRESULT_ERROR_EXIT(hr);
 
     m_fLastTime = (float)timeGetTime();
