@@ -46,7 +46,6 @@ L3DEngine::L3DEngine()
 : m_bActive(false)
 , m_CurSampFilter(m_SampFilter[GRAPHICS_LEVEL_MAX])
 {
-    memset(&m_SampFilter, 0, sizeof(m_SampFilter));
     memset(&m_WindowParam, 0, sizeof(m_WindowParam));
 }
 
@@ -77,8 +76,8 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
     hr = InitSamplerFilter();
     HRESULT_ERROR_EXIT(hr);
 
-    hr = InitInput(hWnd, hInstance);
-    HRESULT_ERROR_EXIT(hr);
+    // hr = InitInput(hWnd, hInstance);
+    // HRESULT_ERROR_EXIT(hr);
 
     hr = InitCamera(m_WindowParam.Width, m_WindowParam.Height);
     HRESULT_ERROR_EXIT(hr);
@@ -100,11 +99,11 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     hr = UpdateMessage();
     HRESULT_ERROR_EXIT(hr);
 
-    hr = UpdateInput();
-    HRESULT_ERROR_EXIT(hr);
+    // hr = UpdateInput();
+    // HRESULT_ERROR_EXIT(hr);
 
-    hr = UpdateCamera(fDeltaTime);
-    HRESULT_ERROR_EXIT(hr);
+    // hr = UpdateCamera(fDeltaTime);
+    // HRESULT_ERROR_EXIT(hr);
 
     RenderOption.piDevice = m_Device.piDevice;
     RenderOption.piImmediateContext = m_Device.piImmediateContext;

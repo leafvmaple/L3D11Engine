@@ -78,7 +78,7 @@ HRESULT L3DWindow::_CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, uns
 	SwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	SwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	// DXGI_SAMPLE_DESC
-	SwapChainDesc.SampleDesc.Count = 1;
+	SwapChainDesc.SampleDesc.Count = 1;     // 1X MASS (MultiSample Anti-Aliasing) 
 	SwapChainDesc.SampleDesc.Quality = 0;
 
 	SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
