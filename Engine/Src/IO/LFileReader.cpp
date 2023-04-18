@@ -77,3 +77,44 @@ Exit0:
 	return hResult;
 }
 
+HRESULT LBinaryReader::Init(const char* szFileName)
+{
+	USES_CONVERSION;
+	return Init(A2CW((LPCSTR)szFileName));
+}
+
+HRESULT LBinaryReader::Init(LPCWSTR cszFileName)
+{
+	HRESULT hResult = E_FAIL;
+	FILE* pFile = nullptr;
+	size_t nFileLen = 0;
+
+	_wfopen_s(&pFile, cszFileName, TEXT("rb"));
+	BOOL_ERROR_EXIT(pFile);
+
+	fseek(pFile, 0, SEEK_END);
+	nFileLen = ftell(pFile);
+	fseek(pFile, 0, SEEK_SET);
+
+	m_pBuffer = new (std::nothrow) BYTE[nFileLen];
+	BOOL_ERROR_EXIT(m_pBuffer);
+
+	m_nLength = fread(m_pBuffer, 1, nFileLen, pFile);
+	BOOL_ERROR_EXIT(m_nLength);
+	BOOL_ERROR_EXIT(m_nLength == nFileLen);
+
+	m_pCursor = m_pBuffer;
+
+	hResult = S_OK;
+Exit0:
+	if (pFile)
+		fclose(pFile);
+	if (FAILED(hResult))
+	{
+		SAFE_DELETE(m_pBuffer);
+		m_nLength = 0;
+	}
+
+	return hResult;
+}
+

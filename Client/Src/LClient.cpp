@@ -33,7 +33,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     WindowParam.Height = 600;
     WindowParam.bWindow = TRUE;
     WindowParam.lpszClassName = TEXT("LDirect3D");
-    WindowParam.lpszWindowName = TEXT("LDirect3D Engine");
+    WindowParam.lpszWindowName = TEXT("LD3D Engine");
 
     m_pObjectMgr = new LObjectMgr;
     BOOL_ERROR_EXIT(m_pObjectMgr);

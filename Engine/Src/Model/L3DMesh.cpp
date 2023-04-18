@@ -5,6 +5,7 @@
 
 #include "L3DMesh.h"
 
+#include "L3DBone.h"
 #include "L3DMaterial.h"
 #include "IO/LFileReader.h"
 
@@ -25,7 +26,7 @@ HRESULT L3DMesh::Create(ID3D11Device* piDevice, const char* szFileName)
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
-    _MESH_FILE_DATA MeshFileData;
+    MESH_FILE_DATA MeshFileData;
 
     hr = LoadMeshData(szFileName, &MeshFileData);
     HRESULT_ERROR_EXIT(hr);
@@ -39,14 +40,11 @@ Exit0:
 }
 
 
-HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData)
+HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     
-    size_t uMeshLen = 0;
-    BYTE* pbyMesh = nullptr;
-    BYTE* pbyBufferHead = nullptr;
     _MESH_FILE_HEAD* pHead = nullptr;
 
     BOOL bBin = false;
@@ -55,14 +53,14 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
 
     XMCOLOR* pColor = nullptr;
 
-    ZeroMemory(pMeshData, sizeof(_MESH_FILE_DATA));
+    LBinaryReader Reader;
 
-    hr = LFileReader::Read(szFileName, &pbyMesh, &uMeshLen);
+    ZeroMemory(pMeshData, sizeof(MESH_FILE_DATA));
+
+    hr = Reader.Init(szFileName);
     HRESULT_ERROR_EXIT(hr);
 
-    pbyBufferHead = pbyMesh;
-
-    pbyMesh = LFileReader::Convert(pbyMesh, pHead);
+    Reader.Convert(pHead);
     BOOL_ERROR_EXIT(pHead->VersionHead.dwFileMask == _MESH_FILE_VERSION_HEAD::s_dwFileMask);
 
     pMeshData->dwVertexCount = pHead->MeshHead.dwNumVertices;
@@ -76,21 +74,24 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     // Position
     if (pHead->MeshHead.Blocks.PositionBlock)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.PositionBlock, pMeshData->pPos, pHead->MeshHead.dwNumVertices);
+        Reader.Seek(pHead->MeshHead.Blocks.PositionBlock);
+        Reader.Convert(pMeshData->pPos, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_XYZ;
     }
 
     // Normal
     if (pHead->MeshHead.Blocks.NormalBlock)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.NormalBlock, pMeshData->pNormals, pHead->MeshHead.dwNumVertices);
+		Reader.Seek(pHead->MeshHead.Blocks.NormalBlock);
+		Reader.Convert(pMeshData->pNormals, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_NORMAL;
     }
 
     // Tangent
     if (pHead->MeshHead.Blocks.TangentBlock)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.TangentBlock, pMeshData->pTangent, pHead->MeshHead.dwNumVertices);
+        Reader.Seek(pHead->MeshHead.Blocks.TangentBlock);
+        Reader.Convert(pMeshData->pTangent, pHead->MeshHead.dwNumVertices);
     }
     else
     {
@@ -102,7 +103,8 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     // Diffuse
     if (pHead->MeshHead.Blocks.DiffuseBlock)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.DiffuseBlock, pMeshData->pDiffuse, pHead->MeshHead.dwNumVertices);
+        Reader.Seek(pHead->MeshHead.Blocks.DiffuseBlock);
+        Reader.Convert(pMeshData->pDiffuse, pHead->MeshHead.dwNumVertices);
     }
     else
     {
@@ -115,14 +117,16 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     // UV1
     if (pHead->MeshHead.Blocks.TextureUVW1Block)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.TextureUVW1Block, pMeshData->pUV1, pHead->MeshHead.dwNumVertices);
+		Reader.Seek(pHead->MeshHead.Blocks.TextureUVW1Block);
+		Reader.Convert(pMeshData->pUV1, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_TEX1;
     }
 
     // UV2
     if (pHead->MeshHead.Blocks.TextureUVW2Block)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.TextureUVW2Block, pMeshData->pUV2, pHead->MeshHead.dwNumVertices);
+		Reader.Seek(pHead->MeshHead.Blocks.TextureUVW2Block);
+		Reader.Convert(pMeshData->pUV2, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_TEX2;
         pMeshData->dwVertexFVF &= ~(D3DFVF_TEX1);
     }
@@ -130,7 +134,8 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     // UV3
     if (pHead->MeshHead.Blocks.TextureUVW3Block)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.TextureUVW3Block, pMeshData->pUV3, pHead->MeshHead.dwNumVertices);
+        Reader.Seek(pHead->MeshHead.Blocks.TextureUVW3Block);
+        Reader.Convert(pMeshData->pUV3, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_TEX3;
         pMeshData->dwVertexFVF &= ~(D3DFVF_TEX1 | D3DFVF_TEX2);
     }
@@ -138,23 +143,28 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pMeshData
     // Index
     if (pHead->MeshHead.Blocks.FacesIndexBlock)
     {
-        LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.FacesIndexBlock, pMeshData->pIndex, 3 * pHead->MeshHead.dwNumFaces);
+        Reader.Seek(pHead->MeshHead.Blocks.FacesIndexBlock);
+        Reader.Convert(pMeshData->pIndex, pHead->MeshHead.dwNumFaces);
     }
 
     // Subset Index
     if (pHead->MeshHead.Blocks.SubsetIndexBlock)
     {
         if (!bSubsetShort)
-            LFileReader::Convert(pbyBufferHead + pHead->MeshHead.Blocks.SubsetIndexBlock, pMeshData->pSubset, pHead->MeshHead.dwNumFaces);
+        {
+            Reader.Seek(pHead->MeshHead.Blocks.SubsetIndexBlock);
+            Reader.Convert(pMeshData->pSubset, pHead->MeshHead.dwNumFaces);
+        }
     }
 
     // Skin Info
     if (pHead->MeshHead.Blocks.SkinInfoBlock)
     {
-        hr = LoadBoneInfo(&pMeshData->BoneInfo, pbyBufferHead + pHead->MeshHead.Blocks.SkinInfoBlock, bHasPxPose, pHead->MeshHead.Blocks.BBoxBlock);
-        HRESULT_ERROR_EXIT(hr);
+        m_pL3DBone = new L3DBone;
+		BOOL_ERROR_EXIT(m_pL3DBone);
 
-        hr = FillSkinData(pMeshData, pMeshData->dwVertexCount);
+        Reader.Seek(pHead->MeshHead.Blocks.SkinInfoBlock);
+        hr = m_pL3DBone->Create(pMeshData, Reader, bHasPxPose, pHead->MeshHead.Blocks.BBoxBlock);
         HRESULT_ERROR_EXIT(hr);
     }
 
@@ -163,11 +173,12 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::CreateMesh(const _MESH_FILE_DATA* pMeshData, ID3D11Device* piDevice)
+HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDevice)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     VERTEX_FILL_INFO FillInfo;
+    const L3D_BONE_INFO* pBoneInfo = nullptr;
 
     ZeroMemory(&FillInfo, sizeof(FillInfo));
 
@@ -183,12 +194,18 @@ HRESULT L3DMesh::CreateMesh(const _MESH_FILE_DATA* pMeshData, ID3D11Device* piDe
     hr = InitRenderParam(FillInfo);
     HRESULT_ERROR_EXIT(hr);
 
+    pBoneInfo = m_pL3DBone->GetBoneInfo();
+
+    m_NormalMesh.BoneMatrix.resize(pBoneInfo->uBoneCount);
+    for (unsigned int i = 0; i < pBoneInfo->uBoneCount; i++)
+        m_NormalMesh.BoneMatrix[i] = XMMatrixInverse(NULL, pBoneInfo->BoneOffset[i]);
+
     hResult = S_OK;
 Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::InitFillInfo(const _MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
+HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
 {
     HRESULT hResult = E_FAIL;
 
@@ -337,7 +354,7 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
+HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -387,7 +404,7 @@ Exit0:
 }
 
 template<typename _INDEX_TYPE>
-HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat)
+HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat)
 {
     struct _INDEX_DATA
     {
@@ -478,94 +495,6 @@ HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
 {
     m_Stage.eInputLayer = FillInfo.eInputLayout;
     m_Stage.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-
-    return S_OK;
-}
-
-HRESULT L3DMesh::FillSkinData(_MESH_FILE_DATA* pMeshData, DWORD nVertexCount)
-{
-    HRESULT hResult = E_FAIL;
-
-    pMeshData->pSkin = new _MESH_FILE_DATA::SKIN[nVertexCount];
-    memset(pMeshData->pSkin, 0xFF, sizeof(pMeshData->pSkin[0]) * nVertexCount);
-
-    for (unsigned i = 0; i < pMeshData->BoneInfo.dwBoneCount; i++)
-    {
-        MESH_FILE_BONE_INFO::BONE& Bone = pMeshData->BoneInfo.pBone[i];
-
-        for (unsigned j = 0; j < Bone.uRefVertexCount; j++)
-        {
-            unsigned uVertexIndex = Bone.pRefVertexIndex[j];
-            float fWeight = Bone.pRefVertexWeight[j];
-
-            BOOL_ERROR_EXIT(uVertexIndex < nVertexCount);
-
-            float* pBoneWeights = pMeshData->pSkin[uVertexIndex].BoneWeights;
-            BYTE* pBoneIndices = pMeshData->pSkin[uVertexIndex].BoneIndices;
-
-            for (unsigned k = 0; k < _MESH_FILE_DATA::MAX_BONE_INFLUNCE; k++)
-            {
-                if (pBoneIndices[k] == 0xFF)
-                {
-                    pBoneIndices[k] = (BYTE)i;
-                    pBoneWeights[k] = fWeight;
-                    break;
-                }
-            }
-        }
-    }
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
-}
-
-HRESULT L3DMesh::LoadBoneInfo(MESH_FILE_BONE_INFO* pBoneInfo, BYTE* pbySkin, BOOL bHasPxPose, BOOL bHasBoundBox)
-{
-    pbySkin = LFileReader::Copy(pbySkin, &pBoneInfo->dwBoneCount);
-    m_dwBoneCount = pBoneInfo->dwBoneCount;
-
-    pBoneInfo->pBone = new MESH_FILE_BONE_INFO::BONE[pBoneInfo->dwBoneCount];
-
-    for (DWORD i = 0; i < pBoneInfo->dwBoneCount; i++)
-    {
-        MESH_FILE_BONE_INFO::BONE& Bone = pBoneInfo->pBone[i];
-
-        pbySkin = LFileReader::Copy(pbySkin, Bone.szName, 30);
-        pbySkin += 30;  // Skip 30 BYTEs
-
-        pbySkin = LFileReader::Convert(pbySkin, Bone.uChildCount);
-        Bone.pChildNames = nullptr;
-        if (Bone.uChildCount > 0)
-        {
-            Bone.pChildNames = new MESH_FILE_BONE_INFO::BONE::BONE_NAME[Bone.uChildCount];
-            pbySkin = LFileReader::Copy(pbySkin, Bone.pChildNames, Bone.uChildCount);
-        }
-
-        pbySkin = LFileReader::Copy(pbySkin, &Bone.mOffset);
-        pbySkin = LFileReader::Copy(pbySkin, &Bone.mOffset2Parent);
-
-        if (bHasPxPose)
-            pbySkin = LFileReader::Copy(pbySkin, &Bone.mInvPxPose);
-
-        pbySkin = LFileReader::Copy(pbySkin, &Bone.uRefVertexCount);
-
-        if (Bone.uRefVertexCount > 0)
-        {
-            Bone.pRefVertexIndex = new DWORD[Bone.uRefVertexCount];
-            Bone.pRefVertexWeight = new float[Bone.uRefVertexCount];
-
-            pbySkin = LFileReader::Copy(pbySkin, Bone.pRefVertexIndex, Bone.uRefVertexCount);
-            pbySkin = LFileReader::Copy(pbySkin, Bone.pRefVertexWeight, Bone.uRefVertexCount);
-        }
-
-        if (bHasBoundBox)
-        {
-            pbySkin += sizeof(XMFLOAT4X4);
-            pbySkin = LFileReader::Copy(pbySkin, &Bone.BoundingBox);
-            pbySkin += sizeof(BOOL);
-        }
-    }
 
     return S_OK;
 }

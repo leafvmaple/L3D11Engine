@@ -116,6 +116,39 @@ struct MESH_FILE_BONE_INFO
 	} *pSocket;
 };
 
+static const unsigned MAX_BONE_INFLUNCE = 4;
+struct SKIN
+{
+	float BoneWeights[MAX_BONE_INFLUNCE];
+	BYTE BoneIndices[MAX_BONE_INFLUNCE];
+};
+
+struct MESH_FILE_DATA
+{
+	DWORD dwVertexCount;
+	DWORD dwFacesCount;
+	DWORD dwSubsetCount;
+	DWORD dwVertexFVF;
+
+	// point to array, element count is dwVertexCount
+	XMFLOAT3* pPos;
+	XMFLOAT3* pNormals;
+	XMCOLOR* pDiffuse;
+	XMFLOAT3* pUV1;
+	XMFLOAT3* pUV2;
+	XMFLOAT3* pUV3;
+	XMFLOAT4* pTangent;
+	DWORD* pVertexRemap;
+
+	SKIN* pSkin;
+
+	DWORD* pIndex;    // element count is dwFacesCount * 3
+	// TODO: Subset may be DWORD
+	DWORD* pSubset;   // element count is dwFacesCount,value in [0, dwSubsetCount - 1]
+
+	MESH_FILE_BONE_INFO BoneInfo;
+};
+
 enum L3D_INPUT_LAYOUT
 {
     L3D_INPUT_LAYOUT_BOX,

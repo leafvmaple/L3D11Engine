@@ -6,7 +6,6 @@
 
 #include "L3DFormat.h"
 #include "L3DInterface.h"
-#include "L3DFormat.h"
 
 #define D3DFVF_XYZ              0x002
 #define D3DFVF_XYZRHW           0x004
@@ -85,38 +84,12 @@ struct NormalMesh
         unsigned    uVertexCount;
         unsigned    uVertexOffset;
     } Subset[MAX_NUM_SUBSET_COUNT];
+
+    std::vector<XMMATRIX> BoneMatrix;
 };
 
-struct _MESH_FILE_DATA
-{
-    DWORD dwVertexCount;
-    DWORD dwFacesCount;
-    DWORD dwSubsetCount;
-    DWORD dwVertexFVF;
-
-    // point to array, element count is dwVertexCount
-    XMFLOAT3* pPos;
-    XMFLOAT3* pNormals;
-    XMCOLOR*  pDiffuse;
-    XMFLOAT3* pUV1;
-    XMFLOAT3* pUV2;
-    XMFLOAT3* pUV3;
-    XMFLOAT4* pTangent;
-    DWORD* pVertexRemap;
-
-    static const unsigned MAX_BONE_INFLUNCE = 4;
-    struct SKIN
-    {
-        float BoneWeights[MAX_BONE_INFLUNCE];
-        BYTE BoneIndices[MAX_BONE_INFLUNCE];
-    } *pSkin;
-
-    DWORD* pIndex;    // element count is dwFacesCount * 3
-    // TODO: Subset may be DWORD
-    DWORD* pSubset;   // element count is dwFacesCount,value in [0, dwSubsetCount - 1]
-
-    MESH_FILE_BONE_INFO BoneInfo;
-};
+class L3DBone;
+class LBinaryReader;
 
 class L3DMesh
 {
@@ -127,19 +100,18 @@ public:
     RENDER_STAGE_INPUT_ASSEMBLER m_Stage;
 
 private:
-    HRESULT LoadMeshData(const char* szFileName, _MESH_FILE_DATA* pLMeshData);
-    HRESULT CreateMesh(const _MESH_FILE_DATA* pLMeshData, ID3D11Device* piDevice);
+    HRESULT LoadMeshData(const char* szFileName, MESH_FILE_DATA* pLMeshData);
+    HRESULT CreateMesh(const MESH_FILE_DATA* pLMeshData, ID3D11Device* piDevice);
 
-    HRESULT InitFillInfo(const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO* pFillInfo);
+    HRESULT InitFillInfo(const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO* pFillInfo);
 
-    HRESULT InitVertexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
+    HRESULT InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
     template<typename _INDEX_TYPE>
-    HRESULT InitIndexBuffer(ID3D11Device* piDevice, const _MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat);
+    HRESULT InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat);
 
     HRESULT InitRenderParam(const VERTEX_FILL_INFO& FillInfo);
 
-    HRESULT FillSkinData(_MESH_FILE_DATA* pMeshData, DWORD nVertexCount);
-    HRESULT LoadBoneInfo(MESH_FILE_BONE_INFO* pBoneInfo, BYTE* pbyBone, BOOL bHasPxPose, BOOL bHasBoundBox);
-
     NormalMesh m_NormalMesh;
+
+    L3DBone* m_pBone = nullptr;
 };
