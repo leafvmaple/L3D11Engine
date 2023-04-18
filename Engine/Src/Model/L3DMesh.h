@@ -110,6 +110,7 @@ private:
     HRESULT InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat);
 
     HRESULT InitRenderParam(const VERTEX_FILL_INFO& FillInfo);
+    void InitBoneMatrix();
 
     NormalMesh m_NormalMesh;
 

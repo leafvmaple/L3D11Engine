@@ -7,29 +7,25 @@
 #include "L3DFormat.h"
 #include "L3DInterface.h"
 
-#define MAX_NUM_CHILD_BONE 60
-
+struct MESH_FILE_DATA;
 struct MESH_FILE_BONE_INFO;
 struct SKIN;
 
+class LBinaryReader;
+
 struct BONEINFO
 {
-	std::string sBoneName;
-	unsigned uParentIndex;
-	unsigned uNumChild;
-	unsigned ChildIndex[MAX_NUM_CHILD_BONE];
-	BONEINFO()
-	{
-		uParentIndex = (unsigned)-1;
-		uNumChild = 0;
-	}
-};
+	static const int MAX_NUM_CHILD_BONE = 60;
 
-struct MESH_FILE_DATA;
+	std::string sBoneName;
+	unsigned int uParentIndex = (unsigned)-1;
+	unsigned int uNumChild = 0;
+	unsigned int ChildIndex[MAX_NUM_CHILD_BONE] = {};
+};
 
 struct L3D_BONE_INFO
 {
-	unsigned uBoneCount;
+	unsigned int uBoneCount = 0;
 
 	std::vector<unsigned int> BaseBoneIndex;
 
@@ -37,18 +33,12 @@ struct L3D_BONE_INFO
 	std::vector<XMMATRIX> BoneOffset; // invBindPose
 	std::vector<XMMATRIX> BoneInvPxPose;
 	std::vector<BONEINFO> BoneInfo;
-	unsigned uSocketCount;
+	unsigned int uSocketCount = 0;
 	// SOCKETINFO* pSocket;
 
 	std::vector<std::string> OrderBoneName;
 	std::vector<unsigned int> OrderIndex;
-
-	unsigned    FindBoneIndex(const char* pcszBoneName);
-	const char* FindBoneName(unsigned uBoneIndex);
-	//static bool  IsFlexibleBone(const char *pcszBoneName);
 };
-
-class LBinaryReader;
 
 class L3DBone
 {
@@ -56,13 +46,13 @@ public:
 	~L3DBone();
 
 	HRESULT Create(MESH_FILE_DATA* pMeshFileData, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
-	HRESULT BindData(MESH_FILE_BONE_INFO& BoneInfo);
 
 	const L3D_BONE_INFO* GetBoneInfo() { return m_pBoneInfo; };
 
 private:
 	HRESULT _Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
 	HRESULT _FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount);
+	HRESULT _CreateBoneData(MESH_FILE_BONE_INFO& BoneInfo);
 
 	unsigned int _FindBoneIndex(const char* szBoneName,
 		const std::vector<std::string>& OrderBoneName,

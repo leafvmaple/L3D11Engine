@@ -82,8 +82,8 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
     // Normal
     if (pHead->MeshHead.Blocks.NormalBlock)
     {
-		Reader.Seek(pHead->MeshHead.Blocks.NormalBlock);
-		Reader.Convert(pMeshData->pNormals, pHead->MeshHead.dwNumVertices);
+        Reader.Seek(pHead->MeshHead.Blocks.NormalBlock);
+        Reader.Convert(pMeshData->pNormals, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_NORMAL;
     }
 
@@ -96,8 +96,8 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
     else
     {
         pMeshData->pTangent = new XMFLOAT4[pHead->MeshHead.dwNumVertices];
-		for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
-			pMeshData->pTangent[i] = XMFLOAT4(.0f, 1.0f, 0.0f, 1.0f);
+        for (int i = 0; i < pHead->MeshHead.dwNumVertices; i++)
+            pMeshData->pTangent[i] = XMFLOAT4(.0f, 1.0f, 0.0f, 1.0f);
     }
 
     // Diffuse
@@ -117,16 +117,16 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
     // UV1
     if (pHead->MeshHead.Blocks.TextureUVW1Block)
     {
-		Reader.Seek(pHead->MeshHead.Blocks.TextureUVW1Block);
-		Reader.Convert(pMeshData->pUV1, pHead->MeshHead.dwNumVertices);
+        Reader.Seek(pHead->MeshHead.Blocks.TextureUVW1Block);
+        Reader.Convert(pMeshData->pUV1, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_TEX1;
     }
 
     // UV2
     if (pHead->MeshHead.Blocks.TextureUVW2Block)
     {
-		Reader.Seek(pHead->MeshHead.Blocks.TextureUVW2Block);
-		Reader.Convert(pMeshData->pUV2, pHead->MeshHead.dwNumVertices);
+        Reader.Seek(pHead->MeshHead.Blocks.TextureUVW2Block);
+        Reader.Convert(pMeshData->pUV2, pHead->MeshHead.dwNumVertices);
         pMeshData->dwVertexFVF |= D3DFVF_TEX2;
         pMeshData->dwVertexFVF &= ~(D3DFVF_TEX1);
     }
@@ -161,7 +161,7 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
     if (pHead->MeshHead.Blocks.SkinInfoBlock)
     {
         m_pL3DBone = new L3DBone;
-		BOOL_ERROR_EXIT(m_pL3DBone);
+        BOOL_ERROR_EXIT(m_pL3DBone);
 
         Reader.Seek(pHead->MeshHead.Blocks.SkinInfoBlock);
         hr = m_pL3DBone->Create(pMeshData, Reader, bHasPxPose, pHead->MeshHead.Blocks.BBoxBlock);
@@ -175,35 +175,19 @@ Exit0:
 
 HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDevice)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
     VERTEX_FILL_INFO FillInfo;
     const L3D_BONE_INFO* pBoneInfo = nullptr;
 
     ZeroMemory(&FillInfo, sizeof(FillInfo));
 
-    hr = InitFillInfo(pMeshData, &FillInfo);
-    HRESULT_ERROR_EXIT(hr);
+    InitFillInfo(pMeshData, &FillInfo);
+    InitVertexBuffer(piDevice, pMeshData, FillInfo);
+    InitIndexBuffer<WORD>(piDevice, pMeshData, DXGI_FORMAT_R16_UINT);
+    InitRenderParam(FillInfo);
+    InitBoneMatrix();
 
-    hr = InitVertexBuffer(piDevice, pMeshData, FillInfo);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = InitIndexBuffer<WORD>(piDevice, pMeshData, DXGI_FORMAT_R16_UINT);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = InitRenderParam(FillInfo);
-    HRESULT_ERROR_EXIT(hr);
-
-    pBoneInfo = m_pL3DBone->GetBoneInfo();
-    m_dwBoneCount = pBoneInfo->uBoneCount;
-
-    m_NormalMesh.BoneMatrix.resize(pBoneInfo->uBoneCount);
-    for (unsigned int i = 0; i < pBoneInfo->uBoneCount; i++)
-        m_NormalMesh.BoneMatrix[i] = XMMatrixInverse(NULL, pBoneInfo->BoneOffset[i]);
-
-    hResult = S_OK;
 Exit0:
-    return hResult;
+    return S_OK;
 }
 
 HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
@@ -373,10 +357,9 @@ HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* 
     {
         for (int j = 0; j < FillInfo.uElementCount; j++)
         {
-            VERTEX_FILL_INFO::_ELEM& Elem = FillInfo.Element[j];
+            auto& Elem = FillInfo.Element[j];
 
             memcpy(pbyOffset, Elem.SourceData, Elem.DestStride);
-
             Elem.SourceData += Elem.SourceStride;
             pbyOffset += Elem.DestStride;
         }
@@ -410,14 +393,8 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
     struct _INDEX_DATA
     {
         std::vector<DWORD> IndexBuffer;
-        DWORD IndexMin;
-        DWORD IndexMax;
-
-        _INDEX_DATA()
-        {
-            IndexMin = (DWORD)-1;
-            IndexMax = 0;
-        }
+        DWORD IndexMin = std::numeric_limits<DWORD>::max();
+        DWORD IndexMax = 0;
     };
 
     HRESULT hr = E_FAIL;
@@ -498,4 +475,16 @@ HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
     m_Stage.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     return S_OK;
+}
+
+void L3DMesh::InitBoneMatrix()
+{
+    const L3D_BONE_INFO* pBoneInfo = nullptr;
+        
+    pBoneInfo = m_pL3DBone->GetBoneInfo();
+    m_dwBoneCount = pBoneInfo->uBoneCount;
+
+    m_NormalMesh.BoneMatrix.resize(pBoneInfo->uBoneCount);
+    for (unsigned int i = 0; i < pBoneInfo->uBoneCount; i++)
+        m_NormalMesh.BoneMatrix[i] = XMMatrixInverse(NULL, pBoneInfo->BoneOffset[i]);
 }
