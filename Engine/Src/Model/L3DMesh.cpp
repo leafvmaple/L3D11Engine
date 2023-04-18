@@ -195,6 +195,7 @@ HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDev
     HRESULT_ERROR_EXIT(hr);
 
     pBoneInfo = m_pL3DBone->GetBoneInfo();
+    m_dwBoneCount = pBoneInfo->uBoneCount;
 
     m_NormalMesh.BoneMatrix.resize(pBoneInfo->uBoneCount);
     for (unsigned int i = 0; i < pBoneInfo->uBoneCount; i++)

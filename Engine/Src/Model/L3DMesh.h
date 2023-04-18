@@ -113,5 +113,5 @@ private:
 
     NormalMesh m_NormalMesh;
 
-    L3DBone* m_pBone = nullptr;
+    L3DBone* m_pL3DBone = nullptr;
 };
