@@ -85,7 +85,7 @@ struct NormalMesh
         unsigned    uVertexOffset;
     } Subset[MAX_NUM_SUBSET_COUNT];
 
-    std::vector<XMMATRIX> BoneMatrix;
+    std::vector<XMMATRIX> BoneMatrix; // Temp for Inverse Matrix
 };
 
 class L3DBone;
@@ -95,6 +95,8 @@ class L3DMesh
 {
 public:
     HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
+
+    NormalMesh& GetMesh() { return m_NormalMesh; };
 
     DWORD m_dwBoneCount = 0;
     RENDER_STAGE_INPUT_ASSEMBLER m_Stage;

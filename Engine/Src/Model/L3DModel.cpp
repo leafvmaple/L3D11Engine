@@ -12,29 +12,33 @@
 
 #include "Render/L3DRenderUnit.h"
 
+// Temp
+#include "Camera/L3DCamera.h"
+
 HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
-	char szMaterialName[MAX_PATH];
+    char szMaterialName[MAX_PATH];
 
-	m_pMesh = new L3DMesh;
-	BOOL_ERROR_EXIT(m_pMesh);
+    m_p3DMesh = new L3DMesh;
+    BOOL_ERROR_EXIT(m_p3DMesh);
 
-	hr = m_pMesh->Create(piDevice, szFileName);
-	HRESULT_ERROR_EXIT(hr);
+    hr = m_p3DMesh->Create(piDevice, szFileName);
+    HRESULT_ERROR_EXIT(hr);
 
     strcpy(szMaterialName, szFileName);
     hr = L3D::FormatExtName(szMaterialName, ".JsonInspack");
-	if (SUCCEEDED(hr))
-	{
-		hr = _LoadMaterialFromJson(piDevice, szMaterialName);
-		HRESULT_ERROR_EXIT(hr);
-	}
+    if (SUCCEEDED(hr))
+    {
+        hr = _LoadMaterialFromJson(piDevice, szMaterialName);
+        HRESULT_ERROR_EXIT(hr);
+    }
+    _CreateBoneMatrix();
 
-	hr = _InitRenderUnits();
-	HRESULT_ERROR_EXIT(hr);
+    _InitRenderData();
+    _InitRenderUnits();
 
     hr = ResetTransform();
     HRESULT_ERROR_EXIT(hr);
@@ -47,12 +51,10 @@ Exit0:
 
 HRESULT L3DModel::ResetTransform()
 {
-	XMStoreFloat4x4(&m_World, XMMatrixIdentity());
-	XMStoreFloat4(&m_Rotation, g_XMIdentityR3);
-	XMStoreFloat3(&m_Scale, g_XMOne);
-	XMStoreFloat3(&m_Translation, g_XMZero);
-
-    m_pRenderUnit->SetWorldMatrix(m_World);
+    XMStoreFloat4x4(&m_World, XMMatrixIdentity());
+    XMStoreFloat4(&m_Rotation, g_XMIdentityR3);
+    XMStoreFloat3(&m_Scale, g_XMOne);
+    XMStoreFloat3(&m_Translation, g_XMZero);
 
     return S_OK;
 }
@@ -84,6 +86,29 @@ HRESULT L3DModel::SetScale(const XMFLOAT3& Scale)
     return S_OK;
 }
 
+
+void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
+{
+    std::vector<XMMATRIX> matBone;
+    MESH_SHARED_CB MeshCB;
+
+    matBone.resize(m_BoneCurMatrix.size());
+    for (int i = 0; i < m_BoneCurMatrix.size(); i++)
+        matBone[i] = XMMatrixMultiply(m_p3DMesh->GetMesh().BoneMatrix[i], m_BoneCurMatrix[i]);
+
+    XMMATRIX viewProj = RenderOption.pCamera->GetViewProjcetion();
+    XMStoreFloat4x4(&MeshCB.MatrixWorld, XMLoadFloat4x4(&m_World) * viewProj);
+
+    _UpdateModelSharedConsts(matBone, MeshCB);
+}
+
+
+void L3DModel::GetRenderUnit(std::vector<L3DRenderUnit*>& RenderQueue)
+{
+    // TODO
+    RenderQueue.push_back(m_pRenderUnit);
+}
+
 void L3DModel::UpdateTransFrom()
 {
     XMStoreFloat4x4(&m_World,
@@ -96,122 +121,126 @@ void L3DModel::UpdateTransFrom()
             XMLoadFloat3(&m_Translation)
         )
     );
-
-    m_pRenderUnit->SetWorldMatrix(m_World);
 }
 
 HRESULT L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
 
-	rapidjson::Document JsonDocument;
+    rapidjson::Document JsonDocument;
 
-	hr = LFileReader::ReadJson(szFileName, JsonDocument);
-	HRESULT_ERROR_EXIT(hr);
+    hr = LFileReader::ReadJson(szFileName, JsonDocument);
+    HRESULT_ERROR_EXIT(hr);
 
-	{
-		auto& LODArray = JsonDocument["LOD"];
+    {
+        auto& LODArray = JsonDocument["LOD"];
 
-		unsigned uLODCount = LODArray.Capacity();
+        unsigned uLODCount = LODArray.Capacity();
 
-		for (int i = 0; i < uLODCount; i++)
-		{
-			auto& GroupArray = LODArray[i]["Group"];
-			unsigned uGroupCount = GroupArray.Capacity();
+        for (int i = 0; i < uLODCount; i++)
+        {
+            auto& GroupArray = LODArray[i]["Group"];
+            unsigned uGroupCount = GroupArray.Capacity();
 
-			for (int j = 0; j < uGroupCount; j++)
-			{
-				auto& SubsetArray = GroupArray[j]["Subset"];
-				unsigned uSubsetCount = SubsetArray.Capacity();
+            for (int j = 0; j < uGroupCount; j++)
+            {
+                auto& SubsetArray = GroupArray[j]["Subset"];
+                unsigned uSubsetCount = SubsetArray.Capacity();
 
-				for (int k = 0; k < uSubsetCount; k++)
-				{
-					auto& SubsetObject = SubsetArray[k];
-					MATERIAL_INSTANCE_DATA InstanceData;
+                for (int k = 0; k < uSubsetCount; k++)
+                {
+                    auto& SubsetObject = SubsetArray[k];
+                    MATERIAL_INSTANCE_DATA InstanceData;
 
-					hr = _LoadInstanceFromJson(SubsetObject, InstanceData);
-					HRESULT_ERROR_EXIT(hr);
+                    hr = _LoadInstanceFromJson(SubsetObject, InstanceData);
+                    HRESULT_ERROR_EXIT(hr);
 
-					if (m_pMesh->m_dwBoneCount > 0)
-						InstanceData.eMacro = RUNTIME_MACRO_SKIN_MESH;
+                    if (m_p3DMesh->m_dwBoneCount > 0)
+                        InstanceData.eMacro = RUNTIME_MACRO_SKIN_MESH;
 
-					hr = _LoadSubsetMaterial(piDevice, InstanceData);
-					HRESULT_ERROR_EXIT(hr);
-				}
-			}
-		}
-	}
+                    hr = _LoadSubsetMaterial(piDevice, InstanceData);
+                    HRESULT_ERROR_EXIT(hr);
+                }
+            }
+        }
+    }
 
-	hResult = S_OK;
+    hResult = S_OK;
 Exit0:
-	return hResult;
+    return hResult;
 }
 
 HRESULT L3DModel::_LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData)
 {
-	auto& InfoObject = JsonObject["Info"];
+    auto& InfoObject = JsonObject["Info"];
 
-	LPCSTR szValue = InfoObject["RefPath"].GetString();
-	strcpy_s(InstanceData.szDefineName, szValue);
+    LPCSTR szValue = InfoObject["RefPath"].GetString();
+    strcpy_s(InstanceData.szDefineName, szValue);
 
-	auto& ParamArray = JsonObject["Param"];
-	for (auto iter = ParamArray.Begin(); iter != ParamArray.End(); ++iter)
-	{
-		auto ParamObject = iter->GetObjectW();
+    auto& ParamArray = JsonObject["Param"];
+    for (auto iter = ParamArray.Begin(); iter != ParamArray.End(); ++iter)
+    {
+        auto ParamObject = iter->GetObjectW();
 
-		LPCSTR szName = ParamObject["Name"].GetString();
-		std::string szType = ParamObject["Type"].GetString();
+        LPCSTR szName = ParamObject["Name"].GetString();
+        std::string szType = ParamObject["Type"].GetString();
 
-		if (szType == "Texture")
-		{
-			szValue = ParamObject["Value"].GetString();
-			InstanceData.TextureArray.insert(std::make_pair(szName, szValue));
-		}
-	}
+        if (szType == "Texture")
+        {
+            szValue = ParamObject["Value"].GetString();
+            InstanceData.TextureArray.insert(std::make_pair(szName, szValue));
+        }
+    }
 
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT L3DModel::_LoadSubsetMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
 
-	L3DMaterial* pMaterial = nullptr;
+    L3DMaterial* pMaterial = nullptr;
 
-	pMaterial = new L3DMaterial;
-	BOOL_ERROR_EXIT(pMaterial);
+    pMaterial = new L3DMaterial;
+    BOOL_ERROR_EXIT(pMaterial);
 
-	hr = pMaterial->Create(piDevice, InstanceData);
-	HRESULT_ERROR_EXIT(hr);
+    hr = pMaterial->Create(piDevice, InstanceData);
+    HRESULT_ERROR_EXIT(hr);
 
-	m_vecMaterial.push_back(pMaterial);
+    m_vecMaterial.push_back(pMaterial);
 
-	hResult = S_OK;
+    hResult = S_OK;
 Exit0:
-	if (FAILED(hResult))
-		SAFE_DELETE(pMaterial);
-	return hResult;
+    if (FAILED(hResult))
+        SAFE_DELETE(pMaterial);
+    return hResult;
 }
 
-HRESULT L3DModel::_InitRenderUnits()
+
+void L3DModel::_UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const MESH_SHARED_CB& MeshCB)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
+    m_RenderData.ModelVariables.pCustomMatrixBones->SetRawValue(BoneMatrix.data(), 0, sizeof(XMMATRIX) * BoneMatrix.size());
+    m_RenderData.ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
+}
 
-	m_pRenderUnit = new L3DRenderUnit;
-	BOOL_ERROR_EXIT(m_pRenderUnit);
+void L3DModel::_CreateBoneMatrix()
+{
+    m_BoneCurMatrix = m_p3DMesh->GetMesh().BoneMatrix;
+}
 
-	hr = m_vecMaterial[0]->CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &m_pRenderUnit->m_piModelSharedCB);
-	HRESULT_ERROR_EXIT(hr);
+void L3DModel::_InitRenderData()
+{
+    m_vecMaterial[0]->CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &m_RenderData.piModelSharedCB);
 
-	m_pRenderUnit->m_ModelVariables.pModelParams = m_pRenderUnit->m_piModelSharedCB->GetMemberByName("g_ModelParams");
-	BOOL_ERROR_EXIT(m_pRenderUnit->m_ModelVariables.pModelParams);
+    m_RenderData.ModelVariables.pCustomMatrixBones = m_RenderData.piModelSharedCB->GetMemberByName("g_CustomMatrixBones");
+    m_RenderData.ModelVariables.pModelParams = m_RenderData.piModelSharedCB->GetMemberByName("g_ModelParams");
+}
 
-	m_pRenderUnit->m_IAStage = m_pMesh->m_Stage;
-	m_pRenderUnit->m_pMaterial = m_vecMaterial[0];
-
-Exit0:
-	return S_OK;
+void L3DModel::_InitRenderUnits()
+{
+    m_pRenderUnit = new L3DRenderUnit;
+    m_pRenderUnit->m_IAStage = m_p3DMesh->m_Stage;
+    m_pRenderUnit->m_pMaterial = m_vecMaterial[0];
 }

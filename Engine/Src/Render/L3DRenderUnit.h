@@ -28,19 +28,18 @@ struct SCENE_RENDER_OPTION
 class L3DRenderUnit
 {
 public:
-	struct MODEL_FIX_VARIBLES
-	{
-		ID3DX11EffectVariable* pModelParams;
-	};
+    struct MODEL_FIX_VARIBLES
+    {
+        ID3DX11EffectVariable* pCustomMatrixBones = nullptr;
+        ID3DX11EffectVariable* pModelParams = nullptr;
+    };
 
     HRESULT ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass);
 
-    void SetWorldMatrix(const XMFLOAT4X4& World);
-
     RENDER_STAGE_INPUT_ASSEMBLER m_IAStage;
 
-	ID3DX11EffectConstantBuffer* m_piModelSharedCB = nullptr;
-	MODEL_FIX_VARIBLES m_ModelVariables;
+    ID3DX11EffectConstantBuffer* m_piModelSharedCB = nullptr;
+    MODEL_FIX_VARIBLES m_ModelVariables;
 
     L3DMaterial* m_pMaterial = nullptr;
 

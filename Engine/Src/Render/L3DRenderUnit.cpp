@@ -33,17 +33,13 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PAS
     HRESULT hResult = E_FAIL;
 
     MESH_SHARED_CB MeshCB;
+    XMMATRIX* pBoneMatrices = nullptr;
 
     Param.piImmediateContext->RSSetState(Param.pStateTable->Rasterizer[L3D_RASTERIZER_STATE_CULL_CLOCKWISE]);
 	Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);
 
-    XMMATRIX viewProj = Param.pCamera->GetViewProjcetion();
-    XMStoreFloat4x4(&MeshCB.MatrixWorld, m_MatrixWorld * viewProj);
-
     hr = m_pMaterial->Apply(Param.piImmediateContext, ePass);
     HRESULT_ERROR_EXIT(hr);
-
-	m_ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
 
     hr = _DrawElement(Param, m_IAStage);
     HRESULT_ERROR_EXIT(hr);
@@ -51,9 +47,4 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PAS
     hResult = S_OK;
 Exit0:
     return hResult;
-}
-
-void L3DRenderUnit::SetWorldMatrix(const XMFLOAT4X4& World)
-{
-    m_MatrixWorld = XMLoadFloat4x4(&World);
 }
