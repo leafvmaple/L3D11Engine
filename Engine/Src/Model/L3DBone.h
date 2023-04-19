@@ -45,19 +45,16 @@ class L3DBone
 public:
 	~L3DBone();
 
-	HRESULT Create(MESH_FILE_DATA* pMeshFileData, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
-
+	HRESULT BindData(const MESH_FILE_BONE_INFO& BoneInfo);
 	const L3D_BONE_INFO* GetBoneInfo() { return m_pBoneInfo; };
 
-private:
-	HRESULT _Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
-	HRESULT _FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount);
-	HRESULT _CreateBoneData(MESH_FILE_BONE_INFO& BoneInfo);
+	static HRESULT Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
+	static HRESULT FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount);
 
+private:
 	unsigned int _FindBoneIndex(const char* szBoneName,
 		const std::vector<std::string>& OrderBoneName,
 		const std::vector<unsigned int>& OrderIndex);
 
-	DWORD m_dwBoneCount = 0;
 	L3D_BONE_INFO* m_pBoneInfo = nullptr;
 };

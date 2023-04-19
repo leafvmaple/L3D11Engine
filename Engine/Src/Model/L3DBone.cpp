@@ -11,29 +11,9 @@ L3DBone::~L3DBone()
     SAFE_DELETE(m_pBoneInfo);
 }
 
-HRESULT L3DBone::Create(MESH_FILE_DATA* pMeshFileData, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox)
-{
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
-    hr = _Load(pMeshFileData->BoneInfo, Reader, bHasPxPose, bHasBoundBox);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = _FillSkinData(pMeshFileData->pSkin, pMeshFileData->BoneInfo, pMeshFileData->dwVertexCount);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = _CreateBoneData(pMeshFileData->BoneInfo);
-    HRESULT_ERROR_EXIT(hr);
-    
-    hResult = S_OK;
-Exit0:
-    return hResult;
-}
-
-HRESULT L3DBone::_Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox)
+HRESULT L3DBone::Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox)
 {
     Reader.Copy(&BoneInfo.dwBoneCount);
-    m_dwBoneCount = BoneInfo.dwBoneCount;
 
     BoneInfo.pBone = new MESH_FILE_BONE_INFO::BONE[BoneInfo.dwBoneCount];
 
@@ -79,10 +59,8 @@ HRESULT L3DBone::_Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOO
     return S_OK;
 }
 
-HRESULT L3DBone::_FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount)
+HRESULT L3DBone::FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount)
 {
-    HRESULT hResult = E_FAIL;
-
     pSkin = new SKIN[nVertexCount];
     memset(pSkin, 0xFF, sizeof(pSkin[0]) * nVertexCount);
 
@@ -95,7 +73,7 @@ HRESULT L3DBone::_FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWOR
             unsigned uVertexIndex = Bone.pRefVertexIndex[j];
             float fWeight = Bone.pRefVertexWeight[j];
 
-            BOOL_ERROR_EXIT(uVertexIndex < nVertexCount);
+            assert(uVertexIndex < nVertexCount);
 
             float* pBoneWeights = pSkin[uVertexIndex].BoneWeights;
             BYTE* pBoneIndices = pSkin[uVertexIndex].BoneIndices;
@@ -112,13 +90,11 @@ HRESULT L3DBone::_FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWOR
         }
     }
 
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return S_OK;
 }
 
 
-HRESULT L3DBone::_CreateBoneData(MESH_FILE_BONE_INFO& BoneInfo)
+HRESULT L3DBone::BindData(const MESH_FILE_BONE_INFO& BoneInfo)
 {
     HRESULT hResult = E_FAIL;
     DWORD uBoneCount = 0;

@@ -109,8 +109,11 @@ private:
     template<typename _INDEX_TYPE>
     HRESULT InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, DXGI_FORMAT eFormat);
 
+    void CreateVertexAndIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
+    void CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo);
+
     HRESULT InitRenderParam(const VERTEX_FILL_INFO& FillInfo);
-    void InitBoneMatrix();
+
 
     NormalMesh m_NormalMesh;
 
