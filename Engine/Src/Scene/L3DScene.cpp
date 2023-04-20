@@ -155,6 +155,8 @@ void L3DScene::_RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption)
     for (auto& pModel : m_VisibleModel)
         pModel->GetRenderUnit(m_RenderQueues.GBuffer);
 
+    _UpdateCommonConstData(RenderOption);
+
     for (auto& pRenderUnit : m_RenderQueues.GBuffer)
         pRenderUnit->ApplyProcess(RenderOption, RENDER_PASS::COLOR);
 }
