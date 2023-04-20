@@ -76,16 +76,28 @@ struct VERTEX_FILL_INFO
 
 struct NormalMesh
 {
-    unsigned        uSubsetCount;
+    L3D_INPUT_LAYOUT eInputLayout = L3D_INPUT_LAYOUT_BOX;
+    unsigned int uVertexSize = 0;
+
+    ID3D11Buffer* piVertexBuffer = nullptr;
+    ID3D11Buffer* piIndexBuffer  = nullptr;
+
+    DXGI_FORMAT eFormat = DXGI_FORMAT_UNKNOWN;
+    D3D11_PRIMITIVE_TOPOLOGY eTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+
+    unsigned        uSubsetCount = 0;
+
     struct _SUBSET
     {
-        unsigned    uIndexCount;
-        unsigned    uIndexOffset;
-        unsigned    uVertexCount;
-        unsigned    uVertexOffset;
+        unsigned    uIndexCount = 0;
+        unsigned    uIndexOffset = 0;
+        unsigned    uVertexCount = 0;
+        unsigned    uVertexOffset = 0;
     } Subset[MAX_NUM_SUBSET_COUNT];
 
     std::vector<XMMATRIX> BoneMatrix; // Temp for Inverse Matrix
+
+    ULONG   ulSize = 0;
 };
 
 class L3DBone;
@@ -96,10 +108,11 @@ class L3DMesh
 public:
     HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
 
+    void ApplyMeshSubset(RENDER_STAGE_INPUT_ASSEMBLER& State, unsigned int nSubsetIndex);
+
     NormalMesh& GetMesh() { return m_NormalMesh; };
 
     DWORD m_dwBoneCount = 0;
-    RENDER_STAGE_INPUT_ASSEMBLER m_Stage;
 
 private:
     HRESULT LoadMeshData(const char* szFileName, MESH_FILE_DATA* pLMeshData);
@@ -113,9 +126,6 @@ private:
 
     void CreateVertexAndIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
     void CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo);
-
-    HRESULT InitRenderParam(const VERTEX_FILL_INFO& FillInfo);
-
 
     NormalMesh m_NormalMesh;
 

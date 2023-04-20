@@ -11,6 +11,8 @@
 #include "L3DMaterialConfig.h"
 #include "L3DMaterialDefine.h"
 
+#include "IO/LFileReader.h"
+
 #include "FX11/inc/d3dx11effect.h"
 
 
@@ -25,7 +27,7 @@ static RENDER_PASS_TABLE g_MaterialPassDeclares[] = {
     {RENDER_PASS::COLOR, "Color", 0},
 };
 
-HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData)
+HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData, RUNTIME_MACRO eMacro)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -48,14 +50,13 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
     m_pEffect = new L3DEffect;
     BOOL_ERROR_EXIT(m_pEffect);
 
-    hr = m_pEffect->Create(piDevice, InstanceData.eMacro);
+    hr = m_pEffect->Create(piDevice, eMacro);
     HRESULT_ERROR_EXIT(hr);
 
     hResult = S_OK;
 Exit0:
     return hResult;
 }
-
 
 HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass)
 {
@@ -172,4 +173,66 @@ HRESULT L3DMaterial::_UpdateTextures()
 
 Exit0:
     return S_OK;
+}
+
+void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIAL_INSTANCE_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro)
+{
+    rapidjson::Document JsonDocument;
+    LFileReader::ReadJson(szFileName, JsonDocument);
+
+    auto& LODArray = JsonDocument["LOD"];
+    unsigned uLODCount = LODArray.Capacity();
+
+    for (int i = 0; i < uLODCount; i++)
+    {
+        auto& GroupArray = LODArray[i]["Group"];
+        unsigned uGroupCount = GroupArray.Capacity();
+
+        for (int j = 0; j < uGroupCount; j++)
+        {
+            auto& SubsetArray = GroupArray[j]["Subset"];
+            unsigned uSubsetCount = SubsetArray.Capacity();
+
+            InstancePack.resize(uSubsetCount);
+
+            for (int k = 0; k < uSubsetCount; k++)
+            {
+                auto& SubsetObject = SubsetArray[k];
+                MATERIAL_INSTANCE_DATA InstanceData;
+                auto& pInstance = InstancePack[k];
+
+                _LoadInstanceFromJson(SubsetObject, InstanceData);
+
+                // TODO ~L3DMaterial
+                pInstance = new L3DMaterial;
+                pInstance->Create(piDevice, InstanceData, eMacro);
+
+                /*if (m_p3DMesh->m_dwBoneCount > 0)
+                    InstanceData.eMacro = RUNTIME_MACRO_SKIN_MESH;*/
+            }
+        }
+    }
+}
+
+void L3DMaterialPack::_LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData)
+{
+    auto& InfoObject = JsonObject["Info"];
+
+    LPCSTR szValue = InfoObject["RefPath"].GetString();
+    strcpy_s(InstanceData.szDefineName, szValue);
+
+    auto& ParamArray = JsonObject["Param"];
+    for (auto iter = ParamArray.Begin(); iter != ParamArray.End(); ++iter)
+    {
+        auto ParamObject = iter->GetObjectW();
+
+        LPCSTR szName = ParamObject["Name"].GetString();
+        std::string szType = ParamObject["Type"].GetString();
+
+        if (szType == "Texture")
+        {
+            szValue = ParamObject["Value"].GetString();
+            InstanceData.TextureArray.insert(std::make_pair(szName, szValue));
+        }
+    }
 }

@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 struct MaterialTextureTable
 {
@@ -25,3 +26,6 @@ private:
 
 	std::vector<MaterialTextureTable> m_vecTexture;
 };
+
+class L3DMaterial;
+typedef std::vector<L3DMaterial*> MATERIAL_INSTANCE_PACK;

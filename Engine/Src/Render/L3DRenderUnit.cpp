@@ -14,7 +14,7 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
 {
     ID3D11InputLayout* piInputLayout = nullptr;
 
-    piInputLayout = Param.pShaderTable->Layout[Stage.eInputLayer];
+    piInputLayout = Param.pShaderTable->Layout[Stage.eInputLayout];
     Param.piImmediateContext->IASetInputLayout(piInputLayout);
 
     Param.piImmediateContext->IASetPrimitiveTopology(Stage.eTopology);

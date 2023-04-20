@@ -40,6 +40,25 @@ Exit0:
 }
 
 
+void L3DMesh::ApplyMeshSubset(RENDER_STAGE_INPUT_ASSEMBLER& State, unsigned int nSubsetIndex)
+{
+    auto& subset = m_NormalMesh.Subset[nSubsetIndex];
+
+    State.eTopology = m_NormalMesh.eTopology;
+    State.eInputLayout = m_NormalMesh.eInputLayout;
+    State.VertexBuffer.piBuffer = m_NormalMesh.piVertexBuffer;
+    State.VertexBuffer.uOffset = 0;
+    State.VertexBuffer.uStride = m_NormalMesh.uVertexSize;
+
+    State.IndexBuffer.piBuffer = m_NormalMesh.piIndexBuffer;
+    State.IndexBuffer.uOffset = 0;
+    State.IndexBuffer.eFormat = m_NormalMesh.eFormat;
+
+    State.Draw.Indexed.uIndexCount = subset.uIndexCount;
+    State.Draw.Indexed.uStartIndexLocation = subset.uIndexOffset;
+    State.Draw.Indexed.nBaseVertexLocation = 0;
+}
+
 HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
 {
     HRESULT hr = E_FAIL;
@@ -169,7 +188,6 @@ Exit0:
 HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDevice)
 {
     VERTEX_FILL_INFO FillInfo;
-    const L3D_BONE_INFO* pBoneInfo = nullptr;
 
     ZeroMemory(&FillInfo, sizeof(FillInfo));
 
@@ -177,7 +195,9 @@ HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDev
     CreateVertexAndIndexBuffer(piDevice, pMeshData, FillInfo);
     CreateBoneInfo(pMeshData->BoneInfo);
 
-    InitRenderParam(FillInfo);
+    m_NormalMesh.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    m_NormalMesh.uVertexSize = FillInfo.uVertexSize;
+    m_NormalMesh.eInputLayout = FillInfo.eInputLayout;
 
 Exit0:
     return S_OK;
@@ -369,11 +389,8 @@ HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* 
     InitData.SysMemPitch = 0;
     InitData.SysMemSlicePitch = 0;
 
-    hr = piDevice->CreateBuffer(&desc, &InitData, &m_Stage.VertexBuffer.piBuffer);
+    hr = piDevice->CreateBuffer(&desc, &InitData, &m_NormalMesh.piVertexBuffer);
     HRESULT_ERROR_EXIT(hr);
-
-    m_Stage.VertexBuffer.uStride = FillInfo.uVertexSize;
-    m_Stage.VertexBuffer.uOffset = 0;
 
     hResult = S_OK;
 Exit0:
@@ -392,15 +409,13 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
 
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
+    DWORD nTotalCount = 0;
     DWORD nSubIndex = 0;
-    size_t nTotalCount = 0;
     std::map<int, _INDEX_DATA> IndexBufferList;
     std::vector<_INDEX_TYPE> arrIndies;
 
     D3D11_BUFFER_DESC desc;
     D3D11_SUBRESOURCE_DATA InitData;
-
-    memset(&m_NormalMesh, 0, sizeof(m_NormalMesh));
 
     for (int i = 0; i < pMeshData->dwFacesCount; i++)
     {
@@ -426,13 +441,12 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
 
     for (auto indexBuff : IndexBufferList)
     {
-        int nCount = indexBuff.second.IndexBuffer.size();
+        DWORD nCount = indexBuff.second.IndexBuffer.size();
 
         for (auto index : indexBuff.second.IndexBuffer)
             arrIndies.push_back(static_cast<_INDEX_TYPE>(index));
 
-        m_NormalMesh.Subset[nSubIndex++] = { (DWORD)nCount, nSubIndex, indexBuff.second.IndexMin, indexBuff.second.IndexMax - indexBuff.second.IndexMin + 1 };
-
+        m_NormalMesh.Subset[nSubIndex++] = { (DWORD)nCount, nTotalCount, indexBuff.second.IndexMin, indexBuff.second.IndexMax - indexBuff.second.IndexMin + 1 };
         nTotalCount += nCount;
     }
 
@@ -447,15 +461,12 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
     InitData.SysMemPitch = 0;
     InitData.SysMemSlicePitch = 0;
 
-    hr = piDevice->CreateBuffer(&desc, &InitData, &m_Stage.IndexBuffer.piBuffer);
+    hr = piDevice->CreateBuffer(&desc, &InitData, &m_NormalMesh.piIndexBuffer);
     HRESULT_ERROR_EXIT(hr);
 
-    m_Stage.IndexBuffer.eFormat = eFormat;
-    m_Stage.IndexBuffer.uOffset = 0;
-
-    m_Stage.Draw.Indexed.uIndexCount = arrIndies.size();
-    m_Stage.Draw.Indexed.nBaseVertexLocation = 0;
-    m_Stage.Draw.Indexed.uStartIndexLocation = 0;
+    m_NormalMesh.eFormat = eFormat;
+    m_NormalMesh.ulSize = nTotalCount;
+    m_NormalMesh.uSubsetCount = nSubIndex;
 
     hResult = S_OK;
 Exit0:
@@ -467,14 +478,6 @@ void L3DMesh::CreateVertexAndIndexBuffer(ID3D11Device* piDevice, const MESH_FILE
 {
     InitVertexBuffer(piDevice, pMeshData, FillInfo);
     InitIndexBuffer<WORD>(piDevice, pMeshData, DXGI_FORMAT_R16_UINT);
-}
-
-HRESULT L3DMesh::InitRenderParam(const VERTEX_FILL_INFO& FillInfo)
-{
-    m_Stage.eInputLayer = FillInfo.eInputLayout;
-    m_Stage.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-
-    return S_OK;
 }
 
 void L3DMesh::CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)

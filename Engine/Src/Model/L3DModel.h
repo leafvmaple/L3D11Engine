@@ -3,8 +3,10 @@
 #include <d3d11.h>
 #include <DirectXPackedVector.h>
 #include <vector>
+#include <memory>
 
 #include "L3DInterface.h"
+#include "L3DMaterialDefine.h"
 
 #include "rapidjson/include/rapidjson/document.h"
 
@@ -34,8 +36,6 @@ public:
     void UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption);
     void GetRenderUnit(std::vector<L3DRenderUnit*>& RenderQueue);
 
-    L3DRenderUnit* m_pRenderUnit = nullptr;
-
 private:
     struct MODEL_FIX_VARIBLES
     {
@@ -46,12 +46,12 @@ private:
     {
         ID3DX11EffectConstantBuffer* piModelSharedCB = nullptr;
         MODEL_FIX_VARIBLES ModelVariables;
+
+        std::vector<L3DRenderUnit> RenderUnits;
     };
 
     void UpdateTransFrom();
-    HRESULT _LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName);
-    HRESULT _LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
-    HRESULT _LoadSubsetMaterial(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData);
+    void _LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName);
 
     void _UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const MESH_SHARED_CB& MeshCB);
 
@@ -64,7 +64,10 @@ private:
     L3DMesh* m_p3DMesh = nullptr;
 
     std::vector<XMMATRIX> m_BoneCurMatrix;
-    std::vector<L3DMaterial*> m_vecMaterial;
+
+    // m_vecMaterial Like MaterialInstancePack
+    // L3DMaterial Like MaterialInstance
+    MATERIAL_INSTANCE_PACK m_MaterialPack;
 
     XMFLOAT3 m_Translation;
     XMFLOAT4 m_Rotation;
