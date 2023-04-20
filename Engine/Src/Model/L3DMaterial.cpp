@@ -59,7 +59,6 @@ Exit0:
 
 HRESULT L3DMaterial::CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB)
 {
-    HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
     switch (eCBType)
@@ -81,9 +80,6 @@ Exit0:
 
 HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
     for (auto it = m_vecTextures.begin(); it != m_vecTextures.end(); it++)
     {
         if (sName == it->sRepresentName)
@@ -91,42 +87,25 @@ HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sNam
             SAFE_DELETE(it->pTexture);
 
             it->pTexture = new L3DTexture;
-            BOOL_ERROR_EXIT(it->pTexture);
-
-            hr = it->pTexture->Create(piDevice, sTextureName.c_str());
-            HRESULT_ERROR_EXIT(hr);
+            it->pTexture->Create(piDevice, sTextureName.c_str());
         }
     }
 
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return S_OK;
 }
 
 
 HRESULT L3DMaterial::_UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** ppEffectPass)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
     ID3DX11EffectTechnique* pEffectTechnique = nullptr;
-    ID3DX11EffectPass* pEffectPass = nullptr;
 
     uint32_t nPass = static_cast<uint32_t>(ePass);
-
     RENDER_PASS_TABLE& passTable = g_MaterialPassDeclares[nPass];
 
     pEffectTechnique = m_pEffect->GetTechniqueByName(passTable.szTechniqueName);
-    BOOL_ERROR_EXIT(pEffectTechnique);
+    *ppEffectPass = pEffectTechnique->GetPassByIndex(nPass);
 
-    pEffectPass = pEffectTechnique->GetPassByIndex(nPass);
-    BOOL_ERROR_EXIT(pEffectPass);
-
-    *ppEffectPass = pEffectPass;
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return S_OK;
 }
 
 HRESULT L3DMaterial::_UpdateTextures()
