@@ -17,35 +17,38 @@ typedef std::vector <L3DModel*> MODEL_VECTOR;
 class L3DScene : public ILScene
 {
 public:
-	HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
-	HRESULT SetParent(IL3DEngine* piEngine);
+    HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
+    HRESULT SetParent(IL3DEngine* piEngine);
 
-	void BeginRender(const SCENE_RENDER_OPTION& RenderOption);
-	void EndRender(const SCENE_RENDER_OPTION& RenderOption);
+    void BeginRender(const SCENE_RENDER_OPTION& RenderOption);
+    void EndRender(const SCENE_RENDER_OPTION& RenderOption);
 
-	HRESULT AddRenderEntity(ILModel* piModel) override;
+    HRESULT AddRenderEntity(ILModel* piModel) override;
 
-	void GetVisibleObjectAll(MODEL_VECTOR& vecModels);
+    void GetVisibleObjectAll(MODEL_VECTOR& vecModels);
 
 private:
-	struct SCENE_RENDER_QUEUES
-	{
-		std::vector<L3DRenderUnit*> GBuffer;
-	};
+    struct SCENE_RENDER_QUEUES
+    {
+        std::vector<L3DRenderUnit*> GBuffer;
+    };
 
-	HRESULT _CreatePathTable(const char* szFileName, SCENE_PATH_TABLE* pPathTable);
+    HRESULT _CreatePathTable(const char* szFileName, SCENE_PATH_TABLE* pPathTable);
 
-	HRESULT _LoadLogicalSceneRect(const char* szSettingName, L3D_SCENE_RECT* pRect);
-	HRESULT _LoadEnvironmentSetting(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable);
+    HRESULT _LoadLogicalSceneRect(const char* szSettingName, L3D_SCENE_RECT* pRect);
+    HRESULT _LoadEnvironmentSetting(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable);
 
-	void _UpdateVisibleList();
-	void _RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption);
+    void _UpdateVisibleList();
+    void _UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption);
+    void _UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption);
 
-	MODEL_VECTOR m_DynamicalObjects;
-	MODEL_VECTOR m_VisibleModel;
+    void _RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption);
 
-	SCENE_RENDER_QUEUES m_RenderQueues;
+    MODEL_VECTOR m_DynamicalObjects;
+    MODEL_VECTOR m_VisibleModel;
 
-	IL3DEngine* m_piEngine;
-	L3DEnvironment* m_pEnvironment = nullptr;
+    SCENE_RENDER_QUEUES m_RenderQueues;
+
+    IL3DEngine* m_piEngine = nullptr;
+    L3DEnvironment* m_pEnvironment = nullptr;
 };

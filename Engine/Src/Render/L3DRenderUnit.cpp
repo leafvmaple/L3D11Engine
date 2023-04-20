@@ -17,7 +17,7 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
     piInputLayout = Param.pShaderTable->Layout[Stage.eInputLayer];
     Param.piImmediateContext->IASetInputLayout(piInputLayout);
 
-	Param.piImmediateContext->IASetPrimitiveTopology(Stage.eTopology);
+    Param.piImmediateContext->IASetPrimitiveTopology(Stage.eTopology);
 
     Param.piImmediateContext->IASetVertexBuffers(0, 1, &Stage.VertexBuffer.piBuffer, &Stage.VertexBuffer.uStride, &Stage.VertexBuffer.uOffset);
     Param.piImmediateContext->IASetIndexBuffer(Stage.IndexBuffer.piBuffer, Stage.IndexBuffer.eFormat, Stage.IndexBuffer.uOffset);
@@ -35,8 +35,7 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PAS
     MESH_SHARED_CB MeshCB;
     XMMATRIX* pBoneMatrices = nullptr;
 
-    Param.piImmediateContext->RSSetState(Param.pStateTable->Rasterizer[L3D_RASTERIZER_STATE_CULL_CLOCKWISE]);
-	Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);
+    Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);
 
     hr = m_pMaterial->Apply(Param.piImmediateContext, ePass);
     HRESULT_ERROR_EXIT(hr);

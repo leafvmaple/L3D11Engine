@@ -5,6 +5,7 @@
 #include "L3DEnvironment.h"
 
 #include "Model/L3DModel.h"
+#include "State/L3DState.h"
 #include "Render/L3DRenderUnit.h"
 
 #include "IO/LFileReader.h"
@@ -41,9 +42,7 @@ HRESULT L3DScene::SetParent(IL3DEngine* piEngine)
 void L3DScene::BeginRender(const SCENE_RENDER_OPTION& RenderOption)
 {
     _UpdateVisibleList();
-
-    for (auto& pModel : m_VisibleModel)
-        pModel->UpdateCommonRenderData(RenderOption);
+    _UpdateCommonRenderData(RenderOption);
 
     return;
 }
@@ -136,6 +135,17 @@ void L3DScene::_UpdateVisibleList()
     GetVisibleObjectAll(m_VisibleModel);
 
     // Cull In This
+}
+
+void L3DScene::_UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption)
+{
+    RenderOption.piImmediateContext->RSSetState(RenderOption.pStateTable->Rasterizer[L3D_RASTERIZER_STATE_CULL_CLOCKWISE]);
+}
+
+void L3DScene::_UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
+{
+    for (auto& pModel : m_VisibleModel)
+        pModel->UpdateCommonRenderData(RenderOption);
 }
 
 void L3DScene::_RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption)
