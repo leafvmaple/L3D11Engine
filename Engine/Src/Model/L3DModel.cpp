@@ -34,8 +34,6 @@ HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
         _LoadMaterialFromJson(piDevice, szMaterialName);
 
     _CreateBoneMatrix();
-
-    _InitRenderData();
     _InitRenderUnits();
 
     hr = ResetTransform();
@@ -142,10 +140,9 @@ void L3DModel::_CreateBoneMatrix()
     m_BoneCurMatrix = m_p3DMesh->GetMesh().BoneMatrix;
 }
 
-void L3DModel::_InitRenderData()
-{
-    m_MaterialPack[0]->CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &m_RenderData.piModelSharedCB);
 
+void L3DModel::_UpdateModelVariablesIndices()
+{
     m_RenderData.ModelVariables.pCustomMatrixBones = m_RenderData.piModelSharedCB->GetMemberByName("g_CustomMatrixBones");
     m_RenderData.ModelVariables.pModelParams = m_RenderData.piModelSharedCB->GetMemberByName("g_ModelParams");
 }
@@ -155,12 +152,25 @@ void L3DModel::_InitRenderUnits()
     auto& mesh = m_p3DMesh->GetMesh();
 
     m_RenderData.RenderUnits.resize(mesh.uSubsetCount);
+    m_RenderData.SubsetCB.resize(mesh.uSubsetCount);
+
     for (int i = 0; i < mesh.uSubsetCount; i++)
     {
         auto& unit = m_RenderData.RenderUnits[i];
+        auto pMaterial = m_MaterialPack[i];
+
         m_p3DMesh->ApplyMeshSubset(unit.m_IAStage, i);
 
-        // TODO
-        unit.m_pMaterial = m_MaterialPack[i];
+        if (!i)
+        {
+            pMaterial->CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &m_RenderData.piModelSharedCB);
+            _UpdateModelVariablesIndices();
+        }
+
+        pMaterial->CreateIndividualCB(MATERIAL_INDIV_CB::SUBSET, &m_RenderData.SubsetCB[i]);
+
+        unit.m_piModelSharedCB = m_RenderData.piModelSharedCB;
+        unit.m_piSubsetSharedCB = m_RenderData.SubsetCB[i];
+        unit.m_pMaterial = pMaterial;
     }
 }

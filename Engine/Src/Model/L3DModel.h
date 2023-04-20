@@ -47,6 +47,8 @@ private:
         ID3DX11EffectConstantBuffer* piModelSharedCB = nullptr;
         MODEL_FIX_VARIBLES ModelVariables;
 
+        std::vector<ID3DX11EffectConstantBuffer*> SubsetCB;
+
         std::vector<L3DRenderUnit> RenderUnits;
     };
 
@@ -56,7 +58,9 @@ private:
     void _UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const MESH_SHARED_CB& MeshCB);
 
     void _CreateBoneMatrix();
-    void _InitRenderData();
+    
+    void _UpdateModelVariablesIndices();
+
     void _InitRenderUnits();
 
     RENDER_DATA m_RenderData;

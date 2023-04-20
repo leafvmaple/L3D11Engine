@@ -30,7 +30,8 @@ struct MATERIAL_INSTANCE_DATA
 
 enum class MATERIAL_INDIV_CB
 {
-	MODELSHARED,
+    MODELSHARED,
+    SUBSET,
 };
 
 class L3DMaterial
@@ -42,11 +43,11 @@ public:
     HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
 
 private:
-	struct PASS_TEXTURE
-	{
-		ID3DX11EffectShaderResourceVariable* pEffectSRVariable;
-		L3DTexture* pTexture;
-	};
+    struct PASS_TEXTURE
+    {
+        ID3DX11EffectShaderResourceVariable* pEffectSRVariable;
+        L3DTexture* pTexture;
+    };
 
     HRESULT _PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName);
 
