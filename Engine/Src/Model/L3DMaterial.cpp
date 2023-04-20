@@ -29,50 +29,28 @@ static RENDER_PASS_TABLE g_MaterialPassDeclares[] = {
 
 HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData, RUNTIME_MACRO eMacro)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
     m_pMaterialDefine = new L3DMaterialDefine;
-    BOOL_ERROR_EXIT(m_pMaterialDefine);
-
-    hr = m_pMaterialDefine->Create(InstanceData.szDefineName);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
-    HRESULT_ERROR_EXIT(hr);
+    m_pMaterialDefine->Create(InstanceData.szDefineName);
+    m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
 
     for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
-    {
-        hr = _PlaceTextureValue(piDevice, iter->first, iter->second);
-        HRESULT_ERROR_EXIT(hr);
-    }
+        _PlaceTextureValue(piDevice, iter->first, iter->second);
 
     m_pEffect = new L3DEffect;
-    BOOL_ERROR_EXIT(m_pEffect);
+    m_pEffect->Create(piDevice, eMacro);
 
-    hr = m_pEffect->Create(piDevice, eMacro);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return S_OK;
 }
 
 HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass)
 {
-    HRESULT hr = E_FAIL;
-
     ID3DX11EffectPass* pEffectPass = nullptr;
 
     // _GetRenderPass
-    hr = _UpdateTechniques(ePass, &pEffectPass);
-    HRESULT_ERROR_EXIT(hr);
+    _UpdateTechniques(ePass, &pEffectPass);
+    _UpdateTextures();
 
-    hr = _UpdateTextures();
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = pEffectPass->Apply(0, pDeviceContext);
-    HRESULT_ERROR_EXIT(hr);
+    pEffectPass->Apply(0, pDeviceContext);
 
 Exit0:
     return S_OK;
@@ -153,8 +131,6 @@ Exit0:
 
 HRESULT L3DMaterial::_UpdateTextures()
 {
-    HRESULT hr = E_FAIL;
-
     std::vector<EFFECT_SHADER> EffectShader;
 
     m_pEffect->GetShader(EffectShader);
@@ -164,14 +140,10 @@ HRESULT L3DMaterial::_UpdateTextures()
         for (auto it : m_vecTextures)
         {
             if (it.sRegisterName == itEffect.name)
-            {
-                hr = it.pTexture->Apply(itEffect.pSRVaraible);
-                HRESULT_ERROR_EXIT(hr);
-            }
+                it.pTexture->Apply(itEffect.pSRVaraible);
         }
     }
 
-Exit0:
     return S_OK;
 }
 
@@ -206,9 +178,6 @@ void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIAL_INSTANCE_PAC
                 // TODO ~L3DMaterial
                 pInstance = new L3DMaterial;
                 pInstance->Create(piDevice, InstanceData, eMacro);
-
-                /*if (m_p3DMesh->m_dwBoneCount > 0)
-                    InstanceData.eMacro = RUNTIME_MACRO_SKIN_MESH;*/
             }
         }
     }
