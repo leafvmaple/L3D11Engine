@@ -63,12 +63,16 @@ HRESULT L3DMaterial::CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11Effect
 
     switch (eCBType)
     {
+    case MATERIAL_INDIV_CB::SUBSET:
+    {
+        *pEffectCB = m_pEffect->GetConstantBufferByName("SubsetConstParam");
+        break;
+    }
     case MATERIAL_INDIV_CB::MODELSHARED:
     {
         *pEffectCB = m_pEffect->GetConstantBufferByName("ModelSharedParam");
-        BOOL_ERROR_EXIT(*pEffectCB);
-    }
         break;
+    }
     default:
         break;
     }

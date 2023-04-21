@@ -4,23 +4,54 @@
 // Transforms and colors geometry.
 //***************************************************************************************
 
+static const int MAX_NUM_BONE_PER_SET = 158;
+
+struct SWITCH 
+{
+    int bEnableSunLight;
+};
+
+struct CAMERA
+{
+    row_major matrix CameraView           : View;
+    row_major matrix CameraProject        : Project;
+};
+
+struct COMMON_PARAM
+{
+    SWITCH Switch;
+    CAMERA Camera;
+};
+
+cbuffer KG3D_CBUFFER_COMMON : register(b13)
+{
+    COMMON_PARAM g_Com;
+};
+
 struct MTLSYS_MESH_SHARED_CB 
 {
     row_major float4x4 MatrixWorld;
 };
 
+cbuffer SubsetConstParam : register (b3)
+{
+    float4  ModelColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+};
+
 cbuffer ModelSharedParam
 {
-    MTLSYS_MESH_SHARED_CB g_ModelParams; 
+    row_major float4x4 g_CustomMatrixBones[MAX_NUM_BONE_PER_SET];
+
+    MTLSYS_MESH_SHARED_CB g_ModelParams;
 };
 
 Texture2D _0_local1_Texture;
 
 SamplerState g_Sampler_0
 {
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = Wrap;
-	AddressV = Wrap;
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
 };
 
 struct VertexIn
