@@ -42,6 +42,9 @@
     <Filter Include="Source Files\Component">
       <UniqueIdentifier>{912a9cae-0825-4195-81eb-64eb211b7a59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Define">
+      <UniqueIdentifier>{14adb150-f1fc-4f44-bc41-ba7fcccde57e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\L3DEngine.cpp">
@@ -103,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="Src\Model\L3DBone.cpp">
       <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Render\L3DMaterialSystem.cpp">
+      <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +189,15 @@
     </ClInclude>
     <ClInclude Include="Src\Model\L3DBone.h">
       <Filter>Source Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Define\L3DSceneDefine.h">
+      <Filter>Source Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Define\L3DCameraDefine.h">
+      <Filter>Source Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Render\L3DMaterialSystem.h">
+      <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

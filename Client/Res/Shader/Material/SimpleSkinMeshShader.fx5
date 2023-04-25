@@ -6,28 +6,6 @@
 
 static const int MAX_NUM_BONE_PER_SET = 158;
 
-struct SWITCH 
-{
-    int bEnableSunLight;
-};
-
-struct CAMERA
-{
-    row_major matrix CameraView           : View;
-    row_major matrix CameraProject        : Project;
-};
-
-struct COMMON_PARAM
-{
-    SWITCH Switch;
-    CAMERA Camera;
-};
-
-cbuffer KG3D_CBUFFER_COMMON : register(b13)
-{
-    COMMON_PARAM g_Com;
-};
-
 struct MTLSYS_MESH_SHARED_CB 
 {
     row_major float4x4 MatrixWorld;
@@ -44,6 +22,8 @@ cbuffer ModelSharedParam
 
     MTLSYS_MESH_SHARED_CB g_ModelParams;
 };
+
+#include "CommonParam.h"
 
 Texture2D _0_local1_Texture;
 
@@ -72,11 +52,17 @@ struct VertexOut
     float2 TexCoords : TEXCOORD0;
 };
 
+float4 GetDeviceCoordinate(float4 InputPosition, float4x4 WorldMatrix, float4x4 ViewMatrix, float4x4 ProjMatrix)
+{
+    return mul(mul(mul(InputPosition, WorldMatrix), ViewMatrix), ProjMatrix); //12 ALU
+}
+
 VertexOut VS(VertexIn vin)
 {
     VertexOut vout;
     
-    vout.PosH = mul(vin.Position, g_ModelParams.MatrixWorld);
+    // vout.PosH = mul(vin.Position, g_ModelParams.MatrixWorld);
+    vout.PosH = GetDeviceCoordinate(vin.Position, g_ModelParams.MatrixWorld, g_Com.Camera.CameraView, g_Com.Camera.CameraProject);
     
     vout.Color = float4(vin.Normal, 1.0f);
     // vout.Color = vin.Color;

@@ -5,11 +5,9 @@
 #include "L3DCamera.h"
 
 
-HRESULT L3DCamera::Init(float fWidth, float fHeight)
+HRESULT L3DCamera::Init()
 {
-    m_Projection = XMMatrixPerspectiveFovLH(0.25f * XM_PI, fWidth / fHeight, 1.0f, 1000.0f);
-
-    ComputeViewMatrix();
+    _UpdateViewMatrix();
 
     return S_OK;
 }
@@ -20,7 +18,7 @@ HRESULT L3DCamera::UpdateYawPitchRoll(float fYaw, float fPitch, float fRoll)
     m_fPitch += fPitch;
     m_fRoll += fRoll;
 
-    return ComputeViewMatrix();
+    return _UpdateViewMatrix();
 }
 
 HRESULT L3DCamera::UpdateSightDistance(float fSightDis)
@@ -28,17 +26,26 @@ HRESULT L3DCamera::UpdateSightDistance(float fSightDis)
     m_fSightDis += fSightDis;
     m_fSightDis = std::max(m_fSightDis, 3.f);
 
-    ComputeViewMatrix();
+    _UpdateViewMatrix();
 
     return S_OK;
 }
 
-XMMATRIX L3DCamera::GetViewProjcetion()
+
+void L3DCamera::GetProperty(CAMERA_PROPERTY& Property)
 {
-    return m_View * m_Projection;
+    memcpy(&Property, &m_CameraInfo.Property, sizeof(Property));
 }
 
-HRESULT L3DCamera::ComputeViewMatrix()
+
+void L3DCamera::SetProperty(const CAMERA_PROPERTY& Property)
+{
+    memcpy(&m_CameraInfo.Property, &Property, sizeof(Property));
+
+    _UpdateProjectMatrix();
+}
+
+HRESULT L3DCamera::_UpdateViewMatrix()
 {
     float x = m_fSightDis * sinf(m_fPitch) * cosf(m_fYaw);
     float z = m_fSightDis * sinf(m_fPitch) * sinf(m_fYaw);
@@ -46,7 +53,12 @@ HRESULT L3DCamera::ComputeViewMatrix()
 
     XMVECTOR m_vPostion = XMVectorSet(x, y, z, 1.0f);
 
-    m_View = XMMatrixLookAtLH(m_vPostion, m_vTarget, m_vUp);
+    m_CameraInfo.mView = XMMatrixLookAtLH(m_vPostion, m_vTarget, m_vUp);
 
     return S_OK;
+}
+
+void L3DCamera::_UpdateProjectMatrix()
+{
+    m_CameraInfo.mProject = XMMatrixPerspectiveFovLH(m_CameraInfo.Property.Persective.fFovAngleY, m_CameraInfo.Property.Persective.fAspectRatio, 1.0f, 1000.0f);
 }

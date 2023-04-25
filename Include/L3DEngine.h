@@ -12,7 +12,6 @@ struct L3D_STATE_TABLE;
 
 class L3DWindow;
 class L3DInput;
-class L3DCamera;
 class L3DModel;
 class L3DScene;
 
@@ -43,12 +42,11 @@ private:
         ID3D11DeviceContext *piImmediateContext;
     } m_Device;
 
-    L3D_SHADER_TABLE* m_pShaderTable;
-    L3D_STATE_TABLE* m_pStateTable;
+    L3D_SHADER_TABLE* m_pShaderTable = nullptr;
+    L3D_STATE_TABLE* m_pStateTable = nullptr;
 
     L3DWindow* m_pWindow = nullptr;
     L3DInput* m_pInput = nullptr;
-    L3DCamera* m_pCamera = nullptr;
 
     L3D_WINDOW_PARAM m_WindowParam;
 
@@ -89,7 +87,6 @@ private:
     HRESULT InitL3DWindow(HWND* pWnd, HINSTANCE hInstance);
     HRESULT InitSamplerFilter();
     HRESULT InitInput(HWND hWnd, HINSTANCE hInstance);
-    HRESULT InitCamera(float fWidth, float fHeight);
 
     HRESULT _SetupD3D();
     HRESULT _CreateTargetWindow(HWND hWnd);

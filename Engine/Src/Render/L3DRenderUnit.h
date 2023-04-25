@@ -16,13 +16,11 @@ struct ID3DX11EffectConstantBuffer;
 
 struct SCENE_RENDER_OPTION
 {
-    ID3D11Device* piDevice;
-    ID3D11DeviceContext* piImmediateContext;
+    ID3D11Device* piDevice = nullptr;
+    ID3D11DeviceContext* piImmediateContext = nullptr;
 
-    L3D_SHADER_TABLE* pShaderTable;
-    L3D_STATE_TABLE* pStateTable;
-
-    L3DCamera* pCamera;
+    L3D_SHADER_TABLE* pShaderTable = nullptr;
+    L3D_STATE_TABLE* pStateTable = nullptr;
 };
 
 class L3DRenderUnit

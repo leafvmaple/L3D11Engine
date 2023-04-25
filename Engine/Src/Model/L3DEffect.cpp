@@ -50,30 +50,45 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
         HRESULT_ERROR_EXIT(hr);
     }
 
-	hr = D3DX11CreateEffectFromMemory(pCompiledShader->GetBufferPointer(), pCompiledShader->GetBufferSize(), 0, piDevice, &m_piEffect);
-	HRESULT_ERROR_EXIT(hr);
+    hr = D3DX11CreateEffectFromMemory(pCompiledShader->GetBufferPointer(), pCompiledShader->GetBufferSize(), 0, piDevice, &m_piEffect);
+    HRESULT_ERROR_EXIT(hr);
 
-	hr = m_piEffect->GetDesc(&desc);
-	HRESULT_ERROR_EXIT(hr);
+    hr = m_piEffect->GetDesc(&desc);
+    HRESULT_ERROR_EXIT(hr);
 
-	for (int i = 0; i < desc.GlobalVariables; i++)
-	{
-		pVariable = m_piEffect->GetVariableByIndex(i);
-		BOOL_ERROR_EXIT(pVariable);
+    for (int i = 0; i < desc.GlobalVariables; i++)
+    {
+        pVariable = m_piEffect->GetVariableByIndex(i);
+        BOOL_ERROR_EXIT(pVariable);
 
-		pVariable->GetDesc(&variableDesc);
-		pType = pVariable->GetType();
-		BOOL_ERROR_EXIT(pType);
+        pVariable->GetDesc(&variableDesc);
+        pType = pVariable->GetType();
+        BOOL_ERROR_EXIT(pType);
 
-		pType->GetDesc(&typeDesc);
-		BOOL_ERROR_EXIT(pType);
+        pType->GetDesc(&typeDesc);
+        BOOL_ERROR_EXIT(pType);
 
-		if (typeDesc.Type == D3D_SVT_TEXTURE2D)
-		{
-			pSRVariable = pVariable->AsShaderResource();
-			m_vecShader.push_back({ variableDesc.Name, pSRVariable });
-		}
-	}
+        if (typeDesc.Type == D3D_SVT_TEXTURE2D)
+        {
+            pSRVariable = pVariable->AsShaderResource();
+            m_vecShader.push_back({ variableDesc.Name, pSRVariable });
+        }
+    }
+
+    for (int i = 0; i < desc.ConstantBuffers; i++)
+    {
+        auto pVariable = m_piEffect->GetConstantBufferByIndex(i);
+        BOOL_ERROR_EXIT(pVariable);
+
+        pVariable->GetDesc(&variableDesc);
+        pType = pVariable->GetType();
+        BOOL_ERROR_EXIT(pType);
+
+        pType->GetDesc(&typeDesc);
+        BOOL_ERROR_EXIT(pType);
+
+        REG_TO_IDX[variableDesc.ExplicitBindPoint] = i;
+    }
 
     hResult = S_OK;
 Exit0:
@@ -83,6 +98,11 @@ Exit0:
 ID3DX11EffectTechnique* L3DEffect::GetTechniqueByName(const char* szTechniqueName)
 {
     return m_piEffect->GetTechniqueByName(szTechniqueName);
+}
+
+ID3DX11EffectConstantBuffer* L3DEffect::GetConstantBufferByRegister(int nIndex)
+{
+    return m_piEffect->GetConstantBufferByIndex(REG_TO_IDX[nIndex]);
 }
 
 ID3DX11EffectConstantBuffer* L3DEffect::GetConstantBufferByName(const char* szCBName)

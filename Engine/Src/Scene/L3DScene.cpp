@@ -5,32 +5,26 @@
 #include "L3DEnvironment.h"
 
 #include "Model/L3DModel.h"
+#include "Camera/L3DCamera.h"
 #include "State/L3DState.h"
 #include "Render/L3DRenderUnit.h"
+#include "Render/L3DMaterialSystem.h"
 
 #include "IO/LFileReader.h"
 #include "Utility/FilePath.h"
 
 HRESULT L3DScene::Create(ID3D11Device* piDevice, const char* szFileName)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
     L3D_SCENE_RECT rect;
     SCENE_PATH_TABLE pathTable;
 
-    hr = _CreatePathTable(szFileName, &pathTable);
-    HRESULT_ERROR_EXIT(hr);
+    _CreatePathTable(szFileName, &pathTable);
+    _CreateCamera();
 
-    hr = _LoadLogicalSceneRect(pathTable.szSetting, &rect);
-    HRESULT_ERROR_EXIT(hr);
+    _LoadLogicalSceneRect(pathTable.szSetting, &rect);
+    _LoadEnvironmentSetting(piDevice, pathTable);
 
-    hr = _LoadEnvironmentSetting(piDevice, pathTable);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return S_OK;
 }
 
 HRESULT L3DScene::SetParent(IL3DEngine* piEngine)
@@ -66,6 +60,17 @@ Exit0:
 void L3DScene::GetVisibleObjectAll(MODEL_VECTOR& vecModels)
 {
     vecModels = m_DynamicalObjects;
+}
+
+void L3DScene::UpdateCamera()
+{
+    m_RenderContext.RenderToTargeParam.CameraInfo = m_pCamera->GetCameraInfo();
+}
+
+void L3DScene::_CreateCamera()
+{
+    m_pCamera = new(std::nothrow) L3DCamera;
+    m_pCamera->Init();
 }
 
 HRESULT L3DScene::_CreatePathTable(const char* szFileName, SCENE_PATH_TABLE* pPathTable)
@@ -139,6 +144,7 @@ void L3DScene::_UpdateVisibleList()
 
 void L3DScene::_UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption)
 {
+    _CommitConstData(RenderOption);
     RenderOption.piImmediateContext->RSSetState(RenderOption.pStateTable->Rasterizer[L3D_RASTERIZER_STATE_CULL_CLOCKWISE]);
 }
 
@@ -146,6 +152,14 @@ void L3DScene::_UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
 {
     for (auto& pModel : m_VisibleModel)
         pModel->UpdateCommonRenderData(RenderOption);
+}
+
+void L3DScene::_CommitConstData(const SCENE_RENDER_OPTION& RenderOption)
+{
+    m_ShaderCommonParam.Camera.CameraView = m_RenderContext.RenderToTargeParam.CameraInfo.mView;
+    m_ShaderCommonParam.Camera.CameraProject = m_RenderContext.RenderToTargeParam.CameraInfo.mProject;
+
+    g_pMaterialSystem->SetCommonShaderData(RenderOption.piImmediateContext, m_ShaderCommonParam);
 }
 
 void L3DScene::_RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption)

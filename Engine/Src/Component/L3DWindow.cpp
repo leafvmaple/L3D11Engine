@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "L3DWindow.h"
+#include "Camera/L3DCamera.h"
 #include "Scene/L3DScene.h"
 
 #include "L3DFormat.h"
@@ -33,33 +34,45 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DWindow::Update(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption)
-{
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
-    m_piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::LightSteelBlue));
-    m_piImmediateContext->ClearDepthStencilView(m_piDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-    for (auto& pScene : m_SceneList)
-        pScene->BeginRender(RenderOption);
-
-    for (auto& pScene : m_SceneList)
-        pScene->EndRender(RenderOption);
-
-    hr = m_piSwapChain->Present(0, 0);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
-}
-
 HRESULT L3DWindow::AddScene(L3DScene* pScene)
 {
     m_SceneList.push_back(pScene);
 
     return S_OK;
+}
+
+void L3DWindow::BeginPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption)
+{
+    for (auto& scene : m_SceneList)
+    {
+        CAMERA_PROPERTY Property;
+        L3DCamera* pCamera = scene->GetCamera();
+
+        pCamera->GetProperty(Property);
+        Property.Persective.fFovAngleY = XM_PIDIV2;
+        Property.Persective.fAspectRatio = m_Viewport.Width / m_Viewport.Height;
+
+        pCamera->SetProperty(Property);
+
+        scene->UpdateCamera();
+    }
+
+    for (auto& pScene : m_SceneList)
+        pScene->BeginRender(RenderOption);
+}
+
+void L3DWindow::EndPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption)
+{
+    m_piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::LightSteelBlue));
+    m_piImmediateContext->ClearDepthStencilView(m_piDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+    for (auto& pScene : m_SceneList)
+        pScene->EndRender(RenderOption);
+}
+
+void L3DWindow::Present()
+{
+    m_piSwapChain->Present(0, 0);
 }
 
 HRESULT L3DWindow::_CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd)

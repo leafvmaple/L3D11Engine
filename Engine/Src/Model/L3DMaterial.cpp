@@ -13,6 +13,8 @@
 
 #include "IO/LFileReader.h"
 
+#include "Render/L3DMaterialSystem.h"
+
 #include "FX11/inc/d3dx11effect.h"
 
 
@@ -47,6 +49,7 @@ HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePas
     ID3DX11EffectPass* pEffectPass = nullptr;
 
     // _GetRenderPass
+    _UpdateCommonCB();
     _UpdateTechniques(ePass, &pEffectPass);
     _UpdateTextures();
 
@@ -128,6 +131,14 @@ HRESULT L3DMaterial::_UpdateTextures()
     }
 
     return S_OK;
+}
+
+
+void L3DMaterial::_UpdateCommonCB()
+{
+    auto& CommonCB = g_pMaterialSystem->GetCommonCBList();
+    for (auto cb : CommonCB)
+        m_pEffect->GetConstantBufferByRegister(cb.first)->SetConstantBuffer(cb.second);
 }
 
 void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIAL_INSTANCE_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro)

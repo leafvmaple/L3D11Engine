@@ -3,21 +3,23 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
+#include "Define/L3DCameraDefine.h"
+
 using namespace DirectX;
 
 class L3DCamera
 {
 public:
-    HRESULT Init(float fWidth, float fHeight);
+    HRESULT Init();
     HRESULT UpdateYawPitchRoll(float fYaw, float fPitch, float fRoll);
     HRESULT UpdateSightDistance(float fSightDis);
 
-    XMMATRIX GetViewProjcetion();
+    void GetProperty(CAMERA_PROPERTY& Property);
+    void SetProperty(const CAMERA_PROPERTY& Property);
+
+    const CAMERA_INFO& GetCameraInfo() { return m_CameraInfo; };
 
 private:
-    XMMATRIX m_Projection;
-    XMMATRIX m_View;
-
     float m_fYaw   = 1.5f * XM_PI;
     float m_fPitch = 0.25f * XM_PI;
     float m_fRoll  = 0.f;
@@ -28,5 +30,8 @@ private:
     XMVECTOR m_vTarget = XMVectorZero();
     XMVECTOR m_vPostion = XMVectorZero();
 
-    HRESULT ComputeViewMatrix();
+    CAMERA_INFO m_CameraInfo;
+
+    HRESULT _UpdateViewMatrix();
+    void _UpdateProjectMatrix();
 };

@@ -92,8 +92,7 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
     for (int i = 0; i < m_BoneCurMatrix.size(); i++)
         matBone[i] = XMMatrixMultiply(m_p3DMesh->GetMesh().BoneMatrix[i], m_BoneCurMatrix[i]);
 
-    XMMATRIX viewProj = RenderOption.pCamera->GetViewProjcetion();
-    XMStoreFloat4x4(&MeshCB.MatrixWorld, XMLoadFloat4x4(&m_World) * viewProj);
+    MeshCB.MatrixWorld = m_World;
 
     _UpdateModelSharedConsts(matBone, MeshCB);
 }

@@ -53,8 +53,10 @@ private:
 
     HRESULT _UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** ppEffectPass);
     HRESULT _UpdateTextures();
+    void _UpdateCommonCB();
 
     L3DMaterialDefine* m_pMaterialDefine = nullptr;
+    ID3D11Buffer* m_piCommonCB = nullptr;
     L3DEffect* m_pEffect = nullptr;
 
     std::vector<TEXTURE_DATA> m_vecTextures;

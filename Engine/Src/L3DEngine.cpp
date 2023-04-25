@@ -17,6 +17,8 @@
 #include "Camera/L3DCamera.h"
 #include "Component/L3DWindow.h"
 
+#include "Render/L3DMaterialSystem.h"
+
 #include "L3DFormat.h"
 
 #pragma comment(lib, "d3d11.lib")
@@ -79,8 +81,7 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
     // hr = InitInput(hWnd, hInstance);
     // HRESULT_ERROR_EXIT(hr);
 
-    hr = InitCamera(m_WindowParam.Width, m_WindowParam.Height);
-    HRESULT_ERROR_EXIT(hr);
+    g_pMaterialSystem->Init(m_Device.piDevice);
 
     m_bActive = TRUE;
 
@@ -110,10 +111,10 @@ HRESULT L3DEngine::Update(float fDeltaTime)
 
     RenderOption.pShaderTable = m_pShaderTable;
     RenderOption.pStateTable = m_pStateTable;
-    RenderOption.pCamera = m_pCamera;
 
-    hr = m_pWindow->Update(m_Device.piDevice, RenderOption);
-    HRESULT_ERROR_EXIT(hr);
+    m_pWindow->BeginPaint(m_Device.piDevice, RenderOption);
+    m_pWindow->EndPaint(m_Device.piDevice, RenderOption);
+    m_pWindow->Present();
 
     hResult = S_OK;
 Exit0:
@@ -149,8 +150,8 @@ LRESULT L3DEngine::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);  
         break;
     case WM_MOUSEWHEEL:
-        if (m_pCamera)
-            m_pCamera->UpdateSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);
+        /*if (m_pCamera)
+            m_pCamera->UpdateSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);*/
         break;
     case WM_KEYDOWN:
         if (wParam == VK_ESCAPE)
@@ -228,40 +229,14 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DEngine::InitCamera(float fWidth, float fHeight)
-{
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
-    m_pCamera = new L3DCamera;
-    BOOL_ERROR_EXIT(m_pCamera);
-
-    hr = m_pCamera->Init(fWidth, fHeight);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
-}
-
-
 HRESULT L3DEngine::_SetupD3D()
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hReusult = E_FAIL;
-
-    hr = _CreateDeivice();
-    HRESULT_ERROR_EXIT(hr);
+    _CreateDeivice();
 
     m_pShaderTable = CreateShaderTable(m_Device.piDevice);
-    BOOL_ERROR_EXIT(m_pShaderTable);
-
     m_pStateTable = CreateStateTable(m_Device.piDevice);
-    BOOL_ERROR_EXIT(m_pStateTable);
 
-    hReusult = S_OK;
-Exit0:
-    return hReusult;
+    return S_OK;
 }
 
 HRESULT L3DEngine::_CreateTargetWindow(HWND hWnd)
@@ -356,7 +331,6 @@ HRESULT L3DEngine::UpdateCamera(float fDeltaTime)
     float fRoll = 0.f;
 
     BOOL_ERROR_EXIT(m_pInput);
-    BOOL_ERROR_EXIT(m_pCamera);
 
     if (m_pInput->IsMouseButtonDown(0))
     {
@@ -376,8 +350,8 @@ HRESULT L3DEngine::UpdateCamera(float fDeltaTime)
     if (m_pInput->IsKeyDown(DIK_DOWN))
         fPitch -= 0.001f;
 
-    if (fYaw || fPitch || fRoll)
-        m_pCamera->UpdateYawPitchRoll(fYaw, fPitch, fRoll);
+    // if (fYaw || fPitch || fRoll)
+    //    m_pCamera->UpdateYawPitchRoll(fYaw, fPitch, fRoll);
 
     hResult = S_OK;
 Exit0:
