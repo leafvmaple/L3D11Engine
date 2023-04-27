@@ -6,7 +6,7 @@
 #include "Model/L3DModel.h"
 #include "Scene/L3DScene.h"
 
-IL3DEngine* IL3DEngine::m_pInstance = NULL;
+IL3DEngine* IL3DEngine::m_pInstance = nullptr;
 
 IL3DEngine* IL3DEngine::Instance()
 {
@@ -71,3 +71,4 @@ HRESULT ILScene::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILScene*
 Exit0:
     return hResult;
 }
+

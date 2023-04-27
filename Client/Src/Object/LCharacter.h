@@ -11,7 +11,7 @@ public:
     HRESULT Create(IL3DEngine* p3DEngine, const char* szPath);
     HRESULT SetPosition(const XMFLOAT3& Position);
 
-    HRESULT AppendRenderEntity(ILScene* piScene);
+    void AppendRenderEntity(ILScene* piScene);
 
 private:
     ILModel* m_pObject = nullptr;

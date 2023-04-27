@@ -9,6 +9,8 @@ class L3DENGINE_CLASS IL3DEngine;
 class LClient
 {
 public:
+    friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
     LClient();
     ~LClient();
 
@@ -26,4 +28,9 @@ private:
     int m_nFrame;
 
     LObjectMgr* m_pObjectMgr;
+
+    LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    void InitL3DWindow(HINSTANCE hInstance, L3D_WINDOW_PARAM& m_WindowParam);
 };
+
+extern LClient* g_pClient;

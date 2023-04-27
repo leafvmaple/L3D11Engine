@@ -27,12 +27,14 @@ public:
     void BeginRender(const SCENE_RENDER_OPTION& RenderOption);
     void EndRender(const SCENE_RENDER_OPTION& RenderOption);
 
-    HRESULT AddRenderEntity(ILModel* piModel) override;
+    void AddRenderEntity(ILModel* piModel) override;
 
     void GetVisibleObjectAll(MODEL_VECTOR& vecModels);
     
     L3DCamera* GetCamera() { return m_pCamera; }
     void UpdateCamera();
+
+    virtual ILCamera* Get3DCamera();
 
 private:
     struct SCENE_RENDER_QUEUES

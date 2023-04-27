@@ -38,12 +38,6 @@ static const D3D_FEATURE_LEVEL FEATURE_LEVEL_ARRAY_1[] =
 
 extern ID3D11Device* g_p3DDevice = nullptr;
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    L3DEngine* pEngine = dynamic_cast<L3DEngine*>(L3DEngine::Instance());
-    return pEngine->MsgProc(hWnd, msg, wParam, lParam);
-}
-
 L3DEngine::L3DEngine()
 : m_bActive(false)
 , m_CurSampFilter(m_SampFilter[GRAPHICS_LEVEL_MAX])
@@ -60,19 +54,13 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-    BOOL nRetCode = false;
-    HWND hWnd = NULL;
-    UINT uCreateDeviceFlag = 0;
 
     m_WindowParam = WindowParam;
-
-	hr = InitL3DWindow(&hWnd, hInstance);
-	HRESULT_ERROR_EXIT(hr);
 
     hr = _SetupD3D();
     HRESULT_ERROR_EXIT(hr);
 
-    hr = _CreateTargetWindow(hWnd);
+    hr = _CreateTargetWindow(WindowParam.wnd);
     HRESULT_ERROR_EXIT(hr);
 
     hr = InitSamplerFilter();
@@ -140,63 +128,6 @@ HRESULT L3DEngine::AttachScene(L3DScene* pScene)
 HRESULT L3DEngine::Uninit()
 {
     return S_OK;
-}
-
-LRESULT L3DEngine::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg)  
-    {
-    case WM_DESTROY:
-        PostQuitMessage(0);  
-        break;
-    case WM_MOUSEWHEEL:
-        /*if (m_pCamera)
-            m_pCamera->UpdateSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);*/
-        break;
-    case WM_KEYDOWN:
-        if (wParam == VK_ESCAPE)
-            DestroyWindow(hWnd);
-        break;
-    }  
-
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-
-HRESULT L3DEngine::InitL3DWindow(HWND* pWnd, HINSTANCE hInstance)
-{
-    BOOL bRetCode = FALSE;
-    HRESULT hResult = E_FAIL;
-    WNDCLASSEX wndClassEx;
-
-    wndClassEx.cbSize = sizeof(WNDCLASSEX);
-    wndClassEx.style = CS_HREDRAW | CS_VREDRAW;
-    wndClassEx.lpfnWndProc = (WNDPROC)WndProc;
-    wndClassEx.cbClsExtra = 0;
-    wndClassEx.cbWndExtra = 0;
-    wndClassEx.hInstance = hInstance;
-    wndClassEx.hIcon = ::LoadIcon(NULL, IDI_WINLOGO);
-    wndClassEx.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-    wndClassEx.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wndClassEx.lpszMenuName = NULL;
-    wndClassEx.lpszClassName = m_WindowParam.lpszClassName;
-    wndClassEx.hIconSm = NULL;
-
-    bRetCode = RegisterClassEx(&wndClassEx);
-    BOOL_ERROR_EXIT(bRetCode);
-
-    *pWnd = CreateWindow(m_WindowParam.lpszClassName, m_WindowParam.lpszWindowName, WS_OVERLAPPEDWINDOW,
-        m_WindowParam.x, m_WindowParam.y, m_WindowParam.Width, m_WindowParam.Height, NULL, NULL, hInstance, NULL);
-    BOOL_ERROR_EXIT(*pWnd);
-
-    ShowWindow(*pWnd, SW_SHOWDEFAULT);
-
-    bRetCode = UpdateWindow(*pWnd);
-    BOOL_ERROR_EXIT(bRetCode);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
 }
 
 HRESULT L3DEngine::InitSamplerFilter()

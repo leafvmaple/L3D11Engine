@@ -17,8 +17,6 @@ class L3DScene;
 
 class L3DEngine : public IL3DEngine
 {
-    friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 public:
     L3DEngine();
     virtual ~L3DEngine();
@@ -83,8 +81,6 @@ private:
     BOOL m_bActive;
 
 private:
-    LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    HRESULT InitL3DWindow(HWND* pWnd, HINSTANCE hInstance);
     HRESULT InitSamplerFilter();
     HRESULT InitInput(HWND hWnd, HINSTANCE hInstance);
 

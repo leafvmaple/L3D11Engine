@@ -28,9 +28,10 @@ void L3DMaterialSystem::SetCommonShaderData(ID3D11DeviceContext* piDeviceContext
     piDeviceContext->PSSetConstantBuffers(s_CommonCBSlot, 1, &m_piCommonCB);
     piDeviceContext->GSSetConstantBuffers(s_CommonCBSlot, 1, &m_piCommonCB);
     piDeviceContext->CSSetConstantBuffers(s_CommonCBSlot, 1, &m_piCommonCB);
+#else
+    m_Buffers[s_CommonCBSlot] = m_piCommonCB;
 #endif
 
-    m_Buffers[s_CommonCBSlot] = m_piCommonCB;
 }
 
 void L3DMaterialSystem::_InitCommonConstBuffer()

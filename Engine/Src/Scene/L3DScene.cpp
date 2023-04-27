@@ -46,15 +46,10 @@ void L3DScene::EndRender(const SCENE_RENDER_OPTION& RenderOption)
     _RenderMainCamera(RenderOption);
 }
 
-HRESULT L3DScene::AddRenderEntity(ILModel* piModel)
+void L3DScene::AddRenderEntity(ILModel* piModel)
 {
     L3DModel* pModel = dynamic_cast<L3DModel*>(piModel);
-    BOOL_ERROR_EXIT(pModel);
-
     m_DynamicalObjects.push_back(pModel);
-
-Exit0:
-    return S_OK;
 }
 
 void L3DScene::GetVisibleObjectAll(MODEL_VECTOR& vecModels)
@@ -65,6 +60,11 @@ void L3DScene::GetVisibleObjectAll(MODEL_VECTOR& vecModels)
 void L3DScene::UpdateCamera()
 {
     m_RenderContext.RenderToTargeParam.CameraInfo = m_pCamera->GetCameraInfo();
+}
+
+ILCamera* L3DScene::Get3DCamera()
+{
+    return m_pCamera;
 }
 
 void L3DScene::_CreateCamera()

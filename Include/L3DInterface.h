@@ -93,6 +93,8 @@ struct L3D_WINDOW_PARAM
     BOOL bWindow;
     LPCWSTR lpszClassName;
     LPCWSTR lpszWindowName;
+
+    HWND wnd;
 };
 
 struct L3D_SCENE_RECT
@@ -145,10 +147,18 @@ public:
     virtual HRESULT SetScale(const XMFLOAT3& Scale) = 0;
 };
 
+class L3DENGINE_CLASS ILCamera
+{
+public:
+    virtual void SetTarget(const XMVECTOR vTarget) = 0;
+    virtual void SetPosition(const XMVECTOR vPosition) = 0;
+};
+
 class L3DENGINE_CLASS ILScene
 {
 public:
-	static HRESULT Create(IL3DEngine* pL3DEngine, const char* szFileName, ILScene** ppScene);
+    static HRESULT Create(IL3DEngine* pL3DEngine, const char* szFileName, ILScene** ppScene);
 
-    virtual HRESULT AddRenderEntity(ILModel* pModel) = 0;
+    virtual ILCamera* Get3DCamera() = 0;
+    virtual void AddRenderEntity(ILModel* pModel) = 0;
 };

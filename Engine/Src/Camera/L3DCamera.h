@@ -3,16 +3,20 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
+#include "L3DInterface.h"
 #include "Define/L3DCameraDefine.h"
 
 using namespace DirectX;
 
-class L3DCamera
+class L3DCamera : public ILCamera
 {
 public:
     HRESULT Init();
     HRESULT UpdateYawPitchRoll(float fYaw, float fPitch, float fRoll);
     HRESULT UpdateSightDistance(float fSightDis);
+
+    virtual void SetTarget(const XMVECTOR vTarget) { m_vTarget = vTarget; };
+    virtual void SetPosition(const XMVECTOR vPosition) { m_vPostion = vPosition; };
 
     void GetProperty(CAMERA_PROPERTY& Property);
     void SetProperty(const CAMERA_PROPERTY& Property);

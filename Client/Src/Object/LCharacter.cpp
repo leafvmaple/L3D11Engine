@@ -30,7 +30,7 @@ Exit0:
     return hResult;
 }
 
-HRESULT LCharacter::AppendRenderEntity(ILScene* piScene)
-{
-    return piScene->AddRenderEntity(m_pObject);
+void LCharacter::AppendRenderEntity(ILScene* piScene)
+{ 
+    piScene->AddRenderEntity(m_pObject);
 }
