@@ -12,6 +12,9 @@
     <Filter Include="Source Files\Object">
       <UniqueIdentifier>{42ad233f-becc-4d0d-a4f2-741190b13311}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\World">
+      <UniqueIdentifier>{2fce7c60-c85a-4928-8f06-c8da03fa1e89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\LClient.cpp">
@@ -22,6 +25,12 @@
     </ClCompile>
     <ClCompile Include="Src\Object\LCharacter.cpp">
       <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\World\LCamera.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\World\LScene.cpp">
+      <Filter>Source Files\World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -36,6 +45,12 @@
     </ClInclude>
     <ClInclude Include="Src\LClient.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\World\LCamera.h">
+      <Filter>Source Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\World\LScene.h">
+      <Filter>Source Files\World</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

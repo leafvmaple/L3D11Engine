@@ -2,26 +2,14 @@
 #include "L3DInterface.h"
 
 #include "Object/LCharacter.h"
+#include "World/LScene.h"
+#include "World/LCamera.h"
 
 extern LClient* g_pClient = new LClient;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     return g_pClient->MsgProc(hWnd, msg, wParam, lParam);
-}
-
-LClient::LClient()
-: m_fLastTime(0.f)
-, m_fTimeElapsed(0.f)
-, m_nFrame(0)
-, m_pObjectMgr(NULL)
-{
-
-}
-
-LClient::~LClient()
-{
-
 }
 
 HRESULT LClient::Init(HINSTANCE hInstance)
@@ -45,16 +33,10 @@ HRESULT LClient::Init(HINSTANCE hInstance)
 
     InitL3DWindow(hInstance, WindowParam);
 
-    m_pObjectMgr = new LObjectMgr;
-    m_pObjectMgr->Init(hInstance, WindowParam);
+    LObjectMgr::Instance().Init(hInstance, WindowParam);
 
-    piEngine = IL3DEngine::Instance();
-    hr = ILScene::Create(piEngine, "Res/maps/唐门登陆界面/唐门登陆界面.jsonmap", &piScene);
-    HRESULT_ERROR_EXIT(hr);
-
-    pCharacter = m_pObjectMgr->CreateModel<LCharacter>("Res/Mesh/A055_body.mesh");
-    pCharacter->AppendRenderEntity(piScene);
-    pCharacter->SetPosition(XMFLOAT3(0, -45, 0));
+    m_pScene = new LScene;
+    m_pScene->Create("Res/maps/唐门登陆界面/唐门登陆界面.jsonmap");
 
     m_fLastTime = (float)timeGetTime();
 
@@ -73,8 +55,8 @@ HRESULT LClient::Update()
     fCurTime = (float)timeGetTime();
     fDeltaTime = (fCurTime - m_fLastTime) * 0.001f;
 
-    hr = m_pObjectMgr->Update(fDeltaTime);
-    HRESULT_ERROR_EXIT(hr);
+    m_pScene->Update(fDeltaTime);
+    LObjectMgr::Instance().Update(fDeltaTime);
 
     hr = ShowFPS(fDeltaTime);
     HRESULT_ERROR_EXIT(hr);
@@ -88,16 +70,12 @@ Exit0:
 
 void LClient::Uninit()
 {
-    if (m_pObjectMgr)
-    {
-        m_pObjectMgr->Uninit();
-        SAFE_DELETE(m_pObjectMgr);
-    }
+    SAFE_DELETE(m_pScene);
 }
 
 BOOL LClient::IsActive()
 {
-    return m_pObjectMgr->IsActive();
+    return LObjectMgr::Instance().IsActive();
 }
 
 HRESULT LClient::ShowFPS(float fDeltaTime)
@@ -133,8 +111,8 @@ LRESULT LClient::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     case WM_MOUSEWHEEL:
     {
-        /*if (m_pCamera)
-            m_pCamera->UpdateSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);*/
+        if (m_pScene)
+            m_pScene->m_pCamera->SetSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);
         break;
     }
     case WM_KEYDOWN:

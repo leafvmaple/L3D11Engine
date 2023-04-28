@@ -6,13 +6,12 @@
 
 class L3DENGINE_CLASS IL3DEngine;
 
+class LScene;
+
 class LClient
 {
 public:
     friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-    LClient();
-    ~LClient();
 
     HRESULT Init(HINSTANCE hInstance);
     HRESULT Update();
@@ -23,11 +22,11 @@ public:
     HRESULT ShowFPS(float fDeltaTime);
 protected:
 private:
-    float m_fLastTime;
-    float m_fTimeElapsed;
-    int m_nFrame;
+    float m_fLastTime = 0.f;
+    float m_fTimeElapsed = 0.f;
+    int m_nFrame = 0;
 
-    LObjectMgr* m_pObjectMgr;
+    LScene* m_pScene = nullptr;
 
     LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void InitL3DWindow(HINSTANCE hInstance, L3D_WINDOW_PARAM& m_WindowParam);

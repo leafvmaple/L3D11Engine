@@ -22,12 +22,16 @@
     <ClCompile Include="Src\LClient.cpp" />
     <ClCompile Include="Src\LObjectMgr.cpp" />
     <ClCompile Include="Src\Object\LCharacter.cpp" />
+    <ClCompile Include="Src\World\LCamera.cpp" />
+    <ClCompile Include="Src\World\LScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\LClient.h" />
     <ClInclude Include="Src\LObjectMgr.h" />
     <ClInclude Include="Src\Object\LCharacter.h" />
     <ClInclude Include="Src\Object\LModel.h" />
+    <ClInclude Include="Src\World\LCamera.h" />
+    <ClInclude Include="Src\World\LScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\LEngine.vcxproj">
@@ -123,8 +127,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

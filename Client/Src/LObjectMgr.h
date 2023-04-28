@@ -18,6 +18,10 @@ public:
     HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam);
     void Uninit();
 
+    static LObjectMgr& Instance();
+
+    LScene* CreateScene(const char* szFileName);
+
     template<typename T>
     T* CreateModel(const char* szFileName)
     {
@@ -43,4 +47,6 @@ public:
 private:
     std::list<LModel*> m_ObjectList;
     std::list<LScene*> m_SceneList;
+
+    static LObjectMgr* m_pInstance;
 };

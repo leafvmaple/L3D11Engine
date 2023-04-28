@@ -15,8 +15,8 @@ public:
     HRESULT UpdateYawPitchRoll(float fYaw, float fPitch, float fRoll);
     HRESULT UpdateSightDistance(float fSightDis);
 
-    virtual void SetTarget(const XMVECTOR vTarget) { m_vTarget = vTarget; };
-    virtual void SetPosition(const XMVECTOR vPosition) { m_vPostion = vPosition; };
+    virtual void SetTarget(const XMVECTOR vTarget);
+    virtual void SetPosition(const XMVECTOR vPosition);
 
     void GetProperty(CAMERA_PROPERTY& Property);
     void SetProperty(const CAMERA_PROPERTY& Property);
@@ -36,6 +36,6 @@ private:
 
     CAMERA_INFO m_CameraInfo;
 
-    HRESULT _UpdateViewMatrix();
+    void _UpdateViewMatrix();
     void _UpdateProjectMatrix();
 };
