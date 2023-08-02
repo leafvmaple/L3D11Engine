@@ -32,14 +32,11 @@ enum LOBJECT_MESH_TYPE
 
 struct Vertex
 {
-    Vertex(){}
-    Vertex(float x, float y, float z)
-    {
-        _x = x;
-        _y = y;
-        _z = z;
-    }
-    float _x, _y, _z;
+    Vertex() {}
+    Vertex(float x, float y, float z) : _x(x), _y(y), _z(z) {}
+    float _x = .0f;
+    float _y = .0f;
+    float _z = .0f;
 };
 
 struct LightVertex : Vertex
@@ -52,7 +49,9 @@ struct LightVertex : Vertex
         _ny = vNormal.y;
         _nz = vNormal.z;
     }
-    float _nx, _ny, _nz;
+    float _nx = 0.f;
+    float _ny = 0.f;
+    float _nz = 0.f;
     XMFLOAT3 operator - (CONST LightVertex& v) const {return XMFLOAT3(_nx - v._nx, _nx - v._nx, _nz - v._nz);}
 };
 
@@ -74,7 +73,8 @@ struct TexVertex : ColorVertex
         _u = u;
         _v = v;
     }
-    float _u, _v;
+    float _u = 0.f;
+    float _v = 0.f;
 };
 
 struct ADAPTERMODE

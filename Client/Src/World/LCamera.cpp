@@ -12,6 +12,11 @@ void LCamera::SetSightDistance(float fSightDis)
     m_fSightDis = std::max(m_fSightDis, 3.f);
 }
 
+void LCamera::SetYaw(float fYaw)
+{
+    m_fYaw = fYaw;
+}
+
 void LCamera::Update()
 {
     float x = m_fSightDis * sinf(m_fPitch) * cosf(m_fYaw);

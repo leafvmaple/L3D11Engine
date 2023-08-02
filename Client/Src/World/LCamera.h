@@ -9,6 +9,7 @@ class LCamera
 public:
     void Init(ILCamera* piCamera);
     void SetSightDistance(float fSightDis);
+    void SetYaw(float fYaw);
 
     void Update();
 

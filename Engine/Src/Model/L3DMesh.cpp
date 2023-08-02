@@ -378,15 +378,15 @@ HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* 
         }
     }
 
-    desc.ByteWidth = uBufferSize;
-    desc.Usage = D3D11_USAGE_IMMUTABLE;
-    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
+    desc.ByteWidth           = uBufferSize;
+    desc.Usage               = D3D11_USAGE_IMMUTABLE;
+    desc.BindFlags           = D3D11_BIND_VERTEX_BUFFER;
+    desc.CPUAccessFlags      = 0;
+    desc.MiscFlags           = 0;
     desc.StructureByteStride = 0;
 
-    InitData.pSysMem = pbyVertexBuffer;
-    InitData.SysMemPitch = 0;
+    InitData.pSysMem          = pbyVertexBuffer;
+    InitData.SysMemPitch      = 0;
     InitData.SysMemSlicePitch = 0;
 
     hr = piDevice->CreateBuffer(&desc, &InitData, &m_NormalMesh.piVertexBuffer);

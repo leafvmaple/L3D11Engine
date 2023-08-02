@@ -19,8 +19,12 @@ enum DEPTHSTENCIL_STATE_ID
 
 struct L3D_STATE_TABLE
 {
-	ID3D11RasterizerState* Rasterizer[L3D_RASTERIZER_STATE_COUNT];
+	ID3D11RasterizerState*   Rasterizer[L3D_RASTERIZER_STATE_COUNT];
 	ID3D11DepthStencilState* DepthStencilState[L3D_DEPTH_WRITE_COUNT];
 };
 
+/*
+* Create Rasterizer State
+* Create Depth Stencil State
+*/
 L3D_STATE_TABLE* CreateStateTable(ID3D11Device* piDevice);

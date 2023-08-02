@@ -8,12 +8,12 @@
 
 HRESULT L3DWindow::Init(ID3D11Device* piDevice, HWND hWnd)
 {
-    HRESULT hr = E_FAIL;
+    HRESULT hr      = E_FAIL;
     HRESULT hResult = E_FAIL;
 
+    LONG nWidth     = 0;
+    LONG nHeight    = 0;
     RECT Rect;
-    LONG nWidth = 0;
-    LONG nHeight = 0;
 
     piDevice->GetImmediateContext(&m_piImmediateContext);
     BOOL_ERROR_EXIT(m_piImmediateContext);
@@ -63,7 +63,7 @@ void L3DWindow::BeginPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& Re
 
 void L3DWindow::EndPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption)
 {
-    m_piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::LightSteelBlue));
+    m_piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::Black));
     m_piImmediateContext->ClearDepthStencilView(m_piDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     for (auto& pScene : m_SceneList)
@@ -77,31 +77,31 @@ void L3DWindow::Present()
 
 HRESULT L3DWindow::_CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-    IDXGIDevice* piDXGIDevice = nullptr;
+    HRESULT       hr            = E_FAIL;
+    HRESULT       hResult       = E_FAIL;
+    IDXGIDevice*  piDXGIDevice  = nullptr;
     IDXGIAdapter* piDXGIAdapter = nullptr;
     IDXGIFactory* piDXGIFactory = nullptr;
     DXGI_SWAP_CHAIN_DESC SwapChainDesc;
 
     // DXGI_MODE_DESC
-    SwapChainDesc.BufferCount = 1;
-    SwapChainDesc.BufferDesc.Width = uWidth;
-    SwapChainDesc.BufferDesc.Height = uHeight;
-    SwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+    SwapChainDesc.BufferCount                        = 1;
+    SwapChainDesc.BufferDesc.Width                   = uWidth;
+    SwapChainDesc.BufferDesc.Height                  = uHeight;
+    SwapChainDesc.BufferDesc.RefreshRate.Numerator   = 60;
     SwapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    SwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    SwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    SwapChainDesc.BufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
+    SwapChainDesc.BufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    SwapChainDesc.BufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
     // DXGI_SAMPLE_DESC
-    SwapChainDesc.SampleDesc.Count = 1;     // 1X MASS (MultiSample Anti-Aliasing) 
-    SwapChainDesc.SampleDesc.Quality = 0;
+    SwapChainDesc.SampleDesc.Count                   = 1;     // 1X MASS (MultiSample Anti-Aliasing) 
+    SwapChainDesc.SampleDesc.Quality                 = 0;
 
-    SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    SwapChainDesc.OutputWindow = hWnd;
-    SwapChainDesc.Windowed = TRUE; // from SDK: should not create a full-screen swap chain
-    SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    SwapChainDesc.Flags = 0;
+    SwapChainDesc.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    SwapChainDesc.OutputWindow                       = hWnd;
+    SwapChainDesc.Windowed                           = true; // from SDK: should not create a full-screen swap chain
+    SwapChainDesc.SwapEffect                         = DXGI_SWAP_EFFECT_DISCARD;
+    SwapChainDesc.Flags                              = 0;
 
     hr = piDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&piDXGIDevice);
     HRESULT_ERROR_EXIT(hr);
@@ -139,8 +139,8 @@ HRESULT L3DWindow::_CreateViewport(unsigned uWidth, unsigned uHeight)
 
     m_Viewport.TopLeftX = 0;
     m_Viewport.TopLeftY = 0;
-    m_Viewport.Width = (FLOAT)uWidth;
-    m_Viewport.Height = (FLOAT)uHeight;
+    m_Viewport.Width    = (FLOAT)uWidth;
+    m_Viewport.Height   = (FLOAT)uHeight;
     m_Viewport.MinDepth = 0.0f;
     m_Viewport.MaxDepth = 1.0f;
 
@@ -153,24 +153,24 @@ Exit0:
 
 HRESULT L3DWindow::_CreateStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
+    HRESULT          hr                  = E_FAIL;
+    HRESULT          hResult             = E_FAIL;
     ID3D11Texture2D* pDepthStencilBuffer = nullptr;
     D3D11_TEXTURE2D_DESC depthStencilDesc;
 
-    depthStencilDesc.Width = uWidth;
-    depthStencilDesc.Height = uHeight;
-    depthStencilDesc.MipLevels = 1;
-    depthStencilDesc.ArraySize = 1;
-    depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilDesc.Width              = uWidth;
+    depthStencilDesc.Height             = uHeight;
+    depthStencilDesc.MipLevels          = 1;
+    depthStencilDesc.ArraySize          = 1;
+    depthStencilDesc.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-    depthStencilDesc.SampleDesc.Count = 1;
+    depthStencilDesc.SampleDesc.Count   = 1;
     depthStencilDesc.SampleDesc.Quality = 0;
 
-    depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    depthStencilDesc.CPUAccessFlags = 0;
-    depthStencilDesc.MiscFlags = 0;
+    depthStencilDesc.Usage              = D3D11_USAGE_DEFAULT;
+    depthStencilDesc.BindFlags          = D3D11_BIND_DEPTH_STENCIL;
+    depthStencilDesc.CPUAccessFlags     = 0;
+    depthStencilDesc.MiscFlags          = 0;
 
     hr = piDevice->CreateTexture2D(&depthStencilDesc, 0, &pDepthStencilBuffer);
     HRESULT_ERROR_EXIT(hr);
@@ -185,7 +185,7 @@ Exit0:
 
 HRESULT L3DWindow::_CreateSwapChainRTV(ID3D11Device* piDevice, IDXGISwapChain* piSwapChain)
 {
-    HRESULT hr = E_FAIL;
+    HRESULT hr      = E_FAIL;
     HRESULT hResult = E_FAIL;
     ID3D11Texture2D* piSwapChainBuffer = nullptr;
 
@@ -212,7 +212,7 @@ Exit0:
 
 L3DWindow* L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd)
 {
-    HRESULT hr = E_FAIL;
+    HRESULT hr      = E_FAIL;
     HRESULT hResult = E_FAIL;
 
     L3DWindow* pWindow = new L3DWindow;

@@ -10,15 +10,15 @@
 struct L3D_SHADER_TABLE
 {
 	ID3D11VertexShader* Vertex[L3D_VERTEX_SHADER_COUNT];
-	ID3D11PixelShader* Pixel[L3D_PIXEL_SHADER_COUNT];
-	ID3D11InputLayout* Layout[L3D_INPUT_LAYOUT_COUNT];
+	ID3D11PixelShader*  Pixel[L3D_PIXEL_SHADER_COUNT];
+	ID3D11InputLayout*  Layout[L3D_INPUT_LAYOUT_COUNT];
 };
 
 struct _LAYOUT_INFO
 {
-	L3D_INPUT_LAYOUT eInputLayout;
+	L3D_INPUT_LAYOUT  eInputLayout;
 	L3D_VERTEX_SHADER eVertexShader;
-	unsigned uDescCount;
+	unsigned int uDescCount;
 	D3D11_INPUT_ELEMENT_DESC DescArr[30];
 };
 
@@ -27,14 +27,14 @@ struct _SHADER_INFO
 	union
 	{
 		int nID;
-		L3D_VERTEX_SHADER   eVertexShaderID;
-		L3D_PIXEL_SHADER    ePixelShaderID;
+		L3D_VERTEX_SHADER eVertexShaderID;
+		L3D_PIXEL_SHADER  ePixelShaderID;
 	} ID;
-	unsigned    uShaderID;
-	const char* pcszSourceName;
-	const char* pcszEntryPoint;
-	const char* pcszShaderModel;
-	const char* pcszMacroList;
+	unsigned    uShaderID = 0;
+	const char* pcszSourceName  = nullptr;
+	const char* pcszEntryPoint  = nullptr;
+	const char* pcszShaderModel = nullptr;
+	const char* pcszMacroList   = nullptr;
 };
 
 static const _LAYOUT_INFO INPUT_LAYOUT_LIST[] =
@@ -44,8 +44,8 @@ static const _LAYOUT_INFO INPUT_LAYOUT_LIST[] =
 		L3D_VERTEX_SHADER_BOX,
 		2,
 		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0 , D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0 , D3D11_INPUT_PER_VERTEX_DATA, 0}, // XYZ
+			{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}, // RGBA
 		}
 	},
 	{
@@ -64,4 +64,9 @@ static const _LAYOUT_INFO INPUT_LAYOUT_LIST[] =
 	},
 };
 
+/*
+* Create Vertex Shader
+* Create Pixel Shader
+* Create Input Layout
+*/
 L3D_SHADER_TABLE* CreateShaderTable(ID3D11Device* piDevice);

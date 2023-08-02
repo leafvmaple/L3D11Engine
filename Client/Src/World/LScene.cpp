@@ -13,6 +13,7 @@ void LScene::Create(const char* szFileName)
     
     m_pCamera = new LCamera;
     m_pCamera->Init(m_piScene->Get3DCamera());
+    m_pCamera->SetYaw(-0.25 * XM_PI);
 
     pCharacter = LObjectMgr::Instance().CreateModel<LCharacter>("Res/Mesh/A055_body.mesh");
     pCharacter->AppendRenderEntity(m_piScene);

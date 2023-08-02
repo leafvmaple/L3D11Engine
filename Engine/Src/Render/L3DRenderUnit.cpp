@@ -16,7 +16,6 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
 
     piInputLayout = Param.pShaderTable->Layout[Stage.eInputLayout];
     Param.piImmediateContext->IASetInputLayout(piInputLayout);
-
     Param.piImmediateContext->IASetPrimitiveTopology(Stage.eTopology);
 
     Param.piImmediateContext->IASetVertexBuffers(0, 1, &Stage.VertexBuffer.piBuffer, &Stage.VertexBuffer.uStride, &Stage.VertexBuffer.uOffset);

@@ -185,21 +185,21 @@ struct RENDER_STATE_DRAW
 
 struct RENDER_STAGE_INPUT_ASSEMBLER
 {
-    L3D_INPUT_LAYOUT eInputLayout;
+    L3D_INPUT_LAYOUT         eInputLayout;
     D3D11_PRIMITIVE_TOPOLOGY eTopology;
 
     struct VERTEX_BUFFER
     {
-        ID3D11Buffer* piBuffer;
-        UINT uStride;
-        UINT uOffset;
+        ID3D11Buffer* piBuffer = nullptr;
+        UINT          uStride  = 0;
+        UINT          uOffset  = 0;
     } VertexBuffer;
 
     struct INDEX_BUFFER
     {
-        ID3D11Buffer* piBuffer;
-        DXGI_FORMAT eFormat;
-        UINT uOffset;
+        ID3D11Buffer* piBuffer = nullptr;
+        DXGI_FORMAT   eFormat  = DXGI_FORMAT_UNKNOWN;
+        UINT          uOffset  = 0;
     } IndexBuffer;
 
     RENDER_STATE_DRAW Draw;
