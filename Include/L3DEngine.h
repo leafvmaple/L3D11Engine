@@ -89,6 +89,4 @@ private:
     HRESULT _CreateDeivice();
 
     HRESULT UpdateMessage();
-    HRESULT UpdateInput();
-    HRESULT UpdateCamera(float fDeltaTime);
 };

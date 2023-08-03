@@ -63,7 +63,7 @@ void L3DWindow::BeginPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& Re
 
 void L3DWindow::EndPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption)
 {
-    m_piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::Black));
+    m_piImmediateContext->ClearRenderTargetView(m_piRenderTargetView, reinterpret_cast<const float*>(&Colors::White));
     m_piImmediateContext->ClearDepthStencilView(m_piDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     for (auto& pScene : m_SceneList)

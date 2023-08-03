@@ -41,6 +41,7 @@ public:
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass);
 
     HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
+    HRESULT SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer* pSharedCB);
 
 private:
     struct PASS_TEXTURE

@@ -127,7 +127,7 @@ struct VertexInput
     float2 TexCoords[1] : TEXCOORD0;
 
     float4 Weights  : BONEWEIGHTS0;
-    uint4  Indices  : BONEINDICES0;
+    uint4  Indices  : BONEINDICES0; // 关联的骨骼，最大4个
     float4 Tangent  : TANGENT0;
 };
 
@@ -135,16 +135,6 @@ struct VertexOutput
 {
     float4 OutPosition          : SV_Position;
     float4 Color                : COLOR0;
-	float4 ParticleVertexColor  : COLOR1;
-	float4 ScreenMotion		    : COLOR2;
-	float4 MatrixWorld0		: COLOR3;
-	float4 MatrixWorld1		: COLOR4;
-	float4 MatrixWorld2		: COLOR5;
-	float4 MatrixWorld3		: COLOR6;
-	float4 MatrixWorldInverse0 : COLOR7;
-	float4 MatrixWorldInverse1 : COLOR8;
-	float4 MatrixWorldInverse2 : COLOR9;
-	float4 MatrixWorldInverse3 : COLOR10; 
     float4 WorldPosition        : TEXCOORD0;
     float4 Normal_Fog           : TEXCOORD1;
     float4 ScreenPosition       : TEXCOORD2;
@@ -176,13 +166,15 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput Input)
     normal   = mul(Input.Normal,         InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
     tangent  = mul(Input.Tangent.xyz,    InvTransposeCustomMatrixBonesX)					    * Input.Weights.x;
 
+    // 第二个关联的骨骼
     if (Input.Indices.y != 255)                                              
     {
         float3x3 InvTransposeCustomMatrixBonesY = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.y]);                                                                      
         position    += mul(Input.Position,      g_CustomMatrixBones[Input.Indices.y])           * Input.Weights.y;
         normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesY)					* Input.Weights.y;
         tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesY)					* Input.Weights.y;
-    }                                                                      
+    }
+    // 第三个关联的骨骼
     if (Input.Indices.z != 255)                                              
     {
         float3x3 InvTransposeCustomMatrixBonesZ = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.z]);                                                                      
@@ -190,7 +182,7 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput Input)
         normal      += mul(Input.Normal,        InvTransposeCustomMatrixBonesZ)					* Input.Weights.z;
         tangent     += mul(Input.Tangent.xyz,   InvTransposeCustomMatrixBonesZ)					* Input.Weights.z;
     }                                              
-
+    // 第四个关联的骨骼
     if (Input.Indices.w != 255)                                              
     {
         float3x3 InvTransposeCustomMatrixBonesW = GetMatrixForNormal(g_CustomMatrixBones[Input.Indices.w]);                                                                      

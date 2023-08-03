@@ -165,6 +165,10 @@ void L3DModel::_InitRenderUnits()
             pMaterial->CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &m_RenderData.piModelSharedCB);
             _UpdateModelVariablesIndices();
         }
+        else
+        {
+            pMaterial->SetIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, m_RenderData.piModelSharedCB);
+        }
 
         pMaterial->CreateIndividualCB(MATERIAL_INDIV_CB::SUBSET, &m_RenderData.SubsetCB[i]);
 

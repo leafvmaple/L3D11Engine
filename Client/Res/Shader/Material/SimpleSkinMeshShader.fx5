@@ -49,8 +49,63 @@ struct VertexOut
 {
     float4 PosH      : SV_POSITION;
     float4 Color     : COLOR;
-    float2 TexCoords : TEXCOORD0;
+    
+    float4 WorldPosition  : TEXCOORD0;
+    float4 Normal_Fog     : TEXCOORD1;
+    float4 ScreenPosition : TEXCOORD2;
+    float2 TexCoords      : TEXCOORD4;
 };
+
+struct MaterialPixelParameters
+{
+    float2 TexCoords;
+    float3 WorldNormal;
+    float3 WorldPosition; 
+    float4 ScreenPosition;
+    float4 OutPosition;
+    float4 VertexColor;
+    float  FogFactor;
+};
+
+struct ParamsMainPixelNode
+{
+    float3  Albedo;
+    float3  SpecularColor;
+    float   Fresnel;
+    float   Roughness;
+    float3  Emissive;
+    float   Opacity;
+    float   PixelDepthOffset;
+    float3  Ambient;
+	float	AO;
+};
+
+
+void CalculateMainPixelNode(in out MaterialPixelParameters Parameters, in out ParamsMainPixelNode MainNodeParam)
+{
+	float4 local1 = _0_local1_Texture.Sample(g_Sampler_0, Parameters.TexCoords.xy);
+	MainNodeParam.Albedo  = local1.rgb;
+	MainNodeParam.Fresnel = 0.5f;
+	MainNodeParam.AO      = 1.0f;
+	MainNodeParam.Opacity = local1.a;
+	MainNodeParam.PixelDepthOffset = 0.0f;
+}
+
+MaterialPixelParameters GetMaterialParameters(VertexOut Input)
+{
+    MaterialPixelParameters Params = (MaterialPixelParameters) 0;
+
+    Params.TexCoords   = Input.TexCoords;
+    Params.VertexColor = Input.Color;
+    
+    Params.WorldNormal      = normalize(Input.Normal_Fog.xyz);
+    Params.FogFactor        = Input.Normal_Fog.w;
+    Params.ScreenPosition   = Input.ScreenPosition;
+	Params.OutPosition		= Input.PosH;
+    Params.WorldPosition    = Input.WorldPosition.xyz;
+	
+    return Params;
+}
 
 float4 GetDeviceCoordinate(float4 InputPosition, float4x4 WorldMatrix, float4x4 ViewMatrix, float4x4 ProjMatrix)
 {
@@ -61,12 +116,8 @@ VertexOut VS(VertexIn vin)
 {
     VertexOut vout;
     
-    // vout.PosH = mul(vin.Position, g_ModelParams.MatrixWorld);
     vout.PosH = GetDeviceCoordinate(vin.Position, g_ModelParams.MatrixWorld, g_Com.Camera.CameraView, g_Com.Camera.CameraProject);
-    
-    vout.Color = float4(vin.Normal, 1.0f);
-    // vout.Color = vin.Color;
-
+    vout.Color = vin.Color;
     vout.TexCoords = vin.TexCoords;
     
     return vout;
@@ -74,10 +125,22 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_Target
 {
-    float4 local1 = _0_local1_Texture.Sample(g_Sampler_0, pin.TexCoords.xy);
-    local1.a = 1.0f;
+    float4 retColor = 0;
+    float3 color = 0;
 
-    return local1;
+    MaterialPixelParameters Params = GetMaterialParameters(pin);
+
+    ParamsMainPixelNode PixelMainNode = (ParamsMainPixelNode)0;
+	CalculateMainPixelNode(Params, PixelMainNode);
+
+    color = PixelMainNode.Albedo;
+    color +=  PixelMainNode.Ambient;
+    color +=  PixelMainNode.Emissive;
+
+    retColor.rgb = color;
+    retColor.a = PixelMainNode.Opacity;
+
+    return retColor;
 }
 
 technique11 Color

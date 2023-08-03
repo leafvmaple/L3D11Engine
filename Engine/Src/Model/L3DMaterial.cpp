@@ -85,6 +85,36 @@ Exit0:
     return hResult;
 }
 
+HRESULT L3DMaterial::SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer* pSharedCB)
+{
+    HRESULT hResult = E_FAIL;
+    ID3DX11EffectConstantBuffer* pCB = nullptr;
+    ID3D11Buffer* pBuffer = nullptr;
+
+    switch (eCBType)
+    {
+    case MATERIAL_INDIV_CB::SUBSET:
+    {
+        pCB = m_pEffect->GetConstantBufferByName("SubsetConstParam");
+        break;
+    }
+    case MATERIAL_INDIV_CB::MODELSHARED:
+    {
+        pCB = m_pEffect->GetConstantBufferByName("ModelSharedParam");
+        break;
+    }
+    default:
+        break;
+    }
+
+    pSharedCB->GetConstantBuffer(&pBuffer);
+    pCB->SetConstantBuffer(pBuffer);
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
+}
+
 HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName)
 {
     for (auto it = m_vecTextures.begin(); it != m_vecTextures.end(); it++)

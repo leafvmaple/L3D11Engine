@@ -29,7 +29,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     WindowParam.Height = 600;
     WindowParam.bWindow = TRUE;
     WindowParam.lpszClassName = TEXT("LDirect3D");
-    WindowParam.lpszWindowName = TEXT("LD3D Engine");
+    WindowParam.lpszWindowName = TEXT("L3D Engine");
 
     InitL3DWindow(hInstance, WindowParam);
 

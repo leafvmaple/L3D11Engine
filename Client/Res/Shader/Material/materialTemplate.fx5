@@ -1,0 +1,1530 @@
+#ifndef MATERIAL_TEMPLATE_FX5
+#define MATERIAL_TEMPLATE_FX5
+//PS中计算切线空间
+//#define NORMALMAP
+#ifdef NORMALMAP
+
+#ifndef DELTA
+#define DELTA (0.00001f)
+#endif
+
+#define DEFINE_FUNC_FULL_PIPELINE(DefineFunc)		\
+DefineFunc(MaterialVertexParameters)				\
+DefineFunc(MaterialPixelParameters)
+//DefineFunc(MaterialTessllationParameters)			\
+//DefineFunc(MaterialGeometryParameters)				\				
+
+float3x3 ComputeTangentFrame(float3 N,float3 p,float2 uv)
+{
+    float3 dp1 = ddx(p);
+    float3 dp2 = ddy(p);
+    float2 duv1 = ddx(uv);
+    float2 duv2 = ddy(uv);
+    
+    float3x3 M = float3x3(dp1,dp2,cross(dp1,dp2));
+    float2x3 inversetransposeM = 
+        float2x3(cross(M[1],M[2]),cross(M[2],M[0]));
+    float3 T = mul(float2(duv1.x,duv2.x),inversetransposeM);
+    float3 B = mul(float2(duv1.y,duv2.y),inversetransposeM);
+
+    //float r = (dot(cross(T,B),N)<0.0f) ? -1.0f : 1.0f;
+    return float3x3(normalize(T),normalize(B),N);
+}
+
+float3 CalcFaceNormal(float3 p)
+{
+    float3 facenormal = cross(ddx(p), ddy(p));
+    return normalize(facenormal);
+}
+
+float4 CalcNormalfromTangentSpaceTexture(float4 normalTex,MaterialPixelParameters Parameters)
+{
+    float3 normal = normalize(2*normalTex.rgb -1);
+    float4 wnormal = float4(normal,1);
+    return wnormal;
+}
+
+float3x3 GetTangentToLocalMatrix(MaterialPixelParameters Parameters)
+{
+	float3x3 TangentToLocal;
+#if defined(NORMALMAP) && defined(TERRAIN) && 0
+        TangentToLocal = ComputeTangentFrame(Parameters.VertexNormal,Parameters.VertexPosition,Parameters.TexCoords[0]);
+#else
+        TangentToLocal = float3x3(Parameters.Tangent, Parameters.Binormal, Parameters.VertexNormal);
+#endif
+
+    return TangentToLocal;
+}
+
+float3x3 GetTangentToLocalMatrix(MaterialPixelParameters Parameters, int TexcoordIndex)
+{
+	float3x3 TangentToLocal;
+    TangentToLocal = ComputeTangentFrame(Parameters.VertexNormal, Parameters.VertexPosition, Parameters.TexCoords[min(TexcoordIndex, NUM_USER_TEXCOORDS - 1)]);
+
+    return TangentToLocal;
+}
+
+float3x3 GetTangentToLocalMatrixFromUp(MaterialPixelParameters Parameters)
+{
+	float3x3 TangentToLocal;
+	float3 NewTangent  = cross(float3(0,1,0), Parameters.VertexNormal);
+	float3 NewBinormal   = cross(NewTangent, Parameters.VertexNormal);
+	float3 NewNormal = cross(NewTangent, NewBinormal);
+	TangentToLocal = float3x3(NewNormal, NewBinormal, NewTangent);
+
+    return TangentToLocal;
+}
+
+float3x3 GetTangentToLocalMatrix(MaterialPixelParameters Parameters, bool IsHairNormal)
+{
+	float3x3 TangentToLocal;	
+	if(IsHairNormal)
+	{
+		TangentToLocal = GetTangentToLocalMatrixFromUp(Parameters);
+	}
+	else
+	{
+    #if defined(NORMALMAP) && defined(TERRAIN) && 0
+        TangentToLocal = ComputeTangentFrame(Parameters.VertexNormal,Parameters.VertexPosition,Parameters.TexCoords[0]);
+    #else
+        TangentToLocal = float3x3(Parameters.Tangent, Parameters.Binormal, Parameters.VertexNormal);
+    #endif
+	}
+
+    return TangentToLocal;
+}
+
+float3x3 GetLocalToTangentMatrix(MaterialPixelParameters Parameters)
+{
+    float3x3 LocalToTangent;
+	
+    LocalToTangent = transpose(float3x3(Parameters.Tangent, Parameters.Binormal, Parameters.VertexNormal));
+    return LocalToTangent;
+}
+
+
+//not correct when instance
+float4 CalcNormalfromLocalSpaceTexture(float4 normalTex)
+{
+    float3 normal = normalize(2*normalTex.rbg -1);
+    //normal.b *= -1;
+    float4 wnormal = mul(float4(normal,1),g_ModelParams.MatrixWorldInverseTranspose);
+    return wnormal;
+}
+#endif
+
+
+void CalcMaterialNormalParams(MaterialPixelParameters Parameters, in out ParamsMainPixelNode MainPixelNode)
+{
+    if(!any(MainPixelNode.Normal))
+    {
+        MainPixelNode.Normal = Parameters.VertexNormal;
+		MainPixelNode.Tangent = Parameters.Tangent;
+    }
+}
+
+float hash(float2 p)
+{
+    return frac(1.0e4 * sin(17.0 * p.x + 0.1 * p.y) * (0.1 + abs(sin(13.0 * p.y + p.x))));
+}
+
+float hash3D(float3 p)
+{
+    return hash(float2(hash(p.xy), p.z));
+}
+
+float HashedAlphaTest(float3 WorldPosition, float Opacity)
+{
+    float g_HashScale = Opacity;
+
+    float maxDeriv = max(length(ddx(WorldPosition)), length(ddy(WorldPosition)));
+    float pixScale = 1.0f / (g_HashScale * maxDeriv);
+
+    float2 pixScales = float2(exp2(floor(log2(pixScale))), exp2(ceil(log2(pixScale))));
+
+    float2 alpha = float2(hash3D(floor(pixScales.x * WorldPosition)), hash3D(floor(pixScales.y * WorldPosition)));
+
+    float lerpFactor = frac(log2(pixScale));
+
+    float x = (1 - lerpFactor) * alpha.x + lerpFactor * alpha.y;
+    
+    float a = min(lerpFactor, 1 - lerpFactor);
+    float3 cases = float3(x * x / (2 * a * (1 - a)),
+                           (x - 0.5 * a) / (1 - a),
+                            1.0f - ((1 - x) * (1 - x) / (2 * a * (1 - a))));
+
+    float a_r = (x < (1 - a)) ? ((x < a) ? cases.x : cases.y) : cases.z;
+
+    a_r = clamp(a_r, 1.0e-6, 1.0);
+
+    return a_r;
+}
+
+float GetOpacityValue(MaterialPixelParameters Parameters, bool bIsDitherMask, ParamsMainPixelNode MainPixelNode)
+{
+    if (bIsDitherMask)
+    {
+        /*
+		5 value dither. Every value present in +
+		012
+		234
+		401
+		*/
+		//float Dither5 = ( ( (uint)Parameters.SvPosition.x + (uint)Parameters.SvPosition.y * 2 + (uint)View.TemporalAAParams.x ) % 5 ) / 5.0;
+        float Dither5 = frac((Parameters.WorldPosition.x + Parameters.WorldPosition.y * 2 - 1.5 /*+ View.TemporalAAParams.x*/) / 5);
+        float Noise = frac(dot(float2(171.0, 231.0) / 71, Parameters.WorldPosition.xy));
+		float Dither = ( Dither5 * 5 + Noise ) * (1.0 / 6.0) - 0.5;
+        return HashedAlphaTest(Parameters.WorldPosition.xyz, MainPixelNode.Opacity+ Dither) ;
+    }
+    else
+        return MainPixelNode.Opacity;
+}
+
+float GetOpacityValue(MaterialPixelParameters Parameters, bool bIsDitherMask, float Opacity)
+{
+    if (bIsDitherMask)
+    {
+        /*
+		5 value dither. Every value present in +
+		012
+		234
+		401
+		*/
+		//float Dither5 = ( ( (uint)Parameters.SvPosition.x + (uint)Parameters.SvPosition.y * 2 + (uint)View.TemporalAAParams.x ) % 5 ) / 5.0;
+        float Dither5 = frac((Parameters.WorldPosition.x + Parameters.WorldPosition.y * 2 - 1.5 /*+ View.TemporalAAParams.x*/) / 5);
+        float Noise = frac(dot(float2(171.0, 231.0) / 71, Parameters.WorldPosition.xy));
+        float Dither = (Dither5 * 5 + Noise) * (1.0 / 6.0) - 0.5;
+        return HashedAlphaTest(Parameters.WorldPosition.xyz, Opacity + Dither);
+    }
+    else
+        return Opacity;
+}
+
+/** Rotates Position about the given axis by the given angle, in radians, and returns the offset to Position. */
+float3 RotateAboutAxis(float4 NormalizedRotationAxisAndAngle, float3 PositionOnAxis, float3 Position)
+{
+    // Project Position onto the rotation axis and find the closest point on the axis to Position
+    float3 ClosestPointOnAxis = PositionOnAxis + NormalizedRotationAxisAndAngle.xyz * dot(NormalizedRotationAxisAndAngle.xyz, Position - PositionOnAxis);
+    // Construct orthogonal axes in the plane of the rotation
+    float3 UAxis = Position - ClosestPointOnAxis;
+    float3 VAxis = cross(NormalizedRotationAxisAndAngle.xyz, UAxis);
+    float CosAngle;
+    float SinAngle;
+    sincos(NormalizedRotationAxisAndAngle.w, SinAngle, CosAngle);
+    // Rotate using the orthogonal axes
+    float3 R = UAxis * CosAngle + VAxis * SinAngle;
+    // Reconstruct the rotated world space position
+    float3 RotatedPosition = ClosestPointOnAxis + R;
+    // Convert from position to a position offset
+    return RotatedPosition - Position;
+}
+
+float2 Rotator(float2 Position,float2 Center,float Angle)
+{
+    Position=Position-Center;
+    float2 rot=float2(cos(Angle),sin(Angle));
+    float x=Position.x*rot.x-Position.y*rot.y+Center.x;
+    float y=Position.x*rot.y+Position.y*rot.x+Center.y;
+    return float2(x,y);
+}
+
+float3 Reflection(MaterialPixelParameters Parameters,float3 InputDir)
+{
+    float3 N = Parameters.WorldNormal;
+    float3 I = normalize(InputDir);
+    float3 Reflection = reflect(InputDir,N);
+    return Reflection;
+}
+
+float3 Refraction(MaterialPixelParameters Parameters,float3 InputDir, float RefractionIndex)
+{
+    float3 N = Parameters.WorldNormal;
+    float3 I = normalize(InputDir);
+    float3 Refraction = refract(I,N,RefractionIndex);
+    return Refraction;
+}
+
+float3 Reflection(float3 InputDir, float3 SurfaceNormal)
+{
+    float3 N = normalize(SurfaceNormal);
+    float3 I = normalize(InputDir);
+    float3 Reflection = reflect(I,N);
+    return Reflection;
+}
+
+float3 Refraction(float3 InputDir, float3 SurfaceNormal, float RefractionIndex)
+{
+    float3 N = normalize(SurfaceNormal);
+    float3 I = normalize(InputDir);
+    float3 Refraction = refract(I,N,RefractionIndex);
+    return Refraction;
+}
+
+float2 ParallaxMap(MaterialPixelParameters Parameters,float2 InputTexcoord, Texture2D HeightMap,
+SamplerState Sampler, float fHeightScale, float3 ParallaxVector)
+{
+	float2 OutTexcoord = 0;
+	float3x3 TangentSpace;
+	float3 TangentWorld = normalize(mul(Parameters.Tangent, (float3x3)Parameters.MatrixWorld));
+	float3 NormalWorld = normalize(mul(Parameters.VertexNormal, (float3x3)Parameters.MatrixWorld));
+	float3 BinormalWorld = normalize(mul(Parameters.Binormal, (float3x3)Parameters.MatrixWorld));
+	TangentSpace[0] = TangentWorld;
+	TangentSpace[1] = BinormalWorld;
+	TangentSpace[2] = NormalWorld;
+	
+	float3 Parallax = mul(TangentSpace, ParallaxVector);
+	
+	float Height = (1.0f - HeightMap.Sample(Sampler,InputTexcoord).r) * fHeightScale;
+	OutTexcoord = InputTexcoord  + Parallax.xy * Height;
+	
+	
+	return OutTexcoord;
+}
+
+float2 ParallaxMapEx(MaterialPixelParameters Parameters,float2 InputTexcoord, Texture2D HeightMap,
+SamplerState Sampler, float fHeightScale, float3 ParallaxVector, int nIterator)
+{
+	float2 OutTexcoord = 0;
+	float3x3 TangentSpace;
+	float3 TangentWorld = normalize(mul(Parameters.Tangent, (float3x3)Parameters.MatrixWorld));
+	float3 NormalWorld = normalize(mul(Parameters.VertexNormal, (float3x3)Parameters.MatrixWorld));
+	float3 BinormalWorld = normalize(mul(Parameters.Binormal, (float3x3)Parameters.MatrixWorld));
+	TangentSpace[0] = TangentWorld;
+	TangentSpace[1] = BinormalWorld;
+	TangentSpace[2] = NormalWorld;
+	
+	
+	float3 Parallax = mul(TangentSpace, normalize(ParallaxVector));
+	//float3 Parallax = mul(normalize(ParallaxVector), TangentSpace);
+	float fHeight_Next = 0;
+	float fHeight_Diff = 0;
+	float fvHeight = 1.0f;
+	float fIteratorScale = fHeightScale;
+	OutTexcoord = InputTexcoord;
+	
+	for (int i = 0; i < nIterator; i++)
+	{
+		fHeight_Next = HeightMap.Sample(Sampler,OutTexcoord).r;
+		fHeight_Diff = fvHeight - fHeight_Next;
+		OutTexcoord -= Parallax.xy * fHeight_Diff * fIteratorScale;
+		fIteratorScale *= 0.5f;
+		fvHeight = fHeight_Next;
+	}
+	
+	return OutTexcoord;
+}
+
+float4 ParallaxOcclusionMappingWithShadow(
+Texture2D Tex, SamplerState TexSampler,
+float2 UV,
+float MaxSteps,
+float stepsize,
+float2 UVDist,
+float2 InDDX,
+float2 InDDY,
+float TexHeight,
+float3 TangentLightVector,
+float ShadowSteps,
+float k,
+float4 HeightMapChannel)
+{
+    float rayheight=1;
+    float oldray=1;
+    float2 offset=0;
+    float oldtex=1;
+    float texatray;
+    float yintersect;
+    int i = 0;
+    
+    while(i < MaxSteps + 2)
+    {
+    
+        float texatray = dot(HeightMapChannel, Tex.SampleGrad(TexSampler,UV+offset,InDDX, InDDY));
+        
+        if (rayheight < texatray)
+        {
+            float xintersect = (oldray-oldtex)+(texatray-rayheight);
+            xintersect = (texatray-rayheight)/xintersect;
+            yintersect = (oldray*(xintersect))+(rayheight*(1-xintersect));
+            offset -= (xintersect*UVDist);
+            break;
+        }
+        
+        oldray=rayheight;
+        rayheight-=stepsize;
+        offset+=UVDist;
+        oldtex=texatray;
+        
+        i++;
+    }
+    
+    float2 saveoffset=offset;
+    float shadow=1;
+    float dist=0;
+    
+    texatray=dot(HeightMapChannel, Tex.SampleGrad(TexSampler,UV+offset,InDDX, InDDY))+0.01;
+    float finalrayz=yintersect;
+    
+    rayheight = texatray;
+    float lightstepsize = 1/ShadowSteps;
+    
+    int j = 0;
+    while(j<ShadowSteps)
+    {
+        if(rayheight < texatray)
+        {
+            shadow=0;
+            break;
+        }
+        else
+        {
+            shadow=min(shadow,(rayheight-texatray)*k/dist);
+        }
+        
+        oldray=rayheight;
+        rayheight += TangentLightVector.z*lightstepsize;
+        
+        offset += TangentLightVector.xy*lightstepsize;
+        oldtex=texatray;
+        
+        texatray = dot(HeightMapChannel, Tex.SampleGrad(TexSampler,UV+offset,InDDX, InDDY));
+        dist += lightstepsize;
+        j++;
+    }
+    
+    float4 finalout;
+    finalout.xy=saveoffset;
+    finalout.z=finalrayz;
+    finalout.w=shadow;
+    return finalout;
+}
+
+float4 ParallaxOcclusionMapping(
+Texture2D Tex, SamplerState TexSampler,
+float2 UV,
+float MaxSteps,
+float stepsize,
+float2 UVDist,
+float2 InDDX,
+float2 InDDY,
+float TexHeight,
+float4 HeightMapChannel)
+{
+    float rayheight=1;
+    float oldray=1;
+    float2 offset=0;
+    float oldtex=1;
+    float texatray;
+    float yintersect;
+    int i = 0;
+    
+    while(i < MaxSteps + 2)
+    {
+        float texatray = dot(HeightMapChannel, Tex.SampleGrad(TexSampler,UV+offset,InDDX, InDDY));
+        
+        if (rayheight < texatray)
+        {
+            float xintersect = (oldray-oldtex)+(texatray-rayheight);
+            xintersect = (texatray-rayheight)/xintersect;
+            yintersect = (oldray*(xintersect))+(rayheight*(1 - xintersect));
+            offset -= (xintersect*UVDist);
+            break;
+        }
+        
+        oldray=rayheight;
+        rayheight-=stepsize;
+        offset+=UVDist;
+        oldtex=texatray;
+        
+        i++;
+    }
+    
+    float finalrayz = yintersect;
+    
+    float4 finalout;
+    finalout.xy=offset;
+    finalout.z=finalrayz;
+    finalout.w=1.0f;
+    return finalout;
+}
+
+
+
+
+float ComputeRandomFrom2DPosition(uint2 v)
+{
+	return (ScrambleTEA(v).x & 0xffff ) / (float)(0xffff) * 2 - 1;
+}
+
+float4 PerlinRamp(float4 t)
+{
+	return t * t * t * (t * (t * 6 - 15) + 10); 
+}
+
+float2 PerlinNoise2D_ALU(float2 fv)
+{
+	int2 iv = int2(floor(fv));
+
+	float2 a = ComputeRandomFrom2DPosition(iv + int2(0, 0));
+	float2 b = ComputeRandomFrom2DPosition(iv + int2(1, 0));
+	float2 c = ComputeRandomFrom2DPosition(iv + int2(0, 1));
+	float2 d = ComputeRandomFrom2DPosition(iv + int2(1, 1));
+	
+	float2 Weights = PerlinRamp(float4(frac(fv), 0, 0)).xy;
+	
+	float2 e = lerp(a, b, Weights.x);
+	float2 f = lerp(c, d, Weights.x);
+
+	return lerp(e, f, Weights.y);
+}
+
+
+// Perlin noise
+float PerlinNoiseSample(float Base, float NoiseScale, float NoiseAmount, float2 XY)
+{
+    float Noise = 0.0f;
+
+    if (NoiseScale > DELTA)
+	{
+		for (uint Octave = 0; Octave < 4; Octave++)
+		{
+			float	OctaveShift = 1 << Octave;
+			float	OctaveScale = OctaveShift / NoiseScale;
+            float2  NoiseVector = abs(XY) * OctaveScale;
+			Noise += PerlinNoise2D_ALU(NoiseVector).x / OctaveShift;
+		}
+	}
+
+	return Base + Noise * NoiseAmount;
+}
+
+float Fresnel(MaterialPixelParameters Parameters,float3 Normal,float addend,float multiplier, float exponent)
+{
+    //saturate(A + B * pow(1 - dot(ViewDir,Normal),C));
+    float3 V = normalize(GetCameraPosition()-Parameters.WorldPosition);
+    float3 N = normalize(Normal);
+    float x = abs(1-max(0,dot(V,N)));
+    x = x < 0.0001f ? 0 : pow(x, exponent);
+    float result = addend + multiplier * x;
+    return result;
+}
+
+float Random(float2 fSeed)
+{
+    float2 r = float2(23.1406926327792690,  // e^pi (Gelfond's constant)
+              2.6651441426902251); // 2^sqrt(2) (Gelfond–Schneider constant)
+    return frac( cos( fmod( 123456789., 1e-7 + 256. * dot(fSeed,r) ) ) ); 
+}
+
+float RandomNoise(float2 fSeed, float fScale)
+{
+	float2 fRandSeed = (fSeed * 2.0f);
+    float2 fTempRand_1 = fRandSeed + 0.2127+fRandSeed.x * 0.3713 * fRandSeed.y;
+    float2 fTempRand_2 = 4.789 * sin(489.123 * (fTempRand_1));
+    float fResult = frac(fTempRand_2.x * fTempRand_2.y * (1+fTempRand_1.x));
+	return fResult;
+}
+
+ // * UnMirrored == 1 if normal
+ // * UnMirrored == -1 if mirrored ,how to know?
+float UnMirror(float Coordinate,float UnMirrored )
+{
+    return ((Coordinate)*(UnMirrored)*0.5+0.5);
+}
+
+float2 CalculateTextureCoordinate(float2 UV,float Utiling,float Vtiling,bool UnMirroredU,bool UnMirroredV)
+{
+    float2 Coordinates = float2(UV.x * Utiling , UV.y * Vtiling);
+    if(UnMirroredU)
+        Coordinates.x = UnMirror(Coordinates.x, 1);
+    if(UnMirroredV)
+        Coordinates.y = UnMirror(Coordinates.y, 1);
+    return Coordinates;
+}
+
+float3 CalculateTextureCoordinateUVW(float3 UVW, float Utiling, float Vtiling, float Wtiling, bool UnMirroredU, bool UnMirroredV, bool UnMirroredW)
+{
+    float3 Coordinates = float3(UVW.x * Utiling , UVW.y * Vtiling, UVW.z * Wtiling);
+    if(UnMirroredU)
+        Coordinates.x = UnMirror(Coordinates.x, 1);
+    if(UnMirroredV)
+        Coordinates.y = UnMirror(Coordinates.y, 1);
+	if(UnMirroredW)
+		Coordinates.z = UnMirror(Coordinates.z, 1);
+
+    return Coordinates;
+}
+
+float4 GetTexColorThreeSample(Texture2D TextureObject, SamplerState Sampler, float3 wsCoord,float3 vNormal)
+{
+    wsCoord.y = 1 - wsCoord.y; 
+
+    float2 coord1 = wsCoord.zy;
+    float2 coord2 = wsCoord.zx;
+    float2 coord3 = wsCoord.xy;
+
+    float4 col1 = TextureObject.Sample(Sampler,coord1);
+    float4 col2 = TextureObject.Sample(Sampler,coord2);
+    float4 col3 = TextureObject.Sample(Sampler,coord3);
+
+    return col1.xyzw * vNormal.x + col2.xyzw * vNormal.y + col3.xyzw * vNormal.z;
+}
+
+//Blend Methods
+
+float3 blend_linear(float4 n1, float4 n2)
+{
+    float3 r = (n1.xyz + n2.xyz);//*2 - 2;
+    return normalize(r);
+}
+
+float3 blend_overlay(float4 n1, float4 n2)
+{
+/*
+    n1 = n1*4 - 2;
+    float4 a = n1 >= 0 ? -1 : 1;
+    float4 b = n1 >= 0 ?  1 : 0;
+    n1 =  2*a + n1;
+    n2 = n2*a + b;
+    float3 r = n1*n2 - a;
+    return normalize(r);
+    */
+    float3 r  = (n1 < 0.5 ? 2*n1*n2 : 1 - 2*(1 - n1)*(1 - n2)).xyz;
+    r = normalize(r);
+    return r;
+}
+
+float3 blend_pd(float4 n1, float4 n2)
+{
+/*
+    n1 = n1*2 - 1;
+    n2 = n2.xyzz*float4(2, 2, 2, 0) + float4(-1, -1, -1, 0);
+    float3 r = n1.xyz*n2.z + n2.xyw*n1.z;
+    return normalize(r);
+*/
+    float2 pd = n1.xy/n1.z + n2.xy/n2.z; // Add the PDs
+    float3 r  = normalize(float3(pd, 1));
+    return r;
+}
+
+float3 blend_whiteout(float4 n1, float4 n2)
+{
+    //n1 = n1*2 - 1;
+    //n2 = n2*2 - 1;
+    float3 r = float3(n1.x + n2.x, n1.y + n2.y, n1.z*n2.z);
+    return normalize(r);
+}
+
+float3 blend_udn(float4 n1, float4 n2)
+{
+/*
+    float3 c = float3(2, 1, 0);
+    float3 r;
+    r = n2*c.yyz + n1.xyz;
+    r =  r*c.xxx -  c.xxy;
+    return normalize(r);
+*/
+    float3 r = normalize(float3(n1.x + n2.x, n1.y + n2.y, n1.z));
+    return r;
+}
+
+float3 blend_rnm(float4 n1, float4 n2)
+{
+    //float3 t = n1.xyz*float3( 2,  2, 2) + float3(-1, -1,  0);
+    //float3 u = n2.xyz*float3(-2, -2, 2) + float3( 1,  1, -1);
+    float3 t = n1.xyz;
+    t.z += 1;
+    float3 u = n2.xyz*float3(-1, -1, 1);
+    float3 r = t*dot(t, u) - u*t.z;
+    return normalize(r);
+}
+
+float3 blend_unity(float4 n1, float4 n2)
+{
+    //n1 = n1.xyzz*float4(2, 2, 2, -2) + float4(-1, -1, -1, 1);
+    //n2 = n2*2 - 1;
+    n1.w = -n1.z;
+    float3 r;
+    r.x = dot(n1.zxx,  n2.xyz);
+    r.y = dot(n1.yzy,  n2.xyz);
+    r.z = dot(n1.xyw, -n2.xyz);
+    return normalize(r);
+}
+
+float GetSceneDepth(MaterialPixelParameters Parameters, SamplerState Sampler, float2 uv)
+{
+	return g_tSceneDepth.Sample(Sampler, uv).r;
+}
+
+float GetPixelDepth(MaterialPixelParameters Parameters)
+{
+	return Parameters.ScreenPosition.z / Parameters.ScreenPosition.w;
+}
+
+float GetSceneLinearDepth(MaterialPixelParameters Parameters, SamplerState Sampler, float2 uv)
+{
+	float depth = g_tSceneDepth.Sample(Sampler, uv).r;
+	float w = ConvertFromDeviceZ(depth);
+	return ConvertToLinearDepth(w);
+}
+
+float GetPixelLinearDepth(MaterialPixelParameters Parameters)
+{
+	return ConvertToLinearDepth(Parameters.ScreenPosition.w);
+}
+
+
+float GetSceneCameraDepth(MaterialPixelParameters Parameters, SamplerState Sampler, float2 uv)
+{
+	float depth = g_tSceneDepth.Sample(Sampler, uv).r;
+	return ConvertFromDeviceZ(depth);
+}
+
+float GetPixelCameraDepth(MaterialPixelParameters Parameters)
+{
+	return Parameters.ScreenPosition.w;
+}
+
+float4 GetSceneColor(MaterialPixelParameters Parameters, SamplerState Sampler, float2 uv)
+{
+	return g_tSceneColor.Sample(Sampler, uv);
+}
+
+//not correct when instance
+float4x4 GetWorldInverseMatrix()
+{
+	return g_ModelParams.MatrixWorldInverse;
+}
+
+#define DEFINE_GETWORLDINVERSEMATRIX(TYPE)				\
+float4x4 GetWorldInverseMatrix(TYPE Parameters)			\
+{														\
+	return Parameters.MatrixWorldInverse;				\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_GETWORLDINVERSEMATRIX)													
+
+float4x4 GetViewProjectionMatrix()
+{
+	return g_Com.Camera.CameraVP;
+}
+
+float2 GetScreenSize()
+{
+	return g_Com.ScreenSize;
+}
+
+float SphereMask(float3 vA, float3 vB, float fRadius, float fHardness)
+{
+	float fLength = length(vA - vB);
+	float fTmp = max((1.0f - fLength / fRadius), 0.0f);
+	return fTmp * fHardness;
+}
+
+//not correct when instance
+float4 LocalToWorld(float4 LocalVector, float fIsPosition)
+{
+	return mul(LocalVector, g_ModelParams.MatrixWorld);
+}
+
+#define DEFINE_LOCALTOWORLD_F4(TYPE)												\
+float4 LocalToWorld(TYPE Parameters, float4 LocalVector, float fIsPosition)			\
+{																					\
+	return mul(LocalVector, Parameters.MatrixWorld);								\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_LOCALTOWORLD_F4)		
+
+//not correct when instance
+float3 LocalToWorld(float3 LocalVector, float fIsPosition)
+{
+	return mul( float4(LocalVector, fIsPosition), g_ModelParams.MatrixWorld).xyz;
+}
+
+#define DEFINE_LOCALTOWORLD_F3(TYPE)												\
+float3 LocalToWorld(TYPE Parameters, float3 LocalVector, float fIsPosition)			\
+{																					\
+	return mul( float4(LocalVector, fIsPosition), Parameters.MatrixWorld).xyz;		\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_LOCALTOWORLD_F3)
+
+//not correct when instance
+float4 WorldToLocal(float4 WorldVector, float fIsPosition)
+{
+	return mul( WorldVector, g_ModelParams.MatrixWorldInverse);
+}
+
+#define DEFINE_WORLDTOLOCAL_F4(TYPE)												\
+float4 WorldToLocal(TYPE Parameters, float4 WorldVector, float fIsPosition)			\
+{																					\
+	return mul( WorldVector, Parameters.MatrixWorldInverse);						\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_WORLDTOLOCAL_F4)
+
+//not correct when instance
+float3 WorldToLocal(float3 WorldVector, float fIsPosition)
+{
+	return mul( float4( WorldVector, fIsPosition), g_ModelParams.MatrixWorldInverse).xyz;
+}
+
+#define DEFINE_WORLDTOLOCAL_F3(TYPE)													\
+float3 WorldToLocal(TYPE Parameters, float3 WorldVector, float fIsPosition)				\
+{																						\
+	return mul( float4( WorldVector, fIsPosition), Parameters.MatrixWorldInverse).xyz;	\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_WORLDTOLOCAL_F3)
+
+//not correct when instance
+float4 NormalLocalToWorld(float4 LocalNormal)
+{
+	return mul( float4(LocalNormal.xyz, 0.0f), g_ModelParams.MatrixWorldInverseTranspose);
+}
+
+#define DEFINE_NORMALLOCALTOWORLD_F4(TYPE)													\
+float4 NormalLocalToWorld(TYPE Parameters, float4 LocalNormal)								\
+{																							\
+	return mul( float4(LocalNormal.xyz, 0.0f), Parameters.MatrixWorldInverseTranspose);		\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_NORMALLOCALTOWORLD_F4)
+
+//not correct when instance
+float3 NormalLocalToWorld(float3 LocalNormal)
+{
+	return mul( float4(LocalNormal, 0.0f), g_ModelParams.MatrixWorldInverseTranspose).xyz;
+}
+
+#define DEFINE_NORMALLOCALTOWORLD_F3(TYPE)													\
+float3 NormalLocalToWorld(TYPE Parameters, float3 LocalNormal)								\
+{																							\
+	return mul( float4(LocalNormal.xyz, 0.0f), Parameters.MatrixWorldInverseTranspose).xyz;	\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_NORMALLOCALTOWORLD_F3)
+
+#define DEFINE_NORMALWORLDTOLOCAL_F4(TYPE)													\
+float4 NormalWorldToLocal(TYPE Parameters, float4 WorldNormal)								\
+{																							\
+	return mul( float4(WorldNormal.xyz, 0.0f), transpose(Parameters.MatrixWorld));			\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_NORMALWORLDTOLOCAL_F4)
+
+#define DEFINE_NORMALWORLDTOLOCAL_F3(TYPE)													\
+float3 NormalWorldToLocal(TYPE Parameters, float3 WorldNormal)								\
+{																							\
+	return mul( float4(WorldNormal.xyz, 0.0f), transpose(Parameters.MatrixWorld)).xyz;		\
+}
+
+DEFINE_FUNC_FULL_PIPELINE(DEFINE_NORMALWORLDTOLOCAL_F3)
+
+float3 TangentToLocal(MaterialPixelParameters Parameters, float3 TangentNormal)
+{
+    return mul(TangentNormal, GetTangentToLocalMatrix(Parameters));
+}
+
+float3 TangentToLocal(MaterialPixelParameters Parameters, float3 TangentNormal, int TexcoordIndex)
+{
+    return mul(TangentNormal, GetTangentToLocalMatrix(Parameters, TexcoordIndex));
+}
+
+float3 TangentToLocal(float3 TangentNormal, MaterialPixelParameters Parameters, bool bIsHairNormal)
+{
+    return mul(TangentNormal, GetTangentToLocalMatrix(Parameters, bIsHairNormal));
+}
+
+float3 LocalToTangent(MaterialPixelParameters Parameters, float3 LocalNormal)
+{
+    return mul(LocalNormal, GetLocalToTangentMatrix(Parameters));
+}
+
+float3 LocalToTangent(float3 LocalNormal, MaterialPixelParameters Parameters, bool bIsHairNormal)
+{
+    return mul(LocalNormal, GetLocalToTangentMatrix(Parameters));
+}
+
+float4 WorldToView(float4 WorldVector, float fIsPosition)
+{
+	return mul( WorldVector, g_Com.Camera.CameraView);
+}
+
+float3 WorldToView(float3 WorldVector, float fIsPosition)
+{
+	return mul( float4(WorldVector, fIsPosition), g_Com.Camera.CameraView).xyz;
+}
+
+float3 ViewToWorld(float3 ViewVector, float fIsPosition)
+{
+	return mul( float4(ViewVector, fIsPosition), g_Com.Camera.CameraViewInv).xyz;
+}
+
+float3 ViewToProjection(float3 ViewVector, float fIsPosition)
+{
+	return mul( float4(ViewVector, fIsPosition), g_Com.Camera.CameraProject).xyz;
+}
+
+float3 ProjectionToView_Vector(float3 ProjectionVector)
+{
+	return mul( float4(ProjectionVector, 0.0f), g_Com.Camera.CameraProjectInv).xyz;
+}
+
+float3 ProjectionToView_Position(float3 ProjectionPostion)
+{
+	float4 ViewPosition = mul(float4(ProjectionPostion, 1.0f), g_Com.Camera.CameraProjectInv);
+	return ViewPosition.xyz / ViewPosition.w;
+}
+
+float ComputePixelDepthOffsetToMaterialParameters(in out MaterialPixelParameters MaterialParameters, ParamsMainPixelNode PixelMaterialInputs, out float OutFinDepth)
+{
+	
+	float PixelDepthOffset = max(PixelMaterialInputs.PixelDepthOffset, 0);
+	float3 CameraVector = normalize(g_Com.Camera.EyePosition - MaterialParameters.WorldPosition.xyz) ;
+
+	MaterialParameters.ScreenPosition.w += PixelDepthOffset;
+	MaterialParameters.WorldPosition.xyz += CameraVector * PixelDepthOffset;
+
+	OutFinDepth = MaterialParameters.ScreenPosition.z / MaterialParameters.ScreenPosition.w;
+
+	return PixelDepthOffset;
+}
+
+float4 ParallaxOcclusionMappingSimple(MaterialPixelParameters Parameters,
+Texture2D HeightTex, SamplerState TexSampler,
+float2 UV,
+float fHeightRatio,
+float fMinSteps,
+float fMaxSteps,
+float4 HeightMapChannel
+)
+{
+    float CameraAngle = dot(normalize(GetCameraPosition()- Parameters.WorldPosition), Parameters.WorldNormal);
+	CameraAngle = abs(CameraAngle);
+	CameraAngle = clamp(CameraAngle, float(0), float(1));
+	float fSampleSteps = lerp(fMaxSteps, fMinSteps, CameraAngle);
+    float ReSampleSteps = 1.0f / fSampleSteps;
+	fSampleSteps = floor(fSampleSteps);
+    
+    float ReSampleStepsFloor = 1.0f / fSampleSteps;
+    
+	float3 TangentCameraVector = LocalToTangent(normalize(GetCameraPosition()- Parameters.WorldPosition),Parameters,0);
+	TangentCameraVector = normalize(TangentCameraVector);
+	float2 VectorRG = TangentCameraVector.rg;
+	VectorRG = VectorRG * float2(-1.0f, -1.0f);
+	float VectorB = TangentCameraVector.b;
+	float2 DistCoefficient = VectorRG / VectorB;
+	DistCoefficient = fHeightRatio * DistCoefficient;
+	float2 UVDist = ReSampleSteps * DistCoefficient;
+    
+	float2 DDX = ddx(UV);
+	float2 DDY = ddy(UV);
+    
+    float4 POMResult = ParallaxOcclusionMapping(HeightTex, TexSampler, UV, fSampleSteps, ReSampleStepsFloor, UVDist, DDX, DDY, fHeightRatio, HeightMapChannel);
+    
+    return POMResult;
+}
+
+void ComputeIBL_OnleyReflectColor(
+	float   AO,
+	float4  IBLDiffuse,
+	float4  IBLSpecular,
+	float EnvReflectionIntensity,
+	float EnvReflectionSaturation,
+	bool HairFlag,
+	out float3 outDiffuse,
+	out float3 outSpecular
+	)
+{
+	float DiffuseGray = (IBLDiffuse.r + IBLDiffuse.g + IBLDiffuse.b) * 0.3333333f;
+	float3 DiffuseIBLColor = IBLDiffuse.rgb; 
+	BRANCH if (HairFlag)
+	{
+		DiffuseIBLColor = lerp(DiffuseGray, DiffuseIBLColor, 0.5f);
+	}
+
+	float SpecularGray = (IBLSpecular.r + IBLSpecular.g + IBLSpecular.b) * 0.3333333f;
+	float3 SpecularIBLColor = IBLSpecular.rgb;
+	BRANCH if (HairFlag)
+	{
+		SpecularIBLColor = lerp(SpecularGray, SpecularIBLColor, 0.5f);
+	}
+
+	outDiffuse = DiffuseIBLColor * AO;
+	outSpecular = SpecularIBLColor * AO;
+}
+
+void Sample_OnlyEnvironmentTexture(
+	float3  R,
+	float3  N,
+	float   Roughness,
+	TextureCube EnvironmentMap,
+	TextureCube EnvironmentMapSH,
+	float EnvReflectionIntensity,
+	float EnvReflectionSaturation,
+	bool HairFlag,	
+	out float4 ReflectionDiffuse,
+	out float4 ReflectionSpecular
+	)
+{
+	ReflectionDiffuse = EnvironmentMapSH.SampleLevel(g_SamplerLinear3Clamp, N, 0);
+	ReflectionSpecular = EnvironmentMap.SampleLevel(g_SamplerLinear3Clamp, R, Roughness * 7);
+
+	float DiffuseGray = (ReflectionDiffuse.r + ReflectionDiffuse.g + ReflectionDiffuse.b) * 0.3333333f;
+	ReflectionDiffuse = lerp(DiffuseGray, ReflectionDiffuse, EnvReflectionSaturation);
+	BRANCH if (HairFlag)
+	{
+		ReflectionDiffuse = lerp(DiffuseGray, ReflectionDiffuse, 0.5f); 
+	}
+
+	float SpecularGray = (ReflectionSpecular.r + ReflectionSpecular.g + ReflectionSpecular.b) * 0.3333333f;
+	ReflectionSpecular = lerp(SpecularGray, ReflectionSpecular, EnvReflectionSaturation);
+	BRANCH if (HairFlag)
+	{
+		ReflectionSpecular = lerp(SpecularGray, ReflectionSpecular, 0.5f);
+	}
+
+	ReflectionDiffuse *= EnvReflectionIntensity;
+	ReflectionSpecular *= EnvReflectionIntensity;
+}
+
+void ComputeIBL_OnlyEnvProbeTexture(
+	float3 DiffuseNormal,
+	float3 SpecularNormal,
+	float3 WorldPosition,
+	float  Rounghness,
+	float EnvReflectionIntensity,
+	float EnvReflectionSaturation,
+	bool EnableSpecialLight,
+	bool HairFlag,
+	out float3 outDiffuse,
+	out float3 outSpecular
+	)
+{
+	float fSourceAlpha = 1.0f;
+	float fDestAlpha = 1.0f;
+	float3 fSourceDiffuse = 1.0f;
+	float3 fSourceSpecular = 1.0f;
+	float3 fDestDiffuse = 0;
+	float3 fDestSpecular = 0;
+
+	float3 fDiffuse = 0;
+	float3 fSpecular = 0;
+
+	if(!g_Com.Switch.bEnableDayNightCycle)
+	{
+		outDiffuse = float3(0.5f, 0.5f, 0.5f);
+		outSpecular = float3(1.0f, 1.0f, 1.0f);
+		return ;
+	}
+
+	float3 V = normalize(g_Com.Camera.EyePosition - WorldPosition);
+
+	float NoV = saturate(dot(SpecularNormal, V));
+
+	for (int i = 0; i < MAX_NUM_ENV_PROBE; i++)
+	{
+		// discard empty
+		if (g_Com.EnvProbesRuntimeParam.EnvProbePorperty[i].y < 1)
+			continue;
+		// diacard outside
+		if (distance(WorldPosition, g_Com.EnvProbesRuntimeParam.EnvProbePositionRadius[i].xyz) > g_Com.EnvProbesRuntimeParam.EnvProbePositionRadius[i].w)
+			continue;
+
+		float4 ReflectionDiffuseTemp = 0;
+		float4 ReflectionSpecularTemp = 0;
+
+		float3 SpecularSampleDirection;
+		float3 DiffuseSampleDirection;
+		float DistanceAlpha = 1;
+
+		GetEnvProbeSampleDirection(DiffuseNormal, 
+			SpecularNormal, 
+			WorldPosition,
+			-V, 
+			g_Com.EnvProbesRuntimeParam.EnvProbePositionRadius[i], 
+			g_Com.EnvProbesRuntimeParam.EnvProbeWorldMatrixInv[i], 
+			g_Com.EnvProbesRuntimeParam.EnvProbePorperty[i].x, 
+			DistanceAlpha, 
+			SpecularSampleDirection, 
+			DiffuseSampleDirection);
+		SampleOnlyEnvProbeTextureArray(SpecularSampleDirection,
+			DiffuseSampleDirection,
+			Rounghness,
+			g_tEnvProbes,
+			g_tSHEnvProbes,
+			EnvReflectionIntensity,
+			EnvReflectionSaturation,
+			HairFlag,
+			i,
+			ReflectionDiffuseTemp,
+			ReflectionSpecularTemp
+			);
+		fSourceAlpha = DistanceAlpha;
+
+		fSourceDiffuse = ReflectionDiffuseTemp.rgb * DistanceAlpha;
+		fSourceSpecular = ReflectionSpecularTemp.rgb * DistanceAlpha;
+
+		fDestDiffuse = fSourceDiffuse * fDestAlpha + fDestDiffuse;
+		fDestSpecular = fSourceSpecular * fDestAlpha + fDestSpecular;
+
+		fDiffuse += fDestDiffuse * DistanceAlpha;
+		fSpecular += fDestSpecular * DistanceAlpha;
+
+		fDestAlpha = saturate(fDestAlpha * (1 - fSourceAlpha));
+	}
+
+	float3 R = normalize(reflect(-V, SpecularNormal));
+
+	float4 SpecularReflection;
+	float4 DiffuseReflection;
+	float4 PlayerSpecularReflection = 0;
+	float4 PlayerDiffuseReflection = 0;
+
+	Sample_OnlyEnvironmentTexture(R, DiffuseNormal, Rounghness, g_tEnvironmentMap, g_tEnvironmentMapSH, 
+		EnvReflectionIntensity, EnvReflectionSaturation, HairFlag, DiffuseReflection, SpecularReflection);
+
+	//BRANCH if (EnableSpecialLight)
+	//{
+	//	SampleEnvironment(R, SurfaceData.DiffuseNormal, SurfaceData.Roughness, g_tPlayerEnvironmentMap, g_tPlayerEnvironmentMapSH, 
+	//		PlayerReflectionIntensity, PlayerReflectionSaturation, HairFlag, PlayerDiffuseReflection, PlayerSpecularReflection);
+	//
+	//	DiffuseReflection.xyz = lerp(DiffuseReflection.xyz, PlayerDiffuseReflection.xyz, g_Com.EnvReflection.EnvToPlayerReflectionLerpFactor);
+	//	SpecularReflection.xyz = lerp(SpecularReflection.xyz, PlayerSpecularReflection.xyz, g_Com.EnvReflection.EnvToPlayerReflectionLerpFactor);
+	//}
+
+	ComputeIBL_OnleyReflectColor(1.0f, DiffuseReflection, SpecularReflection, 
+		EnvReflectionIntensity, EnvReflectionSaturation, HairFlag, fSourceDiffuse, fSourceSpecular);
+
+	fDestDiffuse = fSourceDiffuse * fDestAlpha + fDestDiffuse;
+	fDestSpecular = fSourceSpecular * fDestAlpha + fDestSpecular;
+
+	fDiffuse += fDestDiffuse * fDestAlpha;
+	fSpecular += fDestSpecular * fDestAlpha;
+
+	outDiffuse = fDiffuse;
+	outSpecular = fSpecular;
+}
+
+float3 GetRainRippleNormal(float2 Texcoord)
+{
+	float4 RainRippleNormalMap = g_tRainRippleNor.Sample(g_SamplerLinear2, Texcoord);
+	float3 RippleNormal = normalize(RainRippleNormalMap.rgb);
+	return RippleNormal;
+}
+
+void GetNearTerrainData(float3 WPos, out NearTerrainData data)
+{
+	data.Height = -1000000.0f;
+	float2 Texcoord;
+	Texcoord.x = (WPos.x - g_Com.WaterParam.NearTerrainRangbox.x) / (g_Com.WaterParam.NearTerrainRangbox.y - g_Com.WaterParam.NearTerrainRangbox.x);
+	Texcoord.y = (WPos.z - g_Com.WaterParam.NearTerrainRangbox.z) / (g_Com.WaterParam.NearTerrainRangbox.w - g_Com.WaterParam.NearTerrainRangbox.z);
+	if ((Texcoord.x > 0.0) && (Texcoord.x < 1.0) && (Texcoord.y > 0.0) && (Texcoord.y < 1.0))
+	{
+		Texcoord.y = 1.0f - Texcoord.y;
+		data.Height = g_tNearTerrainHeight.SampleLevel(g_SamplerLinear3Clamp, Texcoord, 0).r;
+	}
+}
+
+void GetNearRangeData(float3 NoDisWPos, out NearRangeData data)
+{
+	NearTerrainData Tdata;
+	data.Dir = float2(1.0f, 0.0f);
+	data.Gradient = float2(0.0f, 0.0f);
+	data.WaveVelocityFactor.x = 1.0f;
+	data.WaveVelocityFactor.y = 1.0f;
+	data.Distance = float2(0.0f, 0.0f);
+	data.Curvature = float2(0.0f, 0.0f);
+
+	float4 NearDataRangbox = g_Com.NearDataRangbox;
+	if (NoDisWPos.x > NearDataRangbox.x&& NoDisWPos.x < NearDataRangbox.y && NoDisWPos.z > NearDataRangbox.z&& NoDisWPos.z < NearDataRangbox.w)
+	{
+		int3 RealTexcoord = int3((NoDisWPos.x - NearDataRangbox.x) / 100, (NearDataRangbox.w - NoDisWPos.z) / 100, 0);
+		int nSharpID = g_tNearInfo.Load(RealTexcoord);
+		if (nSharpID > 0)
+		{
+			RANGEDATA_INFO SharpInfo = g_tRangeDataInfo[nSharpID];
+			data.WaveVelocityFactor.x = SharpInfo.WaveVelocityFactor0;
+			data.WaveVelocityFactor.y = SharpInfo.WaveVelocityFactor1;
+			data.Curvature = SharpInfo.Curvature;
+
+			float3 LocalPos = float3(SharpInfo.RDOffeset.x - NoDisWPos.x, 0.0f, SharpInfo.RDOffeset.z - NoDisWPos.z);
+
+			float SValue = 0.0f;
+			float CValue = 0.0f;
+			sincos(SharpInfo.RDRotY, SValue, CValue);
+			float2 tempPos = LocalPos.xz;
+			//-RotY
+			LocalPos.x = CValue * tempPos.x - SValue * tempPos.y;
+			LocalPos.z = SValue * tempPos.x + CValue * tempPos.y;
+
+			LocalPos.x = LocalPos.x / SharpInfo.RDScale.x;
+			LocalPos.z = LocalPos.z / SharpInfo.RDScale.y;
+
+			data.Gradient.x = (LocalPos.x + GSSHARP_HALFLOCALLENGHT) / GSSHARP_LOCALLENGHT;
+			data.Gradient.y = (LocalPos.z + GSSHARP_HALFLOCALLENGHT) / GSSHARP_LOCALLENGHT;
+
+
+			float2 OrginDir = float2(1.0f, 0.0f);
+			data.Dir.x = CValue * OrginDir.x + SValue * OrginDir.y;
+			data.Dir.y = -SValue * OrginDir.x + CValue * OrginDir.y;
+			data.Dir = normalize(data.Dir);
+
+			data.Distance = (LocalPos.xz + float2(GSSHARP_HALFLOCALLENGHT, GSSHARP_HALFLOCALLENGHT)) * SharpInfo.RDScale;
+		}
+	}
+}
+
+//Begin Water
+#ifdef WATER
+float3 GetPhilipsWaveDisplacement(float3 TexCoord)
+{
+	float3 Displacement = float3(0.0f, 1.0f, 0.0f);
+	if(TexCoord.z >= 0)
+	{
+		Displacement = g_tPhilipsFFTDis.SampleLevel(g_SamplerLinear2, TexCoord, 0).xyz;
+	}
+	return Displacement;
+}
+
+float4 GetPhilipsWaveGradFold(float3 TexCoord)
+{
+	float4 fGradFold = float4(0.0f, 1.0f, 0.0f, 0.0f);
+	if(TexCoord.z >= 0)
+	{
+		fGradFold = g_tPhilipsFFTNor.Sample(g_SamplerLinear2, TexCoord);
+	}
+	return  fGradFold;
+}
+
+FFTPro GetFFTWavePro()
+{
+	int nIndex = g_ModelParams.g_FFTTexIndex;
+	nIndex = max(0, nIndex);
+	return g_ffrPro[nIndex];
+}
+
+float3 GetRippleTexCoord(float3 WPos)
+{
+	int nRippleInex = -1;
+	float3 Texcoord = float3(0.0, 0.0, nRippleInex);
+	float4 RippleRangbox    = g_Com.WaterParam.RippleRangbox;
+	float  RippleEgdeSize   = RippleRangbox.y - RippleRangbox.x;
+	int    RippleEgdeCount  = g_Com.WaterParam.RippleEgdeCount;
+	int2   RippleTexOffset  = g_Com.WaterParam.RippleTexOffset;
+	if((WPos.x	   >= RippleRangbox.x)
+		&& (WPos.x <  RippleRangbox.y)
+		&& (WPos.z >= RippleRangbox.z)
+		&& (WPos.z <  RippleRangbox.w))
+	{
+		float DifferX = (WPos.x - RippleRangbox.x) / RippleEgdeSize;
+	    float DifferZ = (WPos.z - RippleRangbox.z) / RippleEgdeSize;
+	
+		int nX =  (DifferX + RippleTexOffset.x + RippleEgdeCount) % RippleEgdeCount;
+		int nZ =  (DifferZ + RippleTexOffset.y + RippleEgdeCount) % RippleEgdeCount;
+
+		nRippleInex = nZ * RippleEgdeCount + nX;
+		Texcoord.x  = DifferX;
+		Texcoord.y  = DifferZ;
+		Texcoord.z  = nRippleInex;
+	}
+	return Texcoord;
+}
+
+float3 GetRippleDisplacement(float3 WPos)
+{
+   float3 Displacement = float3(0.0f, 1.0f, 0.0f);
+    if(g_Com.WaterParam.UseRipple)
+	{
+	   float3 Texcoord = GetRippleTexCoord(WPos);
+	   if(Texcoord.z != -1)
+	   {
+		   float4 table = float4(0.0f, 0.0f, 1.0f, -1.0f);
+		   float4 heightmap = g_tRippleDis.SampleLevel(g_SamplerLinear2, Texcoord.xy, 0);
+		   Displacement.y = dot(heightmap, table);
+	   }
+	}
+	return Displacement;
+}
+
+float3 GetRippleNormal(float3 WPos)
+{
+   float3 RippleNormal = float3(0.0f, 1.0f, 0.0f);
+   if(g_Com.WaterParam.UseRipple)
+   {
+		float3 Texcoord = GetRippleTexCoord(WPos);
+		if(Texcoord.z != -1)
+		{
+			float4 RippleNormalMap = g_tRippleNor.SampleLevel(g_SamplerLinear2, Texcoord.xy, 0);
+			RippleNormal.rgb = normalize(RippleNormalMap.rgb);
+		}
+   }
+   return RippleNormal;
+}
+
+//Q = Slope
+// L = WaveLength
+//    A = Amplitude  
+//    D = Vector2 Direction  
+//    x = x world coordinate  
+//    y = y world coordinate  
+//    t = time  
+//    Where Qi = Q/(wi * A * NumWaves)  
+//    Where wi = 2pi/L //angular velocity
+//    Where phase = Speed * 2/L //initial phase
+void GetGerstnerDisplament(float Time, float2 WaveWosXZ, float2 Dir, float L, float A, float Speed, float QParam, int numWaves, out float3 Displament, out float2 Grad2D)
+{
+	Displament = float3(0.0f, 0.0f, 0.0f);
+	Grad2D   = float2(0.0f, 0.0f);
+
+	float NewL       = max(0.0001, L);
+
+	A = max(0.0001, A);
+
+	float W = (PI * 2.0f) / NewL;
+	float Q = QParam / (W * A * numWaves);
+	float FirstPhase = Speed * Time;
+	float Phase    = W * dot(Dir, WaveWosXZ) - FirstPhase;
+	float c = cos(Phase);
+	float s = sin(Phase);
+
+	Displament.x = (Dir.x * Q * A * c);
+	Displament.z = (Dir.y * Q * A * c);
+	Displament.y = (A * s);
+
+	Grad2D.x = c;
+	Grad2D.y = s;
+}
+
+//need to be delete after  resave material
+float3 GetGerstnerDisplament(float Time, float Distance, float2 Dir, float LAddFactor, float QParam, float L, float A, float Speed, int numWaves)
+{
+	float3 Displament = float3(0.0f, 0.0f, 0.0f);
+
+	float NewL       = max(0.0001, L + LAddFactor);
+	float2 WaveWosXZ = Dir * Distance;
+
+	A = max(0.0001, A);
+
+	float W = (PI * 2.0f) / NewL;
+	float Q = QParam / (W * A * numWaves);
+	float FirstPhase = Speed * Time;
+	float Phase    = W * dot(Dir, WaveWosXZ) - FirstPhase;
+	float XZDisplamentValue = cos(Phase);
+
+	Displament.x += (Dir.x * Q * A * XZDisplamentValue);
+	Displament.z += (Dir.y * Q * A * XZDisplamentValue);
+	Displament.y += (A * sin(Phase));
+
+	return Displament;
+}
+
+void GetGerstnerNormal(float Time, float2 WaveWosXZ, float2 Dir, float L, float A, float Speed, float QParam, int numWaves, out float3 Normal, out float2 Grad2D)
+{
+	Normal   = float3(0.0f, 1.0f, 0.0f);
+	Grad2D   = float2(0.0f, 0.0f);
+
+	float NewL       = max(0.0001, L);
+
+	A = max(0.0001, A);
+
+	float W = (PI * 2.0f) / NewL;
+	float Q = QParam / (W * A * numWaves);
+	float FirstPhase = Speed * Time;
+	float Phase      = W * dot(Dir, WaveWosXZ) - FirstPhase;
+	float  wa        = W * A;
+	float  s		 = sin(Phase);
+	float  c		 = cos(Phase);
+
+	Normal.x  = (Dir.x * wa * c);
+	Normal.z  = (Dir.y * wa * c);
+	Normal.y  = (Q * wa * s);
+
+	Normal.x *= -1;
+	Normal.z *= -1;
+	Normal.y = 1 - Normal.y;
+
+	Normal = normalize(Normal);
+
+	Grad2D.x = c;
+	Grad2D.y = s;
+}
+
+//need to be delete after  resave material
+float3 GetGerstnerNormal(float Time, float Distance, float2 Dir, float LAddFactor, float QParam, float L, float A, float Speed, int numWaves)
+{
+	float3 Normal   = float3(0.0f, 1.0f, 0.0f);
+
+	float NewL       = max(0.0001, L + LAddFactor);
+	float2 WaveWosXZ = Dir * Distance;
+
+	A = max(0.0001, A);
+
+	float W = (PI * 2.0f) / NewL;
+	float Q = QParam / (W * A * numWaves);
+	float FirstPhase = Speed * Time;
+	float Phase      = W * dot(Dir, WaveWosXZ) - FirstPhase;
+	float  wa        = W * A;
+	float  s		 = sin(Phase);
+	float  c		 = cos(Phase);
+
+	Normal.x  = (Dir.x * wa * c);
+	Normal.z  = (Dir.y * wa * c);
+	Normal.y  = (Q * wa * s);
+
+	Normal.x *= -1;
+	Normal.z *= -1;
+	Normal.y = 1 - Normal.y;
+
+	Normal = normalize(Normal);
+
+	return Normal;
+}
+
+//need to be delete after  resave material
+void GetGerstnerBaseData(float3 NoDisWPos, float2 Texcoord, out float Depth, out float2 Dir, out float Gradient, out float Distance)
+{
+	NearTerrainData Tdata;
+	GetNearTerrainData(NoDisWPos, Tdata);
+	Depth = NoDisWPos.y - Tdata.Height;
+	Dir = float2(1.0f, 0.0f);
+	Gradient = 0.0f;
+	Distance = 0.0f;
+
+	float4 NearDataRangbox = g_Com.NearDataRangbox;
+
+	if (NoDisWPos.x > NearDataRangbox.x&& NoDisWPos.x < NearDataRangbox.y && NoDisWPos.z > NearDataRangbox.z&& NoDisWPos.z < NearDataRangbox.w)
+	{
+		int3 RealTexcoord = int3((NoDisWPos.x - NearDataRangbox.x) / 100, (NearDataRangbox.w - NoDisWPos.z) / 100, 0);
+		int nSharpID = g_tNearInfo.Load(RealTexcoord);
+		if (nSharpID > 0)
+		{
+			RANGEDATA_INFO SharpInfo = g_tRangeDataInfo[nSharpID];
+			float3 LocalPos = float3(SharpInfo.RDOffeset.x - NoDisWPos.x, 0.0f, SharpInfo.RDOffeset.z - NoDisWPos.z);
+
+			float SValue = 0.0f;
+			float CValue = 0.0f;
+			sincos(-SharpInfo.RDRotY, SValue, CValue);
+			float2 tempPos = LocalPos.xz;
+			LocalPos.x = CValue * tempPos.x + SValue * tempPos.y;
+			LocalPos.z = -SValue * tempPos.x + CValue * tempPos.y;
+
+			LocalPos.x = LocalPos.x / SharpInfo.RDScale.x;
+			LocalPos.z = LocalPos.z / SharpInfo.RDScale.y;
+
+			Distance = (LocalPos.x + GSSHARP_HALFLOCALLENGHT);
+			Gradient = Distance / GSSHARP_LOCALLENGHT;
+			Dir = SharpInfo.RDir;
+		}
+	}
+}
+
+//need to be delete after  resave material
+void GetGerstnerBaseData(float3 NoDisWPos, float2 Texcoord, out GerstnerBaseData data)
+{
+	NearTerrainData Tdata;
+	GetNearTerrainData(NoDisWPos, Tdata);
+	data.Depth = NoDisWPos.y - Tdata.Height;
+	data.Dir = float2(1.0f, 0.0f);
+	data.Gradient = float2(0.0f, 0.0f);
+	data.Distance = -100.0f;
+	data.WaveVelocityFactor.x = 0.0f;
+	data.WaveVelocityFactor.y = 0.0f;
+
+	float4 NearDataRangbox = g_Com.NearDataRangbox;
+	if (NoDisWPos.x > NearDataRangbox.x&& NoDisWPos.x < NearDataRangbox.y && NoDisWPos.z > NearDataRangbox.z&& NoDisWPos.z < NearDataRangbox.w)
+	{
+		int3 RealTexcoord = int3((NoDisWPos.x - NearDataRangbox.x) / 100, (NearDataRangbox.w - NoDisWPos.z) / 100, 0);
+		int nSharpID = g_tNearInfo.Load(RealTexcoord);
+		if (nSharpID > 0)
+		{
+			RANGEDATA_INFO SharpInfo = g_tRangeDataInfo[nSharpID];
+			data.WaveVelocityFactor.x = SharpInfo.WaveVelocityFactor0;
+			data.WaveVelocityFactor.y = SharpInfo.WaveVelocityFactor1;
+
+			float3 LocalPos = float3(SharpInfo.RDOffeset.x - NoDisWPos.x, 0.0f, SharpInfo.RDOffeset.z - NoDisWPos.z);
+
+			float SValue = 0.0f;
+			float CValue = 0.0f;
+			sincos(-SharpInfo.RDRotY, SValue, CValue);
+			float2 tempPos = LocalPos.xz;
+			LocalPos.x = CValue * tempPos.x + SValue * tempPos.y;
+			LocalPos.z = -SValue * tempPos.x + CValue * tempPos.y;
+
+			LocalPos.x = LocalPos.x / SharpInfo.RDScale.x;
+			LocalPos.z = LocalPos.z / SharpInfo.RDScale.y;
+
+			data.Distance = (LocalPos.x + GSSHARP_HALFLOCALLENGHT);
+			//data.Gradient.x = data.Distance / GSSHARP_LOCALLENGHT;
+			data.Gradient.x = 0.0f;
+			data.Gradient.y = (LocalPos.z + GSSHARP_HALFLOCALLENGHT) / GSSHARP_LOCALLENGHT;
+			data.Dir = SharpInfo.RDir;
+		}
+	}
+}
+
+void GetGerstnerBaseData(float3 NoDisWPos, out GerstnerBaseData data)
+{
+	NearTerrainData Tdata;
+	GetNearTerrainData(NoDisWPos, Tdata);
+	data.Depth = NoDisWPos.y - Tdata.Height;
+	data.Dir = float2(1.0f, 0.0f);
+	data.Gradient = float2(0.0f, 0.0f);
+	data.Distance = -100.0f;
+	data.WaveVelocityFactor.x = 0.0f;
+	data.WaveVelocityFactor.y = 0.0f;
+
+	float4 NearDataRangbox = g_Com.NearDataRangbox;
+	if (NoDisWPos.x > NearDataRangbox.x&& NoDisWPos.x < NearDataRangbox.y && NoDisWPos.z > NearDataRangbox.z&& NoDisWPos.z < NearDataRangbox.w)
+	{
+		int3 RealTexcoord = int3((NoDisWPos.x - NearDataRangbox.x) / 100, (NearDataRangbox.w - NoDisWPos.z) / 100, 0);
+		int nSharpID = g_tNearInfo.Load(RealTexcoord);
+		if (nSharpID > 0)
+		{
+			RANGEDATA_INFO SharpInfo = g_tRangeDataInfo[nSharpID];
+			data.WaveVelocityFactor.x = SharpInfo.WaveVelocityFactor0;
+			data.WaveVelocityFactor.y = SharpInfo.WaveVelocityFactor1;
+
+			float3 LocalPos = float3(SharpInfo.RDOffeset.x - NoDisWPos.x, 0.0f, SharpInfo.RDOffeset.z - NoDisWPos.z);
+
+			LocalPos.x = LocalPos.x / SharpInfo.RDScale.x;
+			LocalPos.z = LocalPos.z / SharpInfo.RDScale.y;
+
+			float SValue = 0.0f;
+			float CValue = 0.0f;
+			sincos(-SharpInfo.RDRotY, SValue, CValue);
+			float2 tempPos = LocalPos.xz;
+			LocalPos.x = CValue * tempPos.x + SValue * tempPos.y;
+			LocalPos.z = -SValue * tempPos.x + CValue * tempPos.y;
+
+			data.Distance = (LocalPos.x + GSSHARP_HALFLOCALLENGHT);
+			//data.Gradient.x = data.Distance / GSSHARP_LOCALLENGHT;
+			data.Gradient.x = 0.0f;
+			data.Gradient.y = (LocalPos.z + GSSHARP_HALFLOCALLENGHT) / GSSHARP_LOCALLENGHT;
+			data.Dir = SharpInfo.RDir;
+		}
+	}
+}
+#endif //WATER
+
+float3 GetLandscapeCenterPosition()
+{
+	return g_Com.LandscapeCenterPostion;
+}
+
+void GetNearWaterData(float3 WPos, out NearWaterData data)
+{
+	data.Displacement = float3(0.0f, 0.0f, 0.0f);
+	float2 Texcoord;
+	Texcoord.x = (WPos.x - g_Com.WaterParam.NearWaterRangbox.x) / (g_Com.WaterParam.NearWaterRangbox.y - g_Com.WaterParam.NearWaterRangbox.x);
+	Texcoord.y = (WPos.z - g_Com.WaterParam.NearWaterRangbox.z) / (g_Com.WaterParam.NearWaterRangbox.w - g_Com.WaterParam.NearWaterRangbox.z);
+	if((Texcoord.x > 0.0) && (Texcoord.x < 1.0) && (Texcoord.y > 0.0) && (Texcoord.y < 1.0))
+	{
+		float3 MaskDisValue = g_tNearWaterMask.SampleLevel(g_SamplerLinear3Clamp, Texcoord, 0).xyz;
+		Decode88(MaskDisValue.x, 5.0f, data.Displacement.x, data.Displacement.z);
+		data.Displacement.y = MaskDisValue.y;
+	}
+}
+
+#endif

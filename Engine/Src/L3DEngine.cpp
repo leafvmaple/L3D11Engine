@@ -88,12 +88,6 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     hr = UpdateMessage();
     HRESULT_ERROR_EXIT(hr);
 
-    // hr = UpdateInput();
-    // HRESULT_ERROR_EXIT(hr);
-
-    // hr = UpdateCamera(fDeltaTime);
-    // HRESULT_ERROR_EXIT(hr);
-
     RenderOption.piDevice = m_Device.piDevice;
     RenderOption.piImmediateContext = m_Device.piImmediateContext;
 
@@ -203,15 +197,6 @@ HRESULT L3DEngine::_CreateDeivice()
 		D3D11_SDK_VERSION,
 		&m_Device.piDevice, &m_Device.eFeatureLevel, &m_Device.piImmediateContext
 	);
-
-	if (FAILED(hr))
-	{
-		hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, uCreateDeviceFlag,
-			FEATURE_LEVEL_ARRAY_1, _countof(FEATURE_LEVEL_ARRAY_1),
-			D3D11_SDK_VERSION,
-			&m_Device.piDevice, &m_Device.eFeatureLevel, &m_Device.piImmediateContext
-		);
-	}
 	HRESULT_ERROR_EXIT(hr);
 
 	hResult = S_OK;
@@ -235,56 +220,4 @@ HRESULT L3DEngine::UpdateMessage()
         m_bActive = FALSE;
 
     return S_OK;
-}
-
-
-HRESULT L3DEngine::UpdateInput()
-{
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
-    BOOL_ERROR_EXIT(m_pInput);
-
-    hr = m_pInput->Update();
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
-}
-
-HRESULT L3DEngine::UpdateCamera(float fDeltaTime)
-{
-    HRESULT hResult = E_FAIL;
-
-    float fYaw = 0.f;
-    float fPitch = 0.f;
-    float fRoll = 0.f;
-
-    BOOL_ERROR_EXIT(m_pInput);
-
-    if (m_pInput->IsMouseButtonDown(0))
-    {
-        fYaw -= (m_pInput->MouseDX()) * 0.01f;
-        fPitch -= (m_pInput->MouseDY()) * 0.01f;
-    }
-
-    if (m_pInput->IsKeyDown(DIK_LEFT))
-        fYaw -= 0.001f;
-
-    if (m_pInput->IsKeyDown(DIK_RIGHT))
-        fYaw += 0.001f;
-
-    if (m_pInput->IsKeyDown(DIK_UP))
-        fPitch += 0.001f;
-
-    if (m_pInput->IsKeyDown(DIK_DOWN))
-        fPitch -= 0.001f;
-
-    // if (fYaw || fPitch || fRoll)
-    //    m_pCamera->UpdateYawPitchRoll(fYaw, fPitch, fRoll);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
 }
