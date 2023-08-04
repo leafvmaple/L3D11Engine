@@ -35,6 +35,10 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
     m_pMaterialDefine->Create(InstanceData.szDefineName);
     m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
 
+    m_eBlendMode = (BlendMode)InstanceData.uBlendMode;
+    m_dwAlphaRef = InstanceData.uAlphaRef;
+    m_AlphaTestSwitch = m_eBlendMode == BLEND_Masked;
+
     for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
         _PlaceTextureValue(piDevice, iter->first, iter->second);
 
@@ -113,6 +117,13 @@ HRESULT L3DMaterial::SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectCon
     hResult = S_OK;
 Exit0:
     return hResult;
+}
+
+
+void L3DMaterial::GetRenderStateValue(BOOL* pEnableAlphaTest, float* pAlphaRef)
+{
+    *pEnableAlphaTest = m_AlphaTestSwitch;
+    *pAlphaRef = m_dwAlphaRef / 255.f;
 }
 
 HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName)
@@ -228,4 +239,8 @@ void L3DMaterialPack::_LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERI
             InstanceData.TextureArray.insert(std::make_pair(szName, szValue));
         }
     }
+
+    auto& RenderStateObject = JsonObject["RenderState"];
+    InstanceData.uAlphaRef = RenderStateObject["AlphaRef"].GetInt();
+    InstanceData.uBlendMode = RenderStateObject["BlendMode"].GetInt();
 }

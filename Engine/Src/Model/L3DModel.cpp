@@ -95,6 +95,8 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
     MeshCB.MatrixWorld = m_World;
 
     _UpdateModelSharedConsts(matBone, MeshCB);
+    for (int i = 0; i < m_MaterialPack.size(); i++)
+        _UpdateSubsetConst(i);
 }
 
 
@@ -132,6 +134,21 @@ void L3DModel::_UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const
 {
     m_RenderData.ModelVariables.pCustomMatrixBones->SetRawValue(BoneMatrix.data(), 0, sizeof(XMMATRIX) * BoneMatrix.size());
     m_RenderData.ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
+}
+
+__declspec(align(16)) struct SKIN_SUBSET_CONST
+{
+    XMFLOAT4A   ModelColor;
+    BOOL        EnableAlphaTest;
+    float       AlphaReference;
+};
+
+void L3DModel::_UpdateSubsetConst(unsigned int iSubset)
+{
+    SKIN_SUBSET_CONST subsetConst;
+
+    m_MaterialPack[iSubset]->GetRenderStateValue(&subsetConst.EnableAlphaTest, &subsetConst.AlphaReference);
+    m_RenderData.SubsetCB[iSubset]->SetRawValue(&subsetConst, 0, sizeof(SKIN_SUBSET_CONST));
 }
 
 void L3DModel::_CreateBoneMatrix()

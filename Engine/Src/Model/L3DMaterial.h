@@ -24,6 +24,8 @@ struct ID3DX11EffectShaderResourceVariable;
 struct MATERIAL_INSTANCE_DATA
 {
     char szDefineName[MAX_PATH];
+    UINT32 uBlendMode;
+    UINT32 uAlphaRef;
 
     std::unordered_map<std::string, std::string> TextureArray;
 };
@@ -34,6 +36,12 @@ enum class MATERIAL_INDIV_CB
     SUBSET,
 };
 
+enum BlendMode
+{
+    BLEND_Opaque,
+    BLEND_Masked,
+};
+
 class L3DMaterial
 {
 public:
@@ -42,6 +50,8 @@ public:
 
     HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
     HRESULT SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer* pSharedCB);
+
+    void GetRenderStateValue(BOOL* pEnableAlphaTest, float* pAlphaRef);
 
 private:
     struct PASS_TEXTURE
@@ -59,6 +69,10 @@ private:
     L3DMaterialDefine* m_pMaterialDefine = nullptr;
     ID3D11Buffer* m_piCommonCB = nullptr;
     L3DEffect* m_pEffect = nullptr;
+
+    BOOL m_AlphaTestSwitch = false;
+    unsigned int m_dwAlphaRef = 0;
+    BlendMode m_eBlendMode = BLEND_Opaque;
 
     std::vector<TEXTURE_DATA> m_vecTextures;
 };

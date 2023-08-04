@@ -56,6 +56,7 @@ private:
     void _LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName);
 
     void _UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const MESH_SHARED_CB& MeshCB);
+    void _UpdateSubsetConst(unsigned int iSubset);
 
     void _CreateBoneMatrix();
     

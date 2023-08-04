@@ -13,7 +13,10 @@ struct MTLSYS_MESH_SHARED_CB
 
 cbuffer SubsetConstParam : register (b3)
 {
-    float4  ModelColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float4  ModelColor      = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    bool    EnableAlphaTest = false;
+    float   AlphaReference  = 0.f;
+
 };
 
 cbuffer ModelSharedParam
@@ -77,18 +80,18 @@ struct ParamsMainPixelNode
     float   Opacity;
     float   PixelDepthOffset;
     float3  Ambient;
-	float	AO;
+    float	AO;
 };
 
 
 void CalculateMainPixelNode(in out MaterialPixelParameters Parameters, in out ParamsMainPixelNode MainNodeParam)
 {
-	float4 local1 = _0_local1_Texture.Sample(g_Sampler_0, Parameters.TexCoords.xy);
-	MainNodeParam.Albedo  = local1.rgb;
-	MainNodeParam.Fresnel = 0.5f;
-	MainNodeParam.AO      = 1.0f;
-	MainNodeParam.Opacity = local1.a;
-	MainNodeParam.PixelDepthOffset = 0.0f;
+    float4 local1 = _0_local1_Texture.Sample(g_Sampler_0, Parameters.TexCoords.xy);
+    MainNodeParam.Albedo  = local1.rgb;
+    MainNodeParam.Fresnel = 0.5f;
+    MainNodeParam.AO      = 1.0f;
+    MainNodeParam.Opacity = local1.a;
+    MainNodeParam.PixelDepthOffset = 0.0f;
 }
 
 MaterialPixelParameters GetMaterialParameters(VertexOut Input)
@@ -101,9 +104,9 @@ MaterialPixelParameters GetMaterialParameters(VertexOut Input)
     Params.WorldNormal      = normalize(Input.Normal_Fog.xyz);
     Params.FogFactor        = Input.Normal_Fog.w;
     Params.ScreenPosition   = Input.ScreenPosition;
-	Params.OutPosition		= Input.PosH;
+    Params.OutPosition		= Input.PosH;
     Params.WorldPosition    = Input.WorldPosition.xyz;
-	
+    
     return Params;
 }
 
@@ -131,7 +134,13 @@ float4 PS(VertexOut pin) : SV_Target
     MaterialPixelParameters Params = GetMaterialParameters(pin);
 
     ParamsMainPixelNode PixelMainNode = (ParamsMainPixelNode)0;
-	CalculateMainPixelNode(Params, PixelMainNode);
+    CalculateMainPixelNode(Params, PixelMainNode);
+
+    if (EnableAlphaTest)
+    {
+        if (PixelMainNode.Opacity < AlphaReference)
+            discard;
+    }
 
     color = PixelMainNode.Albedo;
     color +=  PixelMainNode.Ambient;
