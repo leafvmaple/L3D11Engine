@@ -72,7 +72,7 @@ private:
 
     // m_vecMaterial Like MaterialInstancePack
     // L3DMaterial Like MaterialInstance
-    MATERIAL_INSTANCE_PACK m_MaterialPack;
+    MATERIALS_PACK m_MaterialPack;
 
     XMFLOAT3 m_Translation;
     XMFLOAT4 m_Rotation;

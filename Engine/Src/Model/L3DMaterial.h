@@ -38,8 +38,8 @@ enum class MATERIAL_INDIV_CB
 
 enum BlendMode
 {
-    BLEND_Opaque,
-    BLEND_Masked,
+    BLEND_OPAQUE,
+    BLEND_MASKED,
 };
 
 class L3DMaterial
@@ -68,13 +68,14 @@ private:
     HRESULT _UpdateTextures();
     void _UpdateCommonCB();
 
+    L3DEffect*         m_pEffect         = nullptr;
+    ID3D11Buffer*      m_piCommonCB      = nullptr;
     L3DMaterialDefine* m_pMaterialDefine = nullptr;
-    ID3D11Buffer* m_piCommonCB = nullptr;
-    L3DEffect* m_pEffect = nullptr;
+
 
     BOOL m_AlphaTestSwitch = false;
     unsigned int m_dwAlphaRef = 0;
-    BlendMode m_eBlendMode = BLEND_Opaque;
+    BlendMode m_eBlendMode = BLEND_OPAQUE;
 
     std::vector<TEXTURE_DATA> m_vecTextures;
 };
@@ -82,7 +83,7 @@ private:
 class L3DMaterialPack
 {
 public:
-    static void LoadFromJson(ID3D11Device* piDevice, MATERIAL_INSTANCE_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro);
+    static void LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro);
 private:
     static void _LoadInstanceFromJson(const rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
 };

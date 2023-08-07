@@ -37,7 +37,7 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
 
     m_eBlendMode = (BlendMode)InstanceData.uBlendMode;
     m_dwAlphaRef = InstanceData.uAlphaRef;
-    m_AlphaTestSwitch = m_eBlendMode == BLEND_Masked;
+    m_AlphaTestSwitch = m_eBlendMode == BLEND_MASKED;
 
     for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
         _PlaceTextureValue(piDevice, iter->first, iter->second);
@@ -182,7 +182,7 @@ void L3DMaterial::_UpdateCommonCB()
         m_pEffect->GetConstantBufferByRegister(cb.first)->SetConstantBuffer(cb.second);
 }
 
-void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIAL_INSTANCE_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro)
+void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro)
 {
     rapidjson::Document JsonDocument;
     LFileReader::ReadJson(szFileName, JsonDocument);
@@ -199,7 +199,6 @@ void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIAL_INSTANCE_PAC
                 MATERIAL_INSTANCE_DATA InstanceData;
                 _LoadInstanceFromJson(SubsetArray[k], InstanceData);
 
-                // TODO ~L3DMaterial
                 auto pInstance = InstancePack.emplace_back(new L3DMaterial);
                 pInstance->Create(piDevice, InstanceData, eMacro);
             }

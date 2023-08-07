@@ -82,8 +82,8 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
     pMeshData->dwFacesCount  = pHead->MeshHead.dwNumFaces;
     pMeshData->dwSubsetCount = pHead->MeshHead.dwNumSubset;
     
-    bBin       = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_TOBIN); // TODO
-    bHasPxPose = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_ADDITIVE_PX_POSE); // TODO
+    bBin         = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_TOBIN); // TODO
+    bHasPxPose   = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_ADDITIVE_PX_POSE); // TODO
     bSubsetShort = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_SUBSETSHORT);
 
     // Position
@@ -450,15 +450,15 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
         nTotalCount += nCount;
     }
 
-    desc.ByteWidth = arrIndies.size() * sizeof(_INDEX_TYPE);
-    desc.Usage = D3D11_USAGE_IMMUTABLE;
-    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
+    desc.ByteWidth           = arrIndies.size() * sizeof(_INDEX_TYPE);
+    desc.Usage               = D3D11_USAGE_IMMUTABLE;
+    desc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
+    desc.CPUAccessFlags      = 0;
+    desc.MiscFlags           = 0;
     desc.StructureByteStride = 0;
 
-    InitData.pSysMem = arrIndies.data();
-    InitData.SysMemPitch = 0;
+    InitData.pSysMem          = arrIndies.data();
+    InitData.SysMemPitch      = 0;
     InitData.SysMemSlicePitch = 0;
 
     hr = piDevice->CreateBuffer(&desc, &InitData, &m_NormalMesh.piIndexBuffer);
