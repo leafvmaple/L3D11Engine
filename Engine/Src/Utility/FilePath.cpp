@@ -52,7 +52,7 @@ namespace L3D
 		return hResult;
 	}
 
-	HRESULT FormatExtName(char* szFileName, const char* ExtName)
+	HRESULT ReplaceExtName(char* szFileName, const char* ExtName)
 	{
 		HRESULT hr = E_FAIL;
 		int nRetCode = 0;

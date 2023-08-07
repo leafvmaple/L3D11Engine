@@ -11,6 +11,8 @@ public:
     HRESULT Create(IL3DEngine* p3DEngine, const char* szPath);
     HRESULT SetPosition(const XMFLOAT3& Position);
 
+    HRESULT PlayAnimation(const char* szAnimation);
+
     void AppendRenderEntity(ILScene* piScene);
 
 private:

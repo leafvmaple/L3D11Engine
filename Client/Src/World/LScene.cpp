@@ -18,6 +18,7 @@ void LScene::Create(const char* szFileName)
     pCharacter = LObjectMgr::Instance().CreateModel<LCharacter>("Res/Mesh/A055_body.mesh");
     pCharacter->AppendRenderEntity(m_piScene);
     pCharacter->SetPosition(XMFLOAT3(0, -45, 0));
+    pCharacter->PlayAnimation("Res/Animation/A055_st01.ani");
 }
 
 void LScene::Update(float fDeltaTime)

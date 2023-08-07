@@ -78,27 +78,19 @@ HRESULT L3DScene::_CreatePathTable(const char* szFileName, SCENE_PATH_TABLE* pPa
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     int nRetCode = false;
-
     char szMapName[MAX_PATH];
-
-    memset(pPathTable, 0, sizeof(SCENE_PATH_TABLE));
 
     strcpy(pPathTable->szSetting, szFileName);
 
-    hr = L3D::FormatExtName(pPathTable->szSetting, "_Setting.ini");
+    hr = L3D::ReplaceExtName(pPathTable->szSetting, "_Setting.ini");
     HRESULT_ERROR_EXIT(hr);
 
     hr = L3D::PathSplit(szFileName, pPathTable->szDir, MAX_PATH, szMapName, MAX_PATH);
     HRESULT_ERROR_EXIT(hr);
 
-    nRetCode = sprintf_s(pPathTable->szSceneInfo, "%hsentities/%hs_sceneinfo.json", pPathTable->szDir, szMapName);
-    BOOL_ERROR_EXIT(nRetCode > 0);
-
-    nRetCode = sprintf_s(pPathTable->szEnvironment, "%senvironment.json", pPathTable->szDir);
-    BOOL_ERROR_EXIT(nRetCode > 0);
-
-    nRetCode = sprintf_s(pPathTable->szCoverMap, "%s%s.tga", pPathTable->szDir, szMapName);
-    BOOL_ERROR_EXIT(nRetCode > 0);
+    sprintf_s(pPathTable->szSceneInfo, "%hsentities/%hs_sceneinfo.json", pPathTable->szDir, szMapName);
+    sprintf_s(pPathTable->szEnvironment, "%senvironment.json", pPathTable->szDir);
+    sprintf_s(pPathTable->szCoverMap, "%s%s.tga", pPathTable->szDir, szMapName);
 
     hResult = S_OK;
 Exit0:

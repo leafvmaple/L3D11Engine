@@ -169,6 +169,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\IO\LFileReader.cpp" />
     <ClCompile Include="Src\L3DEngine.cpp" />
     <ClCompile Include="Src\L3DInterface.cpp" />
+    <ClCompile Include="Src\Model\L3DAnimation.cpp" />
     <ClCompile Include="Src\Model\L3DBone.cpp" />
     <ClCompile Include="Src\Model\L3DEffect.cpp" />
     <ClCompile Include="Src\Model\L3DMaterial.cpp" />
@@ -201,6 +202,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Input\L3DInput.h" />
     <ClInclude Include="Src\IO\LFileReader.h" />
     <ClInclude Include="Src\IO\LFileStruct.h" />
+    <ClInclude Include="Src\Model\L3DAnimation.h" />
     <ClInclude Include="Src\Model\L3DBone.h" />
     <ClInclude Include="Src\Model\L3DEffect.h" />
     <ClInclude Include="Src\Model\L3DMaterial.h" />

@@ -212,10 +212,10 @@ enum class RENDER_PASS
 
 struct SCENE_PATH_TABLE
 {
-	char szDir[MAX_PATH];
-	char szSetting[MAX_PATH];
-	char szSceneInfo[MAX_PATH];
-	char szEnvironment[MAX_PATH];
+	char szDir[MAX_PATH]         = { 0 };
+	char szSetting[MAX_PATH]     = { 0 };
+	char szSceneInfo[MAX_PATH]   = { 0 };
+	char szEnvironment[MAX_PATH] = { 0 };
 
-	char szCoverMap[MAX_PATH];
+	char szCoverMap[MAX_PATH]    = { 0 };
 };

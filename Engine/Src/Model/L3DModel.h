@@ -14,6 +14,7 @@ class L3DMesh;
 class L3DMaterial;
 class L3DRenderUnit;
 class L3DTexture;
+class L3DAnimation;
 
 struct MATERIAL_INSTANCE_DATA;
 // Temp
@@ -32,6 +33,8 @@ public:
     virtual HRESULT SetTranslation(const XMFLOAT3& Translation) override;
     virtual HRESULT SetRotation(const XMFLOAT4& Rotation) override;
     virtual HRESULT SetScale(const XMFLOAT3& Scale) override;
+
+    virtual HRESULT PlayAnimation(const char* szAnimation) override;
 
     void UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption);
     void GetRenderUnit(std::vector<L3DRenderUnit*>& RenderQueue);
@@ -67,6 +70,7 @@ private:
     RENDER_DATA m_RenderData;
 
     L3DMesh* m_p3DMesh = nullptr;
+    L3DAnimation* m_p3DAnimation = nullptr;
 
     std::vector<XMMATRIX> m_BoneCurMatrix;
 

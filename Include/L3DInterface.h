@@ -105,13 +105,36 @@ struct L3D_SCENE_RECT
     float fZWidth;
 };
 
-
 enum LOBJECT_TYPE
 {
     LOBJECT_TYPE_INVALID,
     LOBJECT_TYPE_VERTEX,
     LOBJECT_TYPE_MESH,
     LOBJECT_TYPE_COUNT,
+};
+
+enum ANIMATION_TYPE
+{
+    ANIMATION_NONE = 0,
+    ANIMATION_VERTICES = 1,
+    ANIMATION_VERTICES_RELATIVE = 2,
+    ANIMATION_BONE = 10,
+    ANIMATION_BONE_RELATIVE = 11,
+    ANIMATION_BONE_16 = 12,
+    ANIMATION_BONE_RTS = 13,
+    ANIMATION_BLENDSHAPE = 14,
+    ANIMATION_VCIK = 15,	//视频捕捉动画关键点转FullBodyIK
+    ANIMATION_COUNT,
+    ANIMATION_FORCE_DWORD = 0xffffffff,
+};
+
+struct RTS
+{
+    XMFLOAT3 Translation;
+    XMFLOAT3 Scale;
+    XMFLOAT4 Rotation;
+    float Sign;
+    XMFLOAT4 SRotation;
 };
 
 class L3DENGINE_CLASS IL3DEngine
@@ -146,6 +169,8 @@ public:
     virtual HRESULT SetTranslation(const XMFLOAT3& Translation) = 0;
     virtual HRESULT SetRotation(const XMFLOAT4& Rotation) = 0;
     virtual HRESULT SetScale(const XMFLOAT3& Scale) = 0;
+
+    virtual HRESULT PlayAnimation(const char* szAnimation) = 0;
 };
 
 class L3DENGINE_CLASS ILCamera

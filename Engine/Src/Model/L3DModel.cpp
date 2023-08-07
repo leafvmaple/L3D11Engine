@@ -4,6 +4,7 @@
 #include "L3DMesh.h"
 #include "L3DMaterial.h"
 #include "L3DTexture.h"
+#include "L3DAnimation.h"
 
 #include "IO/LFileReader.h"
 #include "Utility/FilePath.h"
@@ -29,7 +30,7 @@ HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
     HRESULT_ERROR_EXIT(hr);
 
     strcpy(szMaterialName, szFileName);
-    hr = L3D::FormatExtName(szMaterialName, ".JsonInspack");
+    hr = L3D::ReplaceExtName(szMaterialName, ".JsonInspack");
     if (SUCCEEDED(hr))
         _LoadMaterialFromJson(piDevice, szMaterialName);
 
@@ -82,6 +83,13 @@ HRESULT L3DModel::SetScale(const XMFLOAT3& Scale)
     return S_OK;
 }
 
+HRESULT L3DModel::PlayAnimation(const char* szAnimation)
+{
+    if (!m_p3DAnimation)
+        m_p3DAnimation = new L3DAnimation;
+
+    return m_p3DAnimation->LoadFromFile(szAnimation);
+}
 
 void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
 {

@@ -128,14 +128,14 @@ void L3DMaterial::GetRenderStateValue(BOOL* pEnableAlphaTest, float* pAlphaRef)
 
 HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName)
 {
-    for (auto it = m_vecTextures.begin(); it != m_vecTextures.end(); it++)
+    for (auto& texture : m_vecTextures)
     {
-        if (sName == it->sRepresentName)
+        if (sName == texture.sRepresentName)
         {
-            SAFE_DELETE(it->pTexture);
+            SAFE_DELETE(texture.pTexture);
 
-            it->pTexture = new L3DTexture;
-            it->pTexture->Create(piDevice, sTextureName.c_str());
+            texture.pTexture = new L3DTexture;
+            texture.pTexture->Create(piDevice, sTextureName.c_str());
         }
     }
 

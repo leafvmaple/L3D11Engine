@@ -11,5 +11,5 @@ namespace L3D
 	HRESULT PathSplit(const char* szFileName, char* szRetDir, size_t nDirSize, char* szRetBase, size_t nBaseSize);
 
 	HRESULT GetExtName(char* szFileName, char* szExt, size_t nExtSize);
-	HRESULT FormatExtName(char* szFileName, const char* ExtName);
+	HRESULT ReplaceExtName(char* szFileName, const char* ExtName);
 }

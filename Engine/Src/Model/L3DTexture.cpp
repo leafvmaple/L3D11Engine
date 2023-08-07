@@ -25,7 +25,7 @@ HRESULT L3DTexture::Create(ID3D11Device* piDevice, const char* szFileName)
 
 	strcpy(szName, szFileName);
 
-	L3D::FormatExtName(szName, ".dds");
+	L3D::ReplaceExtName(szName, ".dds");
 	L3D::GetExtName(szName, szBaseName, MAX_PATH);
 
 	{
@@ -62,9 +62,10 @@ HRESULT L3DTexture::Create(ID3D11Device* piDevice, const char* szFileName)
 		LoadedImage = std::move(DecompressImage);
 	}*/
 
-	srvDesc.Format = LoadedImage.GetMetadata().format;
+	srvDesc.Format        = LoadedImage.GetMetadata().format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = -1;
+
+	srvDesc.Texture2D.MipLevels       = -1;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 
 	hr = piDevice->CreateShaderResourceView(piResource, &srvDesc, &m_piTextureView);
