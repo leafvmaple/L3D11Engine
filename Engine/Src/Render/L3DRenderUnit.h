@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include <windows.h>
+#include <memory>
 
 #include "L3DFormat.h"
 
@@ -40,7 +41,7 @@ public:
     ID3DX11EffectConstantBuffer* m_piSubsetSharedCB = nullptr;
     MODEL_FIX_VARIBLES m_ModelVariables;
 
-    L3DMaterial* m_pMaterial = nullptr;
+    std::shared_ptr<L3DMaterial> m_pMaterial = nullptr;
 
 private:
     XMMATRIX m_MatrixWorld = XMMatrixIdentity();

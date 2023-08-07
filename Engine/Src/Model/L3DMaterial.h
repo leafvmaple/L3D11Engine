@@ -53,6 +53,8 @@ public:
 
     void GetRenderStateValue(BOOL* pEnableAlphaTest, float* pAlphaRef);
 
+    ~L3DMaterial() {}
+
 private:
     struct PASS_TEXTURE
     {
@@ -82,5 +84,5 @@ class L3DMaterialPack
 public:
     static void LoadFromJson(ID3D11Device* piDevice, MATERIAL_INSTANCE_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro);
 private:
-    static void _LoadInstanceFromJson(rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
+    static void _LoadInstanceFromJson(const rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
 };

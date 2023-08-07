@@ -43,8 +43,7 @@ private:
     L3D_SHADER_TABLE* m_pShaderTable = nullptr;
     L3D_STATE_TABLE* m_pStateTable = nullptr;
 
-    L3DWindow* m_pWindow = nullptr;
-    L3DInput* m_pInput = nullptr;
+    std::shared_ptr<L3DWindow> m_pWindow = nullptr;
 
     L3D_WINDOW_PARAM m_WindowParam;
 
@@ -82,7 +81,6 @@ private:
 
 private:
     HRESULT InitSamplerFilter();
-    HRESULT InitInput(HWND hWnd, HINSTANCE hInstance);
 
     HRESULT _SetupD3D();
     HRESULT _CreateTargetWindow(HWND hWnd);

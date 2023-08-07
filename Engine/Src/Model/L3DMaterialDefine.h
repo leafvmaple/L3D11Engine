@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+class L3DMaterial;
+
 struct MaterialTextureTable
 {
 	std::string hsRepresentName;
@@ -27,5 +29,4 @@ private:
 	std::vector<MaterialTextureTable> m_vecTexture;
 };
 
-class L3DMaterial;
-typedef std::vector<L3DMaterial*> MATERIAL_INSTANCE_PACK;
+typedef std::vector<std::shared_ptr<L3DMaterial>> MATERIAL_INSTANCE_PACK;

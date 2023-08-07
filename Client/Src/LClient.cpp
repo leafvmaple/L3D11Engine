@@ -71,6 +71,8 @@ Exit0:
 void LClient::Uninit()
 {
     SAFE_DELETE(m_pScene);
+
+    IL3DEngine::Destroy();
 }
 
 BOOL LClient::IsActive()

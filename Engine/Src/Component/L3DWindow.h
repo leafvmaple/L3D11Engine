@@ -3,6 +3,7 @@
 #include "L3DInterface.h"
 
 #include <vector>
+#include <memory>
 
 class L3DScene;
 class L3DModel;
@@ -18,6 +19,8 @@ public:
     void BeginPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption);
     void EndPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption);
     void Present();
+
+    ~L3DWindow() {}
 
 private:
     HRESULT _CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd);
@@ -37,4 +40,4 @@ private:
     D3D11_VIEWPORT m_Viewport;
 };
 
-L3DWindow* L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd);
+std::shared_ptr<L3DWindow> L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd);

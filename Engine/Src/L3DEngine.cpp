@@ -47,7 +47,6 @@ L3DEngine::L3DEngine()
 
 L3DEngine::~L3DEngine()
 {
-
 }
 
 HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
@@ -137,23 +136,6 @@ HRESULT L3DEngine::InitSamplerFilter()
     return S_OK;
 }
 
-
-HRESULT L3DEngine::InitInput(HWND hWnd, HINSTANCE hInstance)
-{
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
-    m_pInput = new L3DInput;
-    BOOL_ERROR_EXIT(m_pInput);
-
-    hr = m_pInput->Init(hWnd, hInstance, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
-}
-
 HRESULT L3DEngine::_SetupD3D()
 {
     _CreateDeivice();
@@ -214,10 +196,10 @@ HRESULT L3DEngine::UpdateMessage()
     {
         ::TranslateMessage(&Msg);
         ::DispatchMessage(&Msg);
-    }
 
-    if (Msg.message == WM_QUIT)
-        m_bActive = FALSE;
+        if (Msg.message == WM_QUIT)
+            m_bActive = FALSE;
+    }
 
     return S_OK;
 }

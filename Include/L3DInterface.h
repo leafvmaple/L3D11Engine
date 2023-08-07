@@ -128,6 +128,7 @@ public:
     virtual ID3D11Device* GetDevice() const = 0;
 
     static IL3DEngine* Instance();
+    static void Destroy();
 
 protected:
     IL3DEngine() {};

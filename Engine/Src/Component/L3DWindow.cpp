@@ -36,7 +36,7 @@ Exit0:
 
 HRESULT L3DWindow::AddScene(L3DScene* pScene)
 {
-    m_SceneList.push_back(pScene);
+    m_SceneList.emplace_back(pScene);
 
     return S_OK;
 }
@@ -210,12 +210,12 @@ Exit0:
     return hResult;
 }
 
-L3DWindow* L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd)
+std::shared_ptr<L3DWindow> L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd)
 {
     HRESULT hr      = E_FAIL;
     HRESULT hResult = E_FAIL;
 
-    L3DWindow* pWindow = new L3DWindow;
+    std::shared_ptr<L3DWindow> pWindow(new L3DWindow);
     BOOL_ERROR_EXIT(pWindow);
 
     hr = pWindow->Init(piDevice, hWnd);
@@ -224,6 +224,6 @@ L3DWindow* L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd)
     hResult = S_OK;
 Exit0:
     if (FAILED(hResult))
-        SAFE_DELETE(pWindow);
+        pWindow.reset();
     return pWindow;
 }

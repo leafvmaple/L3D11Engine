@@ -15,6 +15,11 @@ IL3DEngine* IL3DEngine::Instance()
     return m_pInstance;
 }
 
+void IL3DEngine::Destroy()
+{
+    SAFE_DELETE(m_pInstance);
+}
+
 HRESULT ILModel::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILModel** ppModel)
 {
     HRESULT hr = E_FAIL;
