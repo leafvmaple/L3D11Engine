@@ -27,6 +27,8 @@ public:
     void BeginRender(const SCENE_RENDER_OPTION& RenderOption);
     void EndRender(const SCENE_RENDER_OPTION& RenderOption);
 
+    void Update(const SCENE_RENDER_OPTION& RenderOption);
+
     void AddRenderEntity(ILModel* piModel) override;
 
     void GetVisibleObjectAll(MODEL_VECTOR& vecModels);

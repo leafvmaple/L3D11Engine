@@ -57,6 +57,8 @@ void L3DWindow::BeginPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& Re
         scene->UpdateCamera();
     }
 
+    _UpdateAll3DScene(RenderOption);
+
     for (auto& pScene : m_SceneList)
         pScene->BeginRender(RenderOption);
 }
@@ -208,6 +210,12 @@ Exit0:
         SAFE_RELEASE(m_piRenderTargetView);
     }
     return hResult;
+}
+
+void L3DWindow::_UpdateAll3DScene(const SCENE_RENDER_OPTION& RenderOption)
+{
+    for (auto& scene : m_SceneList)
+        scene->Update(RenderOption);
 }
 
 std::shared_ptr<L3DWindow> L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd)

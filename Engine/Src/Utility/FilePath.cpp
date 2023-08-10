@@ -40,7 +40,7 @@ namespace L3D
 		return hResult;
 	}
 
-	HRESULT GetExtName(char* szFileName, char* szExt, size_t nExtSize)
+	HRESULT GetExtName(const char* szFileName, char* szExt, size_t nExtSize)
 	{
 		HRESULT hResult = E_FAIL;
 

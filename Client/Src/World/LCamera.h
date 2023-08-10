@@ -10,6 +10,7 @@ public:
     void Init(ILCamera* piCamera);
     void SetSightDistance(float fSightDis);
     void SetYaw(float fYaw);
+    void SetPitch(float fPitch);
 
     void Update();
 

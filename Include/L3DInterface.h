@@ -128,6 +128,29 @@ enum ANIMATION_TYPE
     ANIMATION_FORCE_DWORD = 0xffffffff,
 };
 
+enum SPLIT_TYPE
+{
+    SPLIT_TOP,    // 上半身
+    SPLIT_BOTTOM, // 下半身
+    SPLIT_ALL,
+    SPLIT_COUNT,
+};
+
+enum ANIMATION_CONTROLLER_PRIORITY
+{
+    ANICTL_PRIMARY,   // 低轨
+    ANICTL_SECONDARY, // 高轨
+    ANICTL_COUNT,
+    ANICTL_FORCEDWORD = 0xffffffff,
+};
+
+enum ANIMATION_PLAY_TYPE
+{
+    ENU_ANIMATIONPLAY_CIRCLE,  // 循环播放动作
+    ENU_ANIMATIONPLAY_ONCE,    // 单次播放动作
+    ENU_ANIMATIONPLAY_FORCE_DWORD = 0xffffffff,
+};
+
 struct RTS
 {
     XMFLOAT3 Translation;
@@ -145,7 +168,7 @@ public:
     virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam) = 0;
     virtual HRESULT Uninit() = 0;
 
-    virtual HRESULT Update(float fDeltaTime) = 0;
+    virtual HRESULT FrameMove(float fDeltaTime) = 0;
 
     virtual BOOL IsActive() = 0;
     virtual ID3D11Device* GetDevice() const = 0;
@@ -170,7 +193,8 @@ public:
     virtual HRESULT SetRotation(const XMFLOAT4& Rotation) = 0;
     virtual HRESULT SetScale(const XMFLOAT3& Scale) = 0;
 
-    virtual HRESULT PlayAnimation(const char* szAnimation) = 0;
+    virtual HRESULT PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) = 0;
+    virtual HRESULT PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) = 0;
 };
 
 class L3DENGINE_CLASS ILCamera

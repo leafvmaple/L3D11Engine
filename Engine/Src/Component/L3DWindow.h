@@ -29,6 +29,8 @@ private:
     HRESULT _CreateStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);
     HRESULT _CreateSwapChainRTV(ID3D11Device* piDevice, IDXGISwapChain* piSwapChain);
 
+    void _UpdateAll3DScene(const SCENE_RENDER_OPTION& RenderOption);
+
     std::vector<L3DScene*> m_SceneList;
 
     IDXGISwapChain* m_piSwapChain = nullptr;

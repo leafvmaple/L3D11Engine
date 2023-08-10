@@ -16,6 +16,7 @@
 #include "Input/L3DInput.h"
 #include "Camera/L3DCamera.h"
 #include "Component/L3DWindow.h"
+#include "Component/L3DEngineTimer.h"
 
 #include "Render/L3DMaterialSystem.h"
 
@@ -65,10 +66,10 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
     hr = InitSamplerFilter();
     HRESULT_ERROR_EXIT(hr);
 
-    // hr = InitInput(hWnd, hInstance);
-    // HRESULT_ERROR_EXIT(hr);
-
     g_pMaterialSystem->Init(m_Device.piDevice);
+
+    // Temp Ç¿ÖÆË¢ÐÂ
+    g_Timer.Update();
 
     m_bActive = TRUE;
 
@@ -77,12 +78,14 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DEngine::Update(float fDeltaTime)
+HRESULT L3DEngine::FrameMove(float fDeltaTime)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
     SCENE_RENDER_OPTION RenderOption;
+
+    g_Timer.Update();
 
     hr = UpdateMessage();
     HRESULT_ERROR_EXIT(hr);

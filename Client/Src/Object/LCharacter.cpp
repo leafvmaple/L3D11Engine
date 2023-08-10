@@ -31,9 +31,9 @@ Exit0:
 }
 
 
-HRESULT LCharacter::PlayAnimation(const char* szAnimation)
+HRESULT LCharacter::PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
-    return m_pObject->PlayAnimation(szAnimation);
+    return m_pObject->PlayAnimation(szAnimation, nPlayType, nPriority);
 }
 
 void LCharacter::AppendRenderEntity(ILScene* piScene)

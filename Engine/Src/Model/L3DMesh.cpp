@@ -34,6 +34,8 @@ HRESULT L3DMesh::Create(ID3D11Device* piDevice, const char* szFileName)
     hr = CreateMesh(&MeshFileData, piDevice);
     HRESULT_ERROR_EXIT(hr);
 
+    m_sName = szFileName;
+
     hResult = S_OK;
 Exit0:
     return hResult;

@@ -30,7 +30,7 @@ struct L3D_BONE_INFO
 	std::vector<unsigned int> BaseBoneIndex;
 
 	std::vector<L3D_BOUND_BOX> BoneBox;
-	std::vector<XMMATRIX> BoneOffset; // invBindPose
+	std::vector<XMMATRIX> BoneOffset; // ¹Ç÷ÀÆ«ÒÆÖµ
 	std::vector<XMMATRIX> BoneInvPxPose;
 	std::vector<BONEINFO> BoneInfo;
 	unsigned int uSocketCount = 0;

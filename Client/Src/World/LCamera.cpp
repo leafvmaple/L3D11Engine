@@ -17,6 +17,11 @@ void LCamera::SetYaw(float fYaw)
     m_fYaw = fYaw;
 }
 
+void LCamera::SetPitch(float fPitch)
+{
+    m_fPitch = fPitch;
+}
+
 void LCamera::Update()
 {
     float x = m_fSightDis * sinf(m_fPitch) * cosf(m_fYaw);

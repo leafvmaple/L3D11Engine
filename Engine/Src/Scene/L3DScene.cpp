@@ -46,6 +46,12 @@ void L3DScene::EndRender(const SCENE_RENDER_OPTION& RenderOption)
     _RenderMainCamera(RenderOption);
 }
 
+void L3DScene::Update(const SCENE_RENDER_OPTION& RenderOption)
+{
+    for (auto& object : m_DynamicalObjects)
+        object->PrimaryUpdate();
+}
+
 void L3DScene::AddRenderEntity(ILModel* piModel)
 {
     L3DModel* pModel = dynamic_cast<L3DModel*>(piModel);

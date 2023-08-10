@@ -24,7 +24,7 @@ public:
     virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam);
     virtual HRESULT Uninit();
     
-    virtual HRESULT Update(float fDeltaTime);
+    virtual HRESULT FrameMove(float fDeltaTime);
 
     virtual BOOL IsActive();
     virtual ID3D11Device* GetDevice() const;

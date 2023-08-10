@@ -113,6 +113,12 @@
     <ClCompile Include="Src\Model\L3DAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Component\L3DEngineTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Model\L3DSkeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\LCommon.h">
@@ -203,6 +209,8 @@
       <Filter>Source Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Src\Model\L3DAnimation.h" />
+    <ClInclude Include="Src\Component\L3DEngineTimer.h" />
+    <ClInclude Include="Src\Model\L3DSkeleton.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">

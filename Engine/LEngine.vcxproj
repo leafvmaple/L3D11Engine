@@ -164,6 +164,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\Camera\L3DCamera.cpp" />
+    <ClCompile Include="Src\Component\L3DEngineTimer.cpp" />
     <ClCompile Include="Src\Component\L3DWindow.cpp" />
     <ClCompile Include="Src\Input\L3DInput.cpp" />
     <ClCompile Include="Src\IO\LFileReader.cpp" />
@@ -177,6 +178,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\Model\L3DMesh.cpp" />
     <ClCompile Include="Src\Model\L3DModel.cpp" />
     <ClCompile Include="Src\Model\L3DShader.cpp" />
+    <ClCompile Include="Src\Model\L3DSkeleton.cpp" />
     <ClCompile Include="Src\Model\L3DTexture.cpp" />
     <ClCompile Include="Src\Render\L3DMaterialSystem.cpp" />
     <ClCompile Include="Src\Render\L3DRenderUnit.cpp" />
@@ -196,6 +198,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="..\Include\L3DInterface.h" />
     <ClInclude Include="..\Include\LExports.h" />
     <ClInclude Include="Src\Camera\L3DCamera.h" />
+    <ClInclude Include="Src\Component\L3DEngineTimer.h" />
     <ClInclude Include="Src\Component\L3DWindow.h" />
     <ClInclude Include="Src\Define\L3DCameraDefine.h" />
     <ClInclude Include="Src\Define\L3DSceneDefine.h" />
@@ -211,6 +214,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Model\L3DModel.h" />
     <ClInclude Include="Src\Model\L3DShader.h" />
     <ClInclude Include="Src\Model\L3DMaterialConfig.h" />
+    <ClInclude Include="Src\Model\L3DSkeleton.h" />
     <ClInclude Include="Src\Model\L3DTexture.h" />
     <ClInclude Include="Src\Render\L3DMaterialSystem.h" />
     <ClInclude Include="Src\Render\L3DRenderUnit.h" />

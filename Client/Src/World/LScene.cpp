@@ -14,11 +14,12 @@ void LScene::Create(const char* szFileName)
     m_pCamera = new LCamera;
     m_pCamera->Init(m_piScene->Get3DCamera());
     m_pCamera->SetYaw(-0.25 * XM_PI);
+    m_pCamera->SetPitch(-0.1 * XM_PI);
 
-    pCharacter = LObjectMgr::Instance().CreateModel<LCharacter>("Res/Mesh/A055_body.mesh");
+    pCharacter = LObjectMgr::Instance().CreateModel<LCharacter>("Res/Mesh/A055.mdl");
     pCharacter->AppendRenderEntity(m_piScene);
     pCharacter->SetPosition(XMFLOAT3(0, -45, 0));
-    pCharacter->PlayAnimation("Res/Animation/A055_st01.ani");
+    pCharacter->PlayAnimation("Res/Animation/A055_st01.ani", ENU_ANIMATIONPLAY_CIRCLE, ANICTL_PRIMARY);
 }
 
 void LScene::Update(float fDeltaTime)

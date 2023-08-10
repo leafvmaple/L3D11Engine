@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <DirectXPackedVector.h>
 #include <vector>
+#include <string>
 
 #include "L3DFormat.h"
 #include "L3DInterface.h"
@@ -95,7 +96,7 @@ struct NormalMesh
         unsigned    uVertexOffset = 0;
     } Subset[MAX_NUM_SUBSET_COUNT];
 
-    std::vector<XMMATRIX> BoneMatrix; // Temp for Inverse Matrix
+    std::vector<XMMATRIX> BoneMatrix; // ¹Ç÷ÀÆ«ÒÆÖµµÄÄæ
 
     ULONG   ulSize = 0;
 };
@@ -110,9 +111,11 @@ public:
 
     void ApplyMeshSubset(RENDER_STAGE_INPUT_ASSEMBLER& State, unsigned int nSubsetIndex);
 
-    NormalMesh& GetMesh() { return m_NormalMesh; };
+    NormalMesh& GetMesh() { return m_NormalMesh; }
+    L3DBone* GetBone()  const { return m_pL3DBone; }
 
     DWORD m_dwBoneCount = 0;
+    std::string m_sName;
 
 private:
     HRESULT LoadMeshData(const char* szFileName, MESH_FILE_DATA* pLMeshData);

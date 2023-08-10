@@ -5,6 +5,7 @@
 #include "L3DMaterial.h"
 #include "L3DTexture.h"
 #include "L3DAnimation.h"
+#include "L3DSkeleton.h"
 
 #include "IO/LFileReader.h"
 #include "Utility/FilePath.h"
@@ -18,31 +19,13 @@
 
 HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
+    char szExt[MAX_PATH];
 
-    char szMaterialName[MAX_PATH];
+    L3D::GetExtName(szFileName, szExt, MAX_PATH);
 
-    m_p3DMesh = new L3DMesh;
-    BOOL_ERROR_EXIT(m_p3DMesh);
+    m_InitFuncs[szExt](piDevice, szFileName);
 
-    hr = m_p3DMesh->Create(piDevice, szFileName);
-    HRESULT_ERROR_EXIT(hr);
-
-    strcpy(szMaterialName, szFileName);
-    hr = L3D::ReplaceExtName(szMaterialName, ".JsonInspack");
-    if (SUCCEEDED(hr))
-        _LoadMaterialFromJson(piDevice, szMaterialName);
-
-    _CreateBoneMatrix();
-    _InitRenderUnits();
-
-    hr = ResetTransform();
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return S_OK;
 }
 
 
@@ -83,12 +66,41 @@ HRESULT L3DModel::SetScale(const XMFLOAT3& Scale)
     return S_OK;
 }
 
-HRESULT L3DModel::PlayAnimation(const char* szAnimation)
+HRESULT L3DModel::PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
-    if (!m_p3DAnimation)
-        m_p3DAnimation = new L3DAnimation;
+    return PlaySplitAnimation(szAnimation, SPLIT_ALL, nPlayType, nPriority);
+}
 
-    return m_p3DAnimation->LoadFromFile(szAnimation);
+
+HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+{
+    L3DAnimation* pAnimation = nullptr;
+
+    assert(nSplitType == SPLIT_ALL);
+
+    if (!m_p3DAniController[nSplitType])
+        m_p3DAniController[nSplitType] = new L3DAnmationController;
+
+    pAnimation = new L3DAnimation;
+    pAnimation->LoadFromFile(szAnimation);
+
+    if (m_pSkeleton)
+        m_p3DAniController[nSplitType]->SetBoneAniInfo(
+            m_pSkeleton->m_nNumBones,
+            m_pSkeleton->m_BoneInfo.data(),
+            m_pSkeleton->m_uFirsetBaseBoneIndex
+        );
+
+    m_p3DAniController[nSplitType]->StartAnimation(pAnimation, nPlayType, nPriority);
+
+    return S_OK;
+}
+
+
+void L3DModel::PrimaryUpdate()
+{
+    _FrameMove();
+    _UpdateAnimation();
 }
 
 void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
@@ -98,7 +110,7 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
 
     matBone.resize(m_BoneCurMatrix.size());
     for (int i = 0; i < m_BoneCurMatrix.size(); i++)
-        matBone[i] = XMMatrixMultiply(m_p3DMesh->GetMesh().BoneMatrix[i], m_BoneCurMatrix[i]);
+        matBone[i] = XMMatrixMultiply(m_p3DMesh->GetBone()->GetBoneInfo()->BoneOffset[i], m_BoneCurMatrix[i]);
 
     MeshCB.MatrixWorld = m_World;
 
@@ -159,6 +171,43 @@ void L3DModel::_UpdateSubsetConst(unsigned int iSubset)
     m_RenderData.SubsetCB[iSubset]->SetRawValue(&subsetConst, 0, sizeof(SKIN_SUBSET_CONST));
 }
 
+
+void L3DModel::_UpdateAnimation()
+{
+    if (m_p3DAniController[SPLIT_ALL])
+        m_p3DAniController[SPLIT_ALL]->UpdateAnimation();
+
+    _UpdateBuffer();
+}
+
+void L3DModel::_UpdateBuffer()
+{
+    HRESULT hResult = E_FAIL;
+    XMMATRIX* pBoneMatrixAll = nullptr;
+    int* pSkeletonIndies = nullptr;
+
+    pBoneMatrixAll = m_p3DAniController[SPLIT_ALL]->GetAnimationInfo()->BoneAni.pBoneMatrix;
+    BOOL_SUCCESS_EXIT(!pBoneMatrixAll);
+
+    pSkeletonIndies = g_SkeletonBoneManager.GetData(m_pSkeleton->m_sName, m_p3DMesh->m_sName);
+    BOOL_ERROR_EXIT(pSkeletonIndies);
+
+    for (int i = 0; i < m_p3DMesh->m_dwBoneCount; i++)
+    {
+        unsigned int nIndex = pSkeletonIndies[i];
+        m_BoneCurMatrix[i] = pBoneMatrixAll[nIndex];
+    }
+
+Exit0:
+    return;
+}
+
+void L3DModel::_FrameMove()
+{
+    if (m_p3DAniController[SPLIT_ALL])
+        m_p3DAniController[SPLIT_ALL]->FrameMove();
+}
+
 void L3DModel::_CreateBoneMatrix()
 {
     m_BoneCurMatrix = m_p3DMesh->GetMesh().BoneMatrix;
@@ -169,6 +218,63 @@ void L3DModel::_UpdateModelVariablesIndices()
 {
     m_RenderData.ModelVariables.pCustomMatrixBones = m_RenderData.piModelSharedCB->GetMemberByName("g_CustomMatrixBones");
     m_RenderData.ModelVariables.pModelParams = m_RenderData.piModelSharedCB->GetMemberByName("g_ModelParams");
+}
+
+void L3DModel::_InitMdl(ID3D11Device* piDevice, const char* szFileName)
+{
+    char szPath[MAX_PATH];
+    char szExt[MAX_PATH];
+    FILE* f = fopen(szFileName, "r");
+
+    while (fscanf(f, "%s", szPath) != EOF)
+    {
+        L3D::GetExtName(szPath, szExt, MAX_PATH);
+        m_InitFuncs[szExt](piDevice, szPath);
+    }
+
+    m_pSkeleton->BindMesh(m_p3DMesh);
+}
+
+
+void L3DModel::_InitSkeletion(ID3D11Device* piDevice, const char* szFileName)
+{
+    HRESULT hr = E_FAIL;
+
+    m_pSkeleton = new L3DSkeleton;
+    BOOL_ERROR_EXIT(m_pSkeleton);
+
+    hr = m_pSkeleton->Create(piDevice, szFileName);
+    HRESULT_ERROR_EXIT(hr);
+
+Exit0:
+    return;
+}
+
+void L3DModel::_InitSingleModel(ID3D11Device* piDevice, const char* szFileName)
+{
+    HRESULT hr = E_FAIL;
+
+    char szMaterialName[MAX_PATH];
+
+    m_p3DMesh = new L3DMesh;
+    BOOL_ERROR_EXIT(m_p3DMesh);
+
+    hr = m_p3DMesh->Create(piDevice, szFileName);
+    HRESULT_ERROR_EXIT(hr);
+
+    strcpy(szMaterialName, szFileName);
+    hr = L3D::ReplaceExtName(szMaterialName, ".JsonInspack");
+    if (SUCCEEDED(hr))
+        _LoadMaterialFromJson(piDevice, szMaterialName);
+
+    _CreateBoneMatrix();
+    _InitRenderUnits();
+
+    hr = ResetTransform();
+    HRESULT_ERROR_EXIT(hr);
+
+Exit0:
+    return;
 }
 
 void L3DModel::_InitRenderUnits()

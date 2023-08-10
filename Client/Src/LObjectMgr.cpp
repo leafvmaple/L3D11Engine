@@ -61,7 +61,7 @@ HRESULT LObjectMgr::Update(float fDeltaTime)
     for (auto& scene : m_SceneList)
         scene->Update(fDeltaTime);
 
-    piEngine->Update(fDeltaTime);
+    piEngine->FrameMove(fDeltaTime);
 
     return S_OK;
 }
