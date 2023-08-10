@@ -14,7 +14,7 @@ public:
     HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
     void BindMesh(const L3DMesh* p3DMesh);
 
-    int FindBone(std::string szBoneName);
+    std::optional<int> FindBone(std::string szBoneName);
 
     unsigned int m_nNumBones = 0;
     std::vector<BONEINFO> m_BoneInfo;
@@ -39,9 +39,7 @@ private:
     {
         size_t operator()(const std::pair<std::string, std::string>& p) const
         {
-            std::size_t h1 = std::hash<std::string>{}(p.first);
-            std::size_t h2 = std::hash<std::string>{}(p.second);
-            return h1 ^ (h2 << 1);
+            return std::hash<std::string>{}(p.first) ^ (std::hash<std::string>{}(p.second) << 1);
         }
     };
     typedef std::unordered_map<std::pair<std::string, std::string>, std::vector<int>, StringHash> HASH_TABLE;

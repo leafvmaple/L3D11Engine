@@ -45,17 +45,21 @@ void L3DSkeleton::BindMesh(const L3DMesh* p3DMesh)
 
     skeletonBoneIndies.resize(p3DMesh->m_dwBoneCount);
     for (int i = 0; i < p3DMesh->m_dwBoneCount; i++)
-        skeletonBoneIndies[i] = FindBone(p3DMesh->GetBone()->GetBoneInfo()->BoneInfo[i].sBoneName);
+    {
+        auto nBone = FindBone(p3DMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[i].sBoneName);
+        if (nBone)
+            skeletonBoneIndies[i] = *nBone;
+    }
 
     g_SkeletonBoneManager.PushNewData(m_sName, p3DMesh->m_sName, skeletonBoneIndies);
 }
 
-int L3DSkeleton::FindBone(std::string szBoneName)
+std::optional<int> L3DSkeleton::FindBone(std::string szBoneName)
 {
     for (int i = 0; i < m_nNumBones; i++)
         if (m_BoneInfo[i].sBoneName == szBoneName)
             return i;
-    return -1;
+    return std::nullopt;
 }
 
 void L3DSkeleton::_LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo, std::vector<std::string>& childBonee)
@@ -74,7 +78,6 @@ void L3DSkeleton::_LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo,
     childBonee.push_back(szLine);
 
     BoneInfo.sBoneName = childBonee[0];
-    BoneInfo.uNumChild = childBonee.size() - 1;
 }
 
 void L3DSkeleton::_ConstructSkeleton(unsigned uIndex, const std::vector<std::string>& childBone)
@@ -83,11 +86,11 @@ void L3DSkeleton::_ConstructSkeleton(unsigned uIndex, const std::vector<std::str
 
     for (int i = 1; i < childBone.size(); i++)
     {
-        int nSkeletonIndex = FindBone(childBone[i]);
-        if (nSkeletonIndex != -1)
+        auto nBone = FindBone(childBone[i]);
+        if (nBone)
         {
-            Info.ChildIndex[i - 1] = nSkeletonIndex;
-            m_BoneInfo[nSkeletonIndex].uParentIndex = uIndex;
+            Info.ChildIndex.push_back(*nBone);
+            m_BoneInfo[*nBone].uParentIndex = uIndex;
         }
     }
 }

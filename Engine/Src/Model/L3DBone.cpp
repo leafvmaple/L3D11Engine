@@ -132,7 +132,7 @@ HRESULT L3DBone::BindData(const MESH_FILE_BONE_INFO& BoneInfo)
         BONEINFO& Bone = m_pBoneInfo->BoneInfo[i];
         MESH_FILE_BONE_INFO::BONE& BoneInFile = BoneInfo.pBone[i];
 
-        Bone.uNumChild = BoneInFile.uChildCount;
+        Bone.ChildIndex.resize(BoneInFile.uChildCount);
         for (DWORD j = 0; j < BoneInFile.uChildCount; ++j)
         {
             uBoneIndex = _FindBoneIndex(BoneInFile.pChildNames[j], m_pBoneInfo->OrderBoneName, m_pBoneInfo->OrderIndex);

@@ -44,17 +44,17 @@ Exit0:
 
 void L3DMesh::ApplyMeshSubset(RENDER_STAGE_INPUT_ASSEMBLER& State, unsigned int nSubsetIndex)
 {
-    auto& subset = m_NormalMesh.Subset[nSubsetIndex];
+    auto& subset = m_Subset[nSubsetIndex];
 
-    State.eTopology = m_NormalMesh.eTopology;
-    State.eInputLayout = m_NormalMesh.eInputLayout;
-    State.VertexBuffer.piBuffer = m_NormalMesh.piVertexBuffer;
+    State.eTopology = m_eTopology;
+    State.eInputLayout = m_eInputLayout;
+    State.VertexBuffer.piBuffer = m_piVertexBuffer;
     State.VertexBuffer.uOffset = 0;
-    State.VertexBuffer.uStride = m_NormalMesh.uVertexSize;
+    State.VertexBuffer.uStride = m_nVertexSize;
 
-    State.IndexBuffer.piBuffer = m_NormalMesh.piIndexBuffer;
+    State.IndexBuffer.piBuffer = m_piIndexBuffer;
     State.IndexBuffer.uOffset = 0;
-    State.IndexBuffer.eFormat = m_NormalMesh.eFormat;
+    State.IndexBuffer.eFormat = m_eFormat;
 
     State.Draw.Indexed.uIndexCount = subset.uIndexCount;
     State.Draw.Indexed.uStartIndexLocation = subset.uIndexOffset;
@@ -197,9 +197,9 @@ HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDev
     CreateVertexAndIndexBuffer(piDevice, pMeshData, FillInfo);
     CreateBoneInfo(pMeshData->BoneInfo);
 
-    m_NormalMesh.eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-    m_NormalMesh.uVertexSize = FillInfo.uVertexSize;
-    m_NormalMesh.eInputLayout = FillInfo.eInputLayout;
+    m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    m_nVertexSize = FillInfo.uVertexSize;
+    m_eInputLayout = FillInfo.eInputLayout;
 
 Exit0:
     return S_OK;
@@ -391,7 +391,7 @@ HRESULT L3DMesh::InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* 
     InitData.SysMemPitch      = 0;
     InitData.SysMemSlicePitch = 0;
 
-    hr = piDevice->CreateBuffer(&desc, &InitData, &m_NormalMesh.piVertexBuffer);
+    hr = piDevice->CreateBuffer(&desc, &InitData, &m_piVertexBuffer);
     HRESULT_ERROR_EXIT(hr);
 
     hResult = S_OK;
@@ -448,7 +448,7 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
         for (auto index : indexBuff.second.IndexBuffer)
             arrIndies.push_back(static_cast<_INDEX_TYPE>(index));
 
-        m_NormalMesh.Subset[nSubIndex++] = { (DWORD)nCount, nTotalCount, indexBuff.second.IndexMin, indexBuff.second.IndexMax - indexBuff.second.IndexMin + 1 };
+        m_Subset.push_back({ (DWORD)nCount, nTotalCount, indexBuff.second.IndexMin, indexBuff.second.IndexMax - indexBuff.second.IndexMin + 1 });
         nTotalCount += nCount;
     }
 
@@ -463,12 +463,10 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
     InitData.SysMemPitch      = 0;
     InitData.SysMemSlicePitch = 0;
 
-    hr = piDevice->CreateBuffer(&desc, &InitData, &m_NormalMesh.piIndexBuffer);
+    hr = piDevice->CreateBuffer(&desc, &InitData, &m_piIndexBuffer);
     HRESULT_ERROR_EXIT(hr);
 
-    m_NormalMesh.eFormat = eFormat;
-    m_NormalMesh.ulSize = nTotalCount;
-    m_NormalMesh.uSubsetCount = nSubIndex;
+    m_eFormat = eFormat;
 
     hResult = S_OK;
 Exit0:
@@ -484,15 +482,12 @@ void L3DMesh::CreateVertexAndIndexBuffer(ID3D11Device* piDevice, const MESH_FILE
 
 void L3DMesh::CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)
 {
-    const L3D_BONE_INFO* pBoneInfo = nullptr;
-
     m_pL3DBone = new(std::nothrow) L3DBone;
     m_pL3DBone->BindData(BoneInfo);
 
     m_dwBoneCount = BoneInfo.dwBoneCount;
 
-    pBoneInfo = m_pL3DBone->GetBoneInfo();
-    m_NormalMesh.BoneMatrix.resize(m_dwBoneCount);
+    m_BoneMatrix.resize(m_dwBoneCount);
     for (unsigned int i = 0; i < m_dwBoneCount; i++)
-        m_NormalMesh.BoneMatrix[i] = XMMatrixInverse(NULL, pBoneInfo->BoneOffset[i]);
+        m_BoneMatrix[i] = XMMatrixInverse(NULL, m_pL3DBone->m_pBoneInfo->BoneOffset[i]);
 }

@@ -119,8 +119,8 @@ void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
     const BONEINFO* pBoneInfo = pUpdateAniInfo->BoneAni.pBoneInfo;
     unsigned int uFirstBaseBoneIndex = pUpdateAniInfo->BoneAni.nFirsetBaseBoneIndex;
 
-    for (unsigned i = 0; i < pBoneInfo[uFirstBaseBoneIndex].uNumChild; i++)
-        _UpdateToObj(pBoneMatrix, pBoneInfo, pBoneInfo[uFirstBaseBoneIndex].ChildIndex[i], pBoneMatrix[uFirstBaseBoneIndex]);
+    for (unsigned nChild : pBoneInfo[uFirstBaseBoneIndex].ChildIndex)
+        _UpdateToObj(pBoneMatrix, pBoneInfo, nChild, pBoneMatrix[uFirstBaseBoneIndex]);
 }
 
 HRESULT L3DAnimation::_GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, XMMATRIX* pResult)
@@ -156,8 +156,8 @@ void L3DAnimation::_UpdateToObj(XMMATRIX* pBoneMatrix, const BONEINFO* pBoneInfo
 
     pBoneMatrix[uIndex] = XMMatrixMultiply(pBoneMatrix[uIndex], mBase);
 
-    for (unsigned i = 0; i < Bone.uNumChild; i++)
-        _UpdateToObj(pBoneMatrix, pBoneInfo, Bone.ChildIndex[i], pBoneMatrix[uIndex]);
+    for (unsigned nChild : Bone.ChildIndex)
+        _UpdateToObj(pBoneMatrix, pBoneInfo, nChild, pBoneMatrix[uIndex]);
 }
 
 HRESULT L3DAnmationController::UpdateAnimation()

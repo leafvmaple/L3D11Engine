@@ -19,8 +19,7 @@ struct BONEINFO
 
 	std::string sBoneName;
 	unsigned int uParentIndex = (unsigned)-1;
-	unsigned int uNumChild = 0;
-	unsigned int ChildIndex[MAX_NUM_CHILD_BONE] = {};
+	std::vector<unsigned int> ChildIndex;
 };
 
 struct L3D_BONE_INFO
@@ -46,15 +45,14 @@ public:
 	~L3DBone();
 
 	HRESULT BindData(const MESH_FILE_BONE_INFO& BoneInfo);
-	const L3D_BONE_INFO* GetBoneInfo() { return m_pBoneInfo; };
 
 	static HRESULT Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
 	static HRESULT FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount);
+
+	L3D_BONE_INFO* m_pBoneInfo = nullptr;
 
 private:
 	unsigned int _FindBoneIndex(const char* szBoneName,
 		const std::vector<std::string>& OrderBoneName,
 		const std::vector<unsigned int>& OrderIndex);
-
-	L3D_BONE_INFO* m_pBoneInfo = nullptr;
 };

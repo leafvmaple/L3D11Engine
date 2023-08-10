@@ -110,7 +110,7 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
 
     matBone.resize(m_BoneCurMatrix.size());
     for (int i = 0; i < m_BoneCurMatrix.size(); i++)
-        matBone[i] = XMMatrixMultiply(m_p3DMesh->GetBone()->GetBoneInfo()->BoneOffset[i], m_BoneCurMatrix[i]);
+        matBone[i] = XMMatrixMultiply(m_p3DMesh->m_pL3DBone->m_pBoneInfo->BoneOffset[i], m_BoneCurMatrix[i]);
 
     MeshCB.MatrixWorld = m_World;
 
@@ -210,7 +210,7 @@ void L3DModel::_FrameMove()
 
 void L3DModel::_CreateBoneMatrix()
 {
-    m_BoneCurMatrix = m_p3DMesh->GetMesh().BoneMatrix;
+    m_BoneCurMatrix = m_p3DMesh->m_BoneMatrix;
 }
 
 
@@ -279,12 +279,12 @@ Exit0:
 
 void L3DModel::_InitRenderUnits()
 {
-    auto& mesh = m_p3DMesh->GetMesh();
+    unsigned int nSubsetCount = m_p3DMesh->m_Subset.size();
 
-    m_RenderData.RenderUnits.resize(mesh.uSubsetCount);
-    m_RenderData.SubsetCB.resize(mesh.uSubsetCount);
+    m_RenderData.RenderUnits.resize(nSubsetCount);
+    m_RenderData.SubsetCB.resize(nSubsetCount);
 
-    for (int i = 0; i < mesh.uSubsetCount; i++)
+    for (int i = 0; i < nSubsetCount; i++)
     {
         auto& unit = m_RenderData.RenderUnits[i];
         auto pMaterial = m_MaterialPack[i];

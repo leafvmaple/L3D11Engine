@@ -74,48 +74,41 @@ struct VERTEX_FILL_INFO
     } Element[MAX_ELEMENT];
 };
 
-
-struct NormalMesh
-{
-    L3D_INPUT_LAYOUT eInputLayout = L3D_INPUT_LAYOUT_BOX;
-    unsigned int uVertexSize = 0;
-
-    ID3D11Buffer* piVertexBuffer = nullptr;
-    ID3D11Buffer* piIndexBuffer  = nullptr;
-
-    DXGI_FORMAT eFormat = DXGI_FORMAT_UNKNOWN;
-    D3D11_PRIMITIVE_TOPOLOGY eTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
-
-    unsigned        uSubsetCount = 0;
-
-    struct _SUBSET
-    {
-        unsigned    uIndexCount = 0;
-        unsigned    uIndexOffset = 0;
-        unsigned    uVertexCount = 0;
-        unsigned    uVertexOffset = 0;
-    } Subset[MAX_NUM_SUBSET_COUNT];
-
-    std::vector<XMMATRIX> BoneMatrix; // ¹Ç÷ÀÆ«ÒÆÖµµÄÄæ
-
-    ULONG   ulSize = 0;
-};
-
 class L3DBone;
 class LBinaryReader;
 
 class L3DMesh
 {
 public:
+    struct _SUBSET
+    {
+        unsigned    uIndexCount = 0;
+        unsigned    uIndexOffset = 0;
+        unsigned    uVertexCount = 0;
+        unsigned    uVertexOffset = 0;
+    };
+
+public:
     HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
 
     void ApplyMeshSubset(RENDER_STAGE_INPUT_ASSEMBLER& State, unsigned int nSubsetIndex);
 
-    NormalMesh& GetMesh() { return m_NormalMesh; }
-    L3DBone* GetBone()  const { return m_pL3DBone; }
-
-    DWORD m_dwBoneCount = 0;
     std::string m_sName;
+
+    DXGI_FORMAT m_eFormat = DXGI_FORMAT_UNKNOWN;
+    L3D_INPUT_LAYOUT m_eInputLayout = L3D_INPUT_LAYOUT_BOX;
+    D3D11_PRIMITIVE_TOPOLOGY m_eTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+
+    ID3D11Buffer* m_piVertexBuffer = nullptr;
+    ID3D11Buffer* m_piIndexBuffer  = nullptr;
+
+    std::vector<_SUBSET> m_Subset;
+    std::vector<XMMATRIX> m_BoneMatrix; // ¹Ç÷ÀÆ«ÒÆÖµµÄÄæ
+
+    unsigned int m_nVertexSize  = 0;
+    unsigned int m_dwBoneCount  = 0;
+
+    L3DBone* m_pL3DBone = nullptr; // Like KG3D_BoneInfoData
 
 private:
     HRESULT LoadMeshData(const char* szFileName, MESH_FILE_DATA* pLMeshData);
@@ -129,8 +122,4 @@ private:
 
     void CreateVertexAndIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
     void CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo);
-
-    NormalMesh m_NormalMesh;
-
-    L3DBone* m_pL3DBone = nullptr;
 };
