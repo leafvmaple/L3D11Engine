@@ -148,7 +148,7 @@ HRESULT L3DBone::BindData(const MESH_FILE_BONE_INFO& BoneInfo)
     for (unsigned i = 0; i < uBoneCount; ++i)
     {
         if (m_pBoneInfo->BoneInfo[i].uParentIndex == (unsigned)-1)
-            m_pBoneInfo->BaseBoneIndex.push_back(i);
+            m_pBoneInfo->BaseBoneIndies.push_back(i);
     }
 
     return S_OK;

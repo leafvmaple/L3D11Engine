@@ -15,8 +15,6 @@ class LBinaryReader;
 
 struct BONEINFO
 {
-	static const int MAX_NUM_CHILD_BONE = 60;
-
 	std::string sBoneName;
 	unsigned int uParentIndex = (unsigned)-1;
 	std::vector<unsigned int> ChildIndex;
@@ -26,14 +24,13 @@ struct L3D_BONE_INFO
 {
 	unsigned int uBoneCount = 0;
 
-	std::vector<unsigned int> BaseBoneIndex;
+	std::vector<unsigned int> BaseBoneIndies;
 
 	std::vector<L3D_BOUND_BOX> BoneBox;
 	std::vector<XMMATRIX> BoneOffset; // ¹Ç÷ÀÆ«ÒÆÖµ
 	std::vector<XMMATRIX> BoneInvPxPose;
 	std::vector<BONEINFO> BoneInfo;
 	unsigned int uSocketCount = 0;
-	// SOCKETINFO* pSocket;
 
 	std::vector<std::string> OrderBoneName;
 	std::vector<unsigned int> OrderIndex;
@@ -52,7 +49,5 @@ public:
 	L3D_BONE_INFO* m_pBoneInfo = nullptr;
 
 private:
-	unsigned int _FindBoneIndex(const char* szBoneName,
-		const std::vector<std::string>& OrderBoneName,
-		const std::vector<unsigned int>& OrderIndex);
+	unsigned int _FindBoneIndex(const char* szBoneName, const std::vector<std::string>& OrderBoneName, const std::vector<unsigned int>& OrderIndex);
 };

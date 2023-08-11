@@ -46,17 +46,18 @@ void L3DMesh::ApplyMeshSubset(RENDER_STAGE_INPUT_ASSEMBLER& State, unsigned int 
 {
     auto& subset = m_Subset[nSubsetIndex];
 
-    State.eTopology = m_eTopology;
+    State.eTopology    = m_eTopology;
     State.eInputLayout = m_eInputLayout;
+
     State.VertexBuffer.piBuffer = m_piVertexBuffer;
-    State.VertexBuffer.uOffset = 0;
-    State.VertexBuffer.uStride = m_nVertexSize;
+    State.VertexBuffer.uOffset  = 0;
+    State.VertexBuffer.uStride  = m_nVertexSize;
 
     State.IndexBuffer.piBuffer = m_piIndexBuffer;
-    State.IndexBuffer.uOffset = 0;
-    State.IndexBuffer.eFormat = m_eFormat;
+    State.IndexBuffer.uOffset  = 0;
+    State.IndexBuffer.eFormat  = m_eFormat;
 
-    State.Draw.Indexed.uIndexCount = subset.uIndexCount;
+    State.Draw.Indexed.uIndexCount         = subset.uIndexCount;
     State.Draw.Indexed.uStartIndexLocation = subset.uIndexOffset;
     State.Draw.Indexed.nBaseVertexLocation = 0;
 }
@@ -489,5 +490,5 @@ void L3DMesh::CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)
 
     m_BoneMatrix.resize(m_dwBoneCount);
     for (unsigned int i = 0; i < m_dwBoneCount; i++)
-        m_BoneMatrix[i] = XMMatrixInverse(NULL, m_pL3DBone->m_pBoneInfo->BoneOffset[i]);
+        m_BoneMatrix[i] = XMMatrixInverse(nullptr, m_pL3DBone->m_pBoneInfo->BoneOffset[i]);
 }
