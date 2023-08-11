@@ -14,7 +14,7 @@
 
 namespace L3D
 {
-    inline size_t GetPathDir(LPCWSTR wszFilePath, WCHAR* wszDir)
+    inline size_t GetPathDir(const wchar_t* wszFilePath, WCHAR* wszDir)
     {
         size_t uLength = wcslen(wszFilePath);
         for (; uLength > 0; uLength--)
@@ -28,7 +28,7 @@ namespace L3D
         return 0;
     }
 
-    inline size_t GetFullPath(LPCWSTR wszFileName, WCHAR* wszPath)
+    inline size_t GetFullPath(const wchar_t* wszFileName, WCHAR* wszPath)
     {
         size_t uLength = wcslen(wszFileName);
         for (size_t u = 0; u < uLength; u++)

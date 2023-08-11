@@ -60,7 +60,8 @@ void L3DScene::AddRenderEntity(ILModel* piModel)
 
 void L3DScene::GetVisibleObjectAll(MODEL_VECTOR& vecModels)
 {
-    vecModels = m_DynamicalObjects;
+    for (const auto& dynamic : m_DynamicalObjects)
+        dynamic->GetAllModel(vecModels);
 }
 
 void L3DScene::UpdateCamera()

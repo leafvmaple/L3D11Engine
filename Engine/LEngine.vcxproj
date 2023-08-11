@@ -204,7 +204,6 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Define\L3DSceneDefine.h" />
     <ClInclude Include="Src\Input\L3DInput.h" />
     <ClInclude Include="Src\IO\LFileReader.h" />
-    <ClInclude Include="Src\IO\LFileStruct.h" />
     <ClInclude Include="Src\Model\L3DAnimation.h" />
     <ClInclude Include="Src\Model\L3DBone.h" />
     <ClInclude Include="Src\Model\L3DEffect.h" />

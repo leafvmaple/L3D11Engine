@@ -19,15 +19,32 @@
 
 HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 {
-    char szExt[MAX_PATH];
-
-    L3D::GetExtName(szFileName, szExt, MAX_PATH);
-
-    m_InitFuncs[szExt](piDevice, szFileName);
+    L3D::PathFormat(szFileName, m_Path);
+    m_InitFuncs[m_Path.extension()](piDevice, szFileName);
 
     return S_OK;
 }
 
+
+void L3DModel::AttachActor(L3DModel* pModel)
+{
+    m_ChildList.emplace_back(pModel);
+    if (m_pSkeleton && pModel->m_p3DMesh)
+        m_pSkeleton->BindMesh(pModel->m_p3DMesh);
+}
+
+
+void L3DModel::GetAllModel(std::vector<L3DModel*>& models)
+{
+    if (m_p3DMesh)
+    {
+        models.push_back(this);
+        return;
+    }
+
+    for (const auto& child : m_ChildList)
+        child->GetAllModel(models);
+}
 
 HRESULT L3DModel::ResetTransform()
 {
@@ -152,8 +169,10 @@ void L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileN
 
 void L3DModel::_UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const MESH_SHARED_CB& MeshCB)
 {
-    m_RenderData.ModelVariables.pCustomMatrixBones->SetRawValue(BoneMatrix.data(), 0, sizeof(XMMATRIX) * BoneMatrix.size());
-    m_RenderData.ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
+    if (m_RenderData.ModelVariables.pCustomMatrixBones)
+        m_RenderData.ModelVariables.pCustomMatrixBones->SetRawValue(BoneMatrix.data(), 0, sizeof(XMMATRIX) * BoneMatrix.size());
+    if (m_RenderData.ModelVariables.pModelParams)
+        m_RenderData.ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
 }
 
 __declspec(align(16)) struct SKIN_SUBSET_CONST
@@ -189,13 +208,20 @@ void L3DModel::_UpdateBuffer()
     pBoneMatrixAll = m_p3DAniController[SPLIT_ALL]->GetAnimationInfo()->BoneAni.pBoneMatrix;
     BOOL_SUCCESS_EXIT(!pBoneMatrixAll);
 
-    pSkeletonIndies = g_SkeletonBoneManager.GetData(m_pSkeleton->m_sName, m_p3DMesh->m_sName);
-    BOOL_ERROR_EXIT(pSkeletonIndies);
-
-    for (int i = 0; i < m_p3DMesh->m_dwBoneCount; i++)
+    for (auto& pModel : m_ChildList)
     {
-        unsigned int nIndex = pSkeletonIndies[i];
-        m_BoneCurMatrix[i] = pBoneMatrixAll[nIndex];
+        L3DMesh* pMesh = pModel->m_p3DMesh;
+        if (!pMesh)
+            continue;
+
+        pSkeletonIndies = g_SkeletonBoneManager.GetData(m_pSkeleton->m_sName, pMesh->m_sName);
+        BOOL_ERROR_EXIT(pSkeletonIndies);
+
+        for (int i = 0; i < pMesh->m_dwBoneCount; i++)
+        {
+            unsigned int nIndex = pSkeletonIndies[i];
+            pModel->m_BoneCurMatrix[i] = pBoneMatrixAll[nIndex];
+        }
     }
 
 Exit0:
@@ -226,13 +252,15 @@ void L3DModel::_InitMdl(ID3D11Device* piDevice, const char* szFileName)
     char szExt[MAX_PATH];
     FILE* f = fopen(szFileName, "r");
 
+    fscanf(f, "%s", szPath);
+    _InitSkeletion(piDevice, szPath); // Load .txt
+
     while (fscanf(f, "%s", szPath) != EOF)
     {
-        L3D::GetExtName(szPath, szExt, MAX_PATH);
-        m_InitFuncs[szExt](piDevice, szPath);
+        L3DModel* pMesh = new L3DModel;
+        pMesh->Create(piDevice, szPath);
+        AttachActor(pMesh);
     }
-
-    m_pSkeleton->BindMesh(m_p3DMesh);
 }
 
 

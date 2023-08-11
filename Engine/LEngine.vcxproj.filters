@@ -139,9 +139,6 @@
     <ClInclude Include="Src\IO\LFileReader.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
-    <ClInclude Include="Src\IO\LFileStruct.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
     <ClInclude Include="..\Include\L3DFormat.h">
       <Filter>Source Files\Common</Filter>
     </ClInclude>

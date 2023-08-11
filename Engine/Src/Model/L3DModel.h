@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <filesystem>
 
 #include "L3DInterface.h"
 #include "L3DMaterialDefine.h"
@@ -30,6 +31,9 @@ class L3DModel : public ILModel
 {
 public:
     HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
+
+    void AttachActor(L3DModel* pModel);
+    void GetAllModel(std::vector<L3DModel*> &models);
 
     virtual HRESULT ResetTransform() override;
     virtual HRESULT SetTranslation(const XMFLOAT3& Translation) override;
@@ -86,6 +90,9 @@ private:
     L3DAnmationController* m_p3DAniController[SPLIT_COUNT] = { nullptr };
 
     std::vector<XMMATRIX> m_BoneCurMatrix;
+    std::vector<L3DModel*> m_ChildList;
+
+    std::filesystem::path m_Path;
 
     // m_vecMaterial Like MaterialInstancePack
     // L3DMaterial Like MaterialInstance
@@ -97,9 +104,9 @@ private:
 
     XMFLOAT4X4 m_World;
 
-    std::unordered_map<std::string, std::function<void(ID3D11Device* piDevice, const char* szFileName)>> m_InitFuncs = {
-        std::make_pair(".mdl", std::bind(&L3DModel::_InitMdl, this, std::placeholders::_1, std::placeholders::_2)),
-        std::make_pair(".txt", std::bind(&L3DModel::_InitSkeletion, this, std::placeholders::_1, std::placeholders::_2)),
-        std::make_pair(".mesh", std::bind(&L3DModel::_InitSingleModel, this, std::placeholders::_1, std::placeholders::_2)),
+    std::unordered_map<std::wstring, std::function<void(ID3D11Device* piDevice, const char* szFileName)>> m_InitFuncs = {
+        std::make_pair(L".mdl", std::bind(&L3DModel::_InitMdl, this, std::placeholders::_1, std::placeholders::_2)),
+        std::make_pair(L".txt", std::bind(&L3DModel::_InitSkeletion, this, std::placeholders::_1, std::placeholders::_2)),
+        std::make_pair(L".mesh", std::bind(&L3DModel::_InitSingleModel, this, std::placeholders::_1, std::placeholders::_2)),
     };
 };

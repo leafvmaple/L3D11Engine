@@ -14,7 +14,6 @@ enum class SEEK
 	SET,
 };
 
-
 class LBinaryReader
 {
 public:
