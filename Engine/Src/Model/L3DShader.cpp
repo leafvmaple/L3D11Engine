@@ -6,7 +6,7 @@
 #include "L3DShader.h"
 #include "IO/LFileReader.h"
 
-#define FXO_PATH "Res/Shader/Base/FXO/g_%s_%s_ASSEMBLY.fxo"
+#define FXO_PATH "data/material/Shader/Base/FXO/g_%s_%s_ASSEMBLY.fxo"
 
 static const char* VERTEX_SHADER_ID_NAME[] =
 {

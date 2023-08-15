@@ -13,6 +13,7 @@
 #include "rapidjson/include/rapidjson/document.h"
 
 class L3DMesh;
+class L3DModel;
 class L3DSkeleton;
 class L3DMaterial;
 class L3DRenderUnit;
@@ -27,13 +28,44 @@ struct MESH_SHARED_CB;
 struct ID3DX11EffectVariable;
 struct ID3DX11EffectConstantBuffer;
 
+enum BIND_TYPE
+{
+    BIND_NONE,
+    BIND_TO_SOCKET,
+    BIND_TO_BONE,
+    BIND_TO_FLEXIBLE_BONE,
+    ATTACH_TO_ACTOR,
+
+};
+
+struct L3D_BIND_EXTRA_INFO
+{
+    L3DModel* pModel = nullptr;
+    unsigned int uBindIndex = 0;
+};
+
+struct L3D_BIND_INFO
+{
+    BIND_TYPE eBindType = BIND_NONE;
+    std::string sBindTarget; // pcszBindToActorName 绑定的骨骼或插槽名
+    L3D_BIND_EXTRA_INFO extraInfo;
+};
+
 class L3DModel : public ILModel
 {
 public:
     HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
 
     void AttachActor(L3DModel* pModel);
+    void BindToSocket(L3DModel* pModel, const char* szSocketName);
+
     void GetAllModel(std::vector<L3DModel*> &models);
+
+    void GetWorldMatrix(XMFLOAT4X4& matrix);
+    void GetSocketMatrix(int nSocketIndex, XMFLOAT4X4& matrix);
+
+    virtual void AttachModel(ILModel* pModel) override;
+    virtual void BindToSocket(ILModel* pModel, const char* szSocketNam) override;
 
     virtual HRESULT ResetTransform() override;
     virtual HRESULT SetTranslation(const XMFLOAT3& Translation) override;
@@ -44,6 +76,7 @@ public:
     virtual HRESULT PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) override;
 
     void PrimaryUpdate();
+    void UpdateTransform();
 
     void UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption);
     void GetRenderUnit(std::vector<L3DRenderUnit*>& RenderQueue);
@@ -64,8 +97,8 @@ private:
         std::vector<L3DRenderUnit> RenderUnits;
     };
 
-    void UpdateTransFrom();
-    void _LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName);
+    void _UpdateTransform();
+    void _LoadMaterialFromJson(ID3D11Device* piDevice, const wchar_t* szFileName);
 
     void _UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const MESH_SHARED_CB& MeshCB);
     void _UpdateSubsetConst(unsigned int iSubset);
@@ -78,10 +111,12 @@ private:
     
     void _UpdateModelVariablesIndices();
 
-    void _InitMdl(ID3D11Device* piDevice, const char* szFileName);
+    void _InitModel(ID3D11Device* piDevice, const char* szFileName);
     void _InitSkeletion(ID3D11Device* piDevice, const char* szFileName);
-    void _InitSingleModel(ID3D11Device* piDevice, const char* szFileName);
+    void _InitMesh(ID3D11Device* piDevice, const char* szFileName);
     void _InitRenderUnits();
+
+    HRESULT _FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& BindExtraInfo);
 
     RENDER_DATA m_RenderData;
 
@@ -91,6 +126,8 @@ private:
 
     std::vector<XMMATRIX> m_BoneCurMatrix;
     std::vector<L3DModel*> m_ChildList;
+
+    L3D_BIND_INFO m_BindInfo;
 
     std::filesystem::path m_Path;
 
@@ -105,8 +142,8 @@ private:
     XMFLOAT4X4 m_World;
 
     std::unordered_map<std::wstring, std::function<void(ID3D11Device* piDevice, const char* szFileName)>> m_InitFuncs = {
-        std::make_pair(L".mdl", std::bind(&L3DModel::_InitMdl, this, std::placeholders::_1, std::placeholders::_2)),
+        std::make_pair(L".mdl", std::bind(&L3DModel::_InitModel, this, std::placeholders::_1, std::placeholders::_2)),
         std::make_pair(L".txt", std::bind(&L3DModel::_InitSkeletion, this, std::placeholders::_1, std::placeholders::_2)),
-        std::make_pair(L".mesh", std::bind(&L3DModel::_InitSingleModel, this, std::placeholders::_1, std::placeholders::_2)),
+        std::make_pair(L".mesh", std::bind(&L3DModel::_InitMesh, this, std::placeholders::_1, std::placeholders::_2)),
     };
 };

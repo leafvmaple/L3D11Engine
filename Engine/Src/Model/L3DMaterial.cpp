@@ -43,7 +43,7 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
         _PlaceTextureValue(piDevice, iter->first, iter->second);
 
     m_pEffect = new L3DEffect;
-    m_pEffect->Create(piDevice, eMacro);
+    m_pEffect->Create(piDevice, m_pMaterialDefine->m_szShaderName, eMacro);
 
     return S_OK;
 }
@@ -67,6 +67,8 @@ Exit0:
 HRESULT L3DMaterial::CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB)
 {
     HRESULT hResult = E_FAIL;
+
+    BOOL_ERROR_EXIT(m_pEffect);
 
     switch (eCBType)
     {
@@ -94,6 +96,8 @@ HRESULT L3DMaterial::SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectCon
     HRESULT hResult = E_FAIL;
     ID3DX11EffectConstantBuffer* pCB = nullptr;
     ID3D11Buffer* pBuffer = nullptr;
+
+    BOOL_ERROR_EXIT(m_pEffect);
 
     switch (eCBType)
     {
@@ -182,7 +186,7 @@ void L3DMaterial::_UpdateCommonCB()
         m_pEffect->GetConstantBufferByRegister(cb.first)->SetConstantBuffer(cb.second);
 }
 
-void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro)
+void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
 {
     rapidjson::Document JsonDocument;
     LFileReader::ReadJson(szFileName, JsonDocument);

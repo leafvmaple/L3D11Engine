@@ -15,6 +15,21 @@ Exit0:
     return hResult;
 }
 
+
+HRESULT LCharacter::LoadPart(IL3DEngine* p3DEngine, const char* szPath, const char* szSocketName)
+{
+    ILModel* piModel = nullptr;
+
+    ILModel::Create(p3DEngine, szPath, &piModel);
+    m_Parts.emplace_back(piModel);
+    m_pObject->AttachModel(piModel);
+
+    if (szSocketName)
+        piModel->BindToSocket(m_pObject, szSocketName);
+
+    return S_OK;
+}
+
 HRESULT LCharacter::SetPosition(const XMFLOAT3& Position)
 {
     HRESULT hr = E_FAIL;

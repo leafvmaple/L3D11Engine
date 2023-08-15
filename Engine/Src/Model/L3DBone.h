@@ -20,6 +20,13 @@ struct BONEINFO
 	std::vector<unsigned int> ChildIndex;
 };
 
+struct SOCKETINFO
+{
+    std::string sSocketName;
+    unsigned int uParentBoneIndex = (unsigned)-1;
+	XMFLOAT4X4 mOffset;
+};
+
 struct L3D_BONE_INFO
 {
 	unsigned int uBoneCount = 0;
@@ -34,6 +41,8 @@ struct L3D_BONE_INFO
 
 	std::vector<std::string> OrderBoneName;
 	std::vector<unsigned int> OrderIndex;
+
+	std::vector<SOCKETINFO> Socket;
 };
 
 class L3DBone
@@ -49,5 +58,7 @@ public:
 	L3D_BONE_INFO* m_pBoneInfo = nullptr;
 
 private:
-	unsigned int _FindBoneIndex(const char* szBoneName, const std::vector<std::string>& OrderBoneName, const std::vector<unsigned int>& OrderIndex);
+	void _CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo);
+	void _CreateSocketInfo(const MESH_FILE_BONE_INFO& BoneInfo);
+	unsigned int _FindBoneIndex(const char* szBoneName, const L3D_BONE_INFO* pBoneInfo);
 };

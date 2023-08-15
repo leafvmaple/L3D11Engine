@@ -83,7 +83,7 @@ private:
 class L3DMaterialPack
 {
 public:
-    static void LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro);
+    static void LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
 private:
     static void _LoadInstanceFromJson(const rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
 };

@@ -22,9 +22,9 @@ public:
 	HRESULT Create(const char* szFileName);
 	HRESULT GetTextureVariables(ID3D11Device* piDevice, std::vector<TEXTURE_DATA>& Variables);
 
+	char m_szShaderName[256] = {0};
 private:
-	char m_szName[256];
-	char m_szShaderName[256];
+	char m_szName[256] = {0};
 
 	std::vector<MaterialTextureTable> m_vecTexture;
 };

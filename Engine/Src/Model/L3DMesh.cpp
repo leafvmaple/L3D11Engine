@@ -168,9 +168,20 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
     // Subset Index
     if (pHead->MeshHead.Blocks.SubsetIndexBlock)
     {
-        if (!bSubsetShort)
+        Reader.Seek(pHead->MeshHead.Blocks.SubsetIndexBlock);
+        if (bSubsetShort)
         {
-            Reader.Seek(pHead->MeshHead.Blocks.SubsetIndexBlock);
+            WORD* pSubset = nullptr;
+            Reader.Convert(pSubset, pHead->MeshHead.dwNumFaces);
+            // TODO GC
+            pMeshData->pSubset = new DWORD[pHead->MeshHead.dwNumFaces];
+            for (int i = 0; i < pHead->MeshHead.dwNumFaces; i++)
+            {
+                pMeshData->pSubset[i] = static_cast<DWORD>(pSubset[i]);
+            }
+        }
+        else
+        {
             Reader.Convert(pMeshData->pSubset, pHead->MeshHead.dwNumFaces);
         }
     }
@@ -194,7 +205,7 @@ HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDev
 
     ZeroMemory(&FillInfo, sizeof(FillInfo));
 
-    InitFillInfo(pMeshData, &FillInfo);
+    VertexFillInfo(pMeshData, &FillInfo);
     CreateVertexAndIndexBuffer(piDevice, pMeshData, FillInfo);
     CreateBoneInfo(pMeshData->BoneInfo);
 
@@ -206,7 +217,8 @@ Exit0:
     return S_OK;
 }
 
-HRESULT L3DMesh::InitFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
+// KG3D_GetVertexFillInfo
+HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
 {
     HRESULT hResult = E_FAIL;
 

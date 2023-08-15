@@ -13,7 +13,7 @@ struct TEXTURE_DATA
 	std::string sRepresentName;
 	std::string sRegisterName;
 
-	L3DTexture* pTexture;
+	L3DTexture* pTexture = nullptr;
 };
 
 class L3DTexture
@@ -22,6 +22,6 @@ public:
 	HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
 	HRESULT Apply(ID3DX11EffectShaderResourceVariable* pEffectSRVariable);
 
-	ID3D11Texture2D* m_piTexture;
-	ID3D11ShaderResourceView* m_piTextureView;
+	ID3D11Texture2D* m_piTexture = nullptr;
+	ID3D11ShaderResourceView* m_piTextureView = nullptr;
 };

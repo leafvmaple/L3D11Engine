@@ -56,6 +56,20 @@ HRESULT L3DBone::Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL
         }
     }
 
+    Reader.Copy(&BoneInfo.dwSocketCount);
+    if (BoneInfo.dwSocketCount > 0)
+    {
+        BoneInfo.pSocket = new MESH_FILE_BONE_INFO::SOCKET[BoneInfo.dwSocketCount];
+
+        Reader.Copy(BoneInfo.pSocket, BoneInfo.dwSocketCount);
+        std::sort(BoneInfo.pSocket, BoneInfo.pSocket + BoneInfo.dwSocketCount, [](MESH_FILE_BONE_INFO::SOCKET& left, MESH_FILE_BONE_INFO::SOCKET& right) {
+            if (int nCmp = _stricmp(left.szName, right.szName))
+                return nCmp < 0;
+            return &left < &right;
+            });
+    }
+
+
     return S_OK;
 }
 
@@ -97,13 +111,23 @@ HRESULT L3DBone::FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD
 HRESULT L3DBone::BindData(const MESH_FILE_BONE_INFO& BoneInfo)
 {
     HRESULT hResult = E_FAIL;
-    DWORD uBoneCount = 0;
+
+    m_pBoneInfo = new L3D_BONE_INFO;
+
+    _CreateBoneInfo(BoneInfo);
+    _CreateSocketInfo(BoneInfo);
+
+    return S_OK;
+}
+
+void L3DBone::_CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)
+{
     DWORD uBoneIndex = 0;
+    DWORD uBoneCount = 0;
     std::vector<std::pair<std::string, unsigned int>> vecOrderBoneName;
 
     uBoneCount = BoneInfo.dwBoneCount;
 
-    m_pBoneInfo = new L3D_BONE_INFO;
     m_pBoneInfo->uBoneCount = uBoneCount;
 
     m_pBoneInfo->BoneBox.resize(uBoneCount);
@@ -135,7 +159,7 @@ HRESULT L3DBone::BindData(const MESH_FILE_BONE_INFO& BoneInfo)
         Bone.ChildIndex.resize(BoneInFile.uChildCount);
         for (DWORD j = 0; j < BoneInFile.uChildCount; ++j)
         {
-            uBoneIndex = _FindBoneIndex(BoneInFile.pChildNames[j], m_pBoneInfo->OrderBoneName, m_pBoneInfo->OrderIndex);
+            uBoneIndex = _FindBoneIndex(BoneInFile.pChildNames[j], m_pBoneInfo);
             Bone.ChildIndex[j] = uBoneIndex;
             m_pBoneInfo->BoneInfo[uBoneIndex].uParentIndex = i;
         }
@@ -150,16 +174,31 @@ HRESULT L3DBone::BindData(const MESH_FILE_BONE_INFO& BoneInfo)
         if (m_pBoneInfo->BoneInfo[i].uParentIndex == (unsigned)-1)
             m_pBoneInfo->BaseBoneIndies.push_back(i);
     }
-
-    return S_OK;
 }
 
-unsigned int L3DBone::_FindBoneIndex(const char* szBoneName,
-    const std::vector<std::string>& OrderBoneName,
-    const std::vector<unsigned int>& OrderIndex)
+void L3DBone::_CreateSocketInfo(const MESH_FILE_BONE_INFO& BoneInfo)
 {
-    auto it = std::lower_bound(OrderBoneName.begin(), OrderBoneName.end(), szBoneName);
+    unsigned int nSocketCount = 0;
+
+    nSocketCount = BoneInfo.dwSocketCount;
+
+    m_pBoneInfo->uSocketCount = nSocketCount;
+
+    m_pBoneInfo->Socket.resize(nSocketCount);
+    for (int i = 0; i < nSocketCount; i++)
+    {
+        SOCKETINFO& Socket = m_pBoneInfo->Socket[i];
+
+        Socket.sSocketName = BoneInfo.pSocket[i].szName;
+        Socket.uParentBoneIndex = _FindBoneIndex(BoneInfo.pSocket[i].szParentName, m_pBoneInfo);
+        Socket.mOffset = BoneInfo.pSocket[i].mOffset;
+    }
+}
+
+unsigned int L3DBone::_FindBoneIndex(const char* szBoneName, const L3D_BONE_INFO* pBoneInfo)
+{
+    auto it = std::lower_bound(pBoneInfo->OrderBoneName.begin(), pBoneInfo->OrderBoneName.end(), szBoneName);
     if (*it == szBoneName)
-        return OrderIndex[it - OrderBoneName.begin()];
+        return pBoneInfo->OrderIndex[it - pBoneInfo->OrderBoneName.begin()];
     return -1;
 }

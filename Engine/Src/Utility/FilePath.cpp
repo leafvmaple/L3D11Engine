@@ -53,6 +53,12 @@ namespace L3D
         return hResult;
     }
 
+    void GetExtension(std::filesystem::path& path, wchar_t* szExt)
+    {
+        wcscpy(szExt, path.extension().c_str());
+        wcslwr(szExt);
+    }
+
     HRESULT ReplaceExtName(char* szFileName, const char* ExtName)
     {
         HRESULT hr = E_FAIL;
@@ -81,9 +87,6 @@ namespace L3D
 
     void PathFormat(const char* szFileName, std::filesystem::path& path)
     {
-        std::string s(szFileName);
-        std::transform(s.begin(), s.end(), s.begin(), tolower);
-        path = s;
+        path = relative(std::filesystem::path(szFileName));
     }
-
 }

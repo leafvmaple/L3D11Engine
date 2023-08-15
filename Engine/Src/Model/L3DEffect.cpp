@@ -9,7 +9,7 @@
 
 #include "FX11/inc/d3dx11effect.h"
 
-#define MATERIAL_SHADER_ROOT "Res/Shader/Material/"
+#define MATERIAL_SHADER_ROOT "data/material/Shader/"
 
 struct _MacroKeyValue
 {
@@ -23,7 +23,53 @@ static _MacroKeyValue gs_ShaderTemplate[] = {
     { RUNTIME_MACRO_SKIN_MESH,   MATERIAL_SHADER_ROOT"SimpleSkinMeshShader.fx5"},
 };
 
-HRESULT L3DEffect::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
+L3DInclude::L3DInclude(const char* szFileName)
+{
+    m_sName = szFileName;
+}
+
+
+L3DInclude::~L3DInclude()
+{
+
+}
+
+HRESULT STDMETHODCALLTYPE L3DInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes)
+{
+    HRESULT hReuslt = E_FAIL;
+    FILE* f = nullptr;
+    int nFileLen = 0;
+    char* pBuffer = nullptr;
+    std::string fileName = !_stricmp(pFileName, "UserShader.fx5") ? m_sName : std::string(MATERIAL_SHADER_ROOT) + pFileName;
+
+    f = fopen(fileName.c_str(), "rb");
+    BOOL_ERROR_EXIT(f);
+
+    fseek(f, 0, SEEK_END);
+    nFileLen = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    pBuffer = new char[nFileLen + 1];
+    fread(pBuffer, sizeof(char), nFileLen + 1, f);
+
+    *pBytes = nFileLen;
+    *ppData = pBuffer;
+
+    m_piBufferList.push_back(pBuffer);
+
+    hReuslt = S_OK;
+Exit0:
+    return hReuslt;
+}
+
+HRESULT STDMETHODCALLTYPE L3DInclude::Close(LPCVOID pData)
+{
+    SAFE_DELETE(pData);
+
+    return S_OK;
+}
+
+HRESULT L3DEffect::Create(ID3D11Device* piDevice, const char* szMaterial, RUNTIME_MACRO eMacro)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -39,6 +85,9 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
     D3DX11_EFFECT_VARIABLE_DESC variableDesc;
     D3DX11_EFFECT_TYPE_DESC typeDesc;
 
+    L3DInclude include(szMaterial);
+    char error[MAX_PATH];
+
 #if defined( DEBUG ) || defined( _DEBUG )
     dwShaderFlags |= D3D10_SHADER_DEBUG;
     dwShaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
@@ -46,7 +95,12 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro)
 
     {
         USES_CONVERSION;
-        hr = D3DCompileFromFile(A2CW((LPCSTR)gs_ShaderTemplate[eMacro].value), 0, D3D_COMPILE_STANDARD_FILE_INCLUDE, 0, "fx_5_0", dwShaderFlags, 0, &pCompiledShader, &pCompilationMsgs);
+        hr = D3DCompileFromFile(A2CW((LPCSTR)gs_ShaderTemplate[eMacro].value), 0, &include, 0, "fx_5_0", dwShaderFlags, 0, &pCompiledShader, &pCompilationMsgs);
+        if (FAILED(hr))
+        {
+            
+            strcpy(error, (const char*)pCompilationMsgs->GetBufferPointer());
+        }
         HRESULT_ERROR_EXIT(hr);
     }
 

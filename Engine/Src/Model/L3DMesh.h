@@ -31,11 +31,6 @@
 
 #define MAX_NUM_SUBSET_COUNT 32
 
-struct MESH_DATA
-{
-    DWORD dwBoneCount;
-};
-
 struct NORMAL_MESH_VERTEX_DESC
 {
     unsigned bHasPosition : 1;
@@ -114,7 +109,7 @@ private:
     HRESULT LoadMeshData(const char* szFileName, MESH_FILE_DATA* pLMeshData);
     HRESULT CreateMesh(const MESH_FILE_DATA* pLMeshData, ID3D11Device* piDevice);
 
-    HRESULT InitFillInfo(const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO* pFillInfo);
+    HRESULT VertexFillInfo(const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO* pFillInfo);
 
     HRESULT InitVertexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* pMeshData, VERTEX_FILL_INFO& FillInfo);
     template<typename _INDEX_TYPE>

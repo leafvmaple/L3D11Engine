@@ -97,7 +97,7 @@ struct MESH_FILE_BONE_INFO
 
 		char         szName[30];
 		unsigned     uChildCount;
-		BONE_NAME* pChildNames;
+		BONE_NAME*   pChildNames;
 		XMFLOAT4X4   mOffset2Parent;
 		XMFLOAT4X4   mOffset;
 		XMFLOAT4X4   mInvPxPose;

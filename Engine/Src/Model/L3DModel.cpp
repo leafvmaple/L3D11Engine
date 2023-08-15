@@ -19,8 +19,13 @@
 
 HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 {
+    wchar_t szExt[MAX_PATH];
+
+    ResetTransform();
+
     L3D::PathFormat(szFileName, m_Path);
-    m_InitFuncs[m_Path.extension()](piDevice, szFileName);
+    L3D::GetExtension(m_Path, szExt);
+    m_InitFuncs[szExt](piDevice, szFileName);
 
     return S_OK;
 }
@@ -28,11 +33,22 @@ HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 
 void L3DModel::AttachActor(L3DModel* pModel)
 {
+    pModel->m_BindInfo.eBindType = ATTACH_TO_ACTOR;
+    pModel->m_BindInfo.extraInfo.pModel = this;
+
     m_ChildList.emplace_back(pModel);
     if (m_pSkeleton && pModel->m_p3DMesh)
         m_pSkeleton->BindMesh(pModel->m_p3DMesh);
 }
 
+
+void L3DModel::BindToSocket(L3DModel* pModel, const char* szSocketName)
+{
+    m_BindInfo.eBindType = BIND_TO_SOCKET;
+    m_BindInfo.sBindTarget = szSocketName;
+
+    pModel->_FindSocket(szSocketName, m_BindInfo.extraInfo);
+}
 
 void L3DModel::GetAllModel(std::vector<L3DModel*>& models)
 {
@@ -44,6 +60,44 @@ void L3DModel::GetAllModel(std::vector<L3DModel*>& models)
 
     for (const auto& child : m_ChildList)
         child->GetAllModel(models);
+}
+
+
+void L3DModel::GetWorldMatrix(XMFLOAT4X4& matrix)
+{
+    matrix = m_World;
+}
+
+void L3DModel::GetSocketMatrix(int nSocketIndex, XMFLOAT4X4& matrix)
+{
+    XMMATRIX mSocketCurMatrix;
+    SOCKETINFO& Socket = m_p3DMesh->m_pL3DBone->m_pBoneInfo->Socket[nSocketIndex];
+
+    mSocketCurMatrix = XMMatrixMultiply(XMLoadFloat4x4(&Socket.mOffset), m_BoneCurMatrix[Socket.uParentBoneIndex]);
+    XMStoreFloat4x4(&matrix, XMMatrixMultiply(mSocketCurMatrix, XMLoadFloat4x4(&m_World)));
+}
+
+void L3DModel::AttachModel(ILModel* pModel)
+{
+    L3DModel* p3DModel = dynamic_cast<L3DModel*>(pModel);
+    BOOL_ERROR_EXIT(p3DModel);
+
+    AttachActor(p3DModel);
+
+Exit0:
+    return;
+}
+
+void L3DModel::BindToSocket(ILModel* pModel, const char* szSocketName)
+{
+    L3DModel* p3DModel = dynamic_cast<L3DModel*>(pModel);
+    BOOL_ERROR_EXIT(p3DModel);
+
+    BindToSocket(p3DModel, szSocketName);
+    UpdateTransform();
+
+Exit0:
+    return;
 }
 
 HRESULT L3DModel::ResetTransform()
@@ -60,7 +114,7 @@ HRESULT L3DModel::SetTranslation(const XMFLOAT3& Translation)
 {
     m_Translation = Translation;
 
-    UpdateTransFrom();
+    UpdateTransform();
 
     return S_OK;
 }
@@ -69,7 +123,7 @@ HRESULT L3DModel::SetRotation(const XMFLOAT4& Rotation)
 {
     m_Rotation = Rotation;
 
-    UpdateTransFrom();
+    UpdateTransform();
 
     return S_OK;
 }
@@ -78,7 +132,7 @@ HRESULT L3DModel::SetScale(const XMFLOAT3& Scale)
 {
     m_Scale = Scale;
 
-    UpdateTransFrom();
+    UpdateTransform();
 
     return S_OK;
 }
@@ -120,6 +174,15 @@ void L3DModel::PrimaryUpdate()
     _UpdateAnimation();
 }
 
+
+void L3DModel::UpdateTransform()
+{
+    _UpdateTransform();
+
+    for (auto& child : m_ChildList)
+        child->UpdateTransform();
+}
+
 void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
 {
     std::vector<XMMATRIX> matBone;
@@ -144,21 +207,37 @@ void L3DModel::GetRenderUnit(std::vector<L3DRenderUnit*>& RenderQueue)
         RenderQueue.push_back(&unit);
 }
 
-void L3DModel::UpdateTransFrom()
+void L3DModel::_UpdateTransform()
 {
-    XMStoreFloat4x4(&m_World,
-        XMMatrixTransformation(
+    switch (m_BindInfo.eBindType)
+    {
+    case BIND_TO_SOCKET:
+    {
+        m_BindInfo.extraInfo.pModel->GetSocketMatrix(m_BindInfo.extraInfo.uBindIndex, m_World);
+
+        break;
+    }
+    case ATTACH_TO_ACTOR:
+    {
+         m_BindInfo.extraInfo.pModel->GetWorldMatrix(m_World);
+
+        break;
+    }
+    default:
+    {
+        XMStoreFloat4x4(&m_World, XMMatrixTransformation(
             g_XMZero,
             g_XMIdentityR3,
             XMLoadFloat3(&m_Scale),
             g_XMZero,
             XMLoadFloat4(&m_Rotation),
             XMLoadFloat3(&m_Translation)
-        )
-    );
+        ));
+    }
+    }
 }
 
-void L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName)
+void L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const wchar_t* szFileName)
 {
     RUNTIME_MACRO eMacro = RUNTIME_MACRO_MESH;
     if (m_p3DMesh->m_dwBoneCount > 0)
@@ -205,6 +284,8 @@ void L3DModel::_UpdateBuffer()
     XMMATRIX* pBoneMatrixAll = nullptr;
     int* pSkeletonIndies = nullptr;
 
+    BOOL_SUCCESS_EXIT(!m_p3DAniController[SPLIT_ALL]);
+
     pBoneMatrixAll = m_p3DAniController[SPLIT_ALL]->GetAnimationInfo()->BoneAni.pBoneMatrix;
     BOOL_SUCCESS_EXIT(!pBoneMatrixAll);
 
@@ -246,19 +327,20 @@ void L3DModel::_UpdateModelVariablesIndices()
     m_RenderData.ModelVariables.pModelParams = m_RenderData.piModelSharedCB->GetMemberByName("g_ModelParams");
 }
 
-void L3DModel::_InitMdl(ID3D11Device* piDevice, const char* szFileName)
+// _InitMdl
+void L3DModel::_InitModel(ID3D11Device* piDevice, const char* szFileName)
 {
     char szPath[MAX_PATH];
     char szExt[MAX_PATH];
     FILE* f = fopen(szFileName, "r");
 
     fscanf(f, "%s", szPath);
-    _InitSkeletion(piDevice, szPath); // Load .txt
+    _InitSkeletion(piDevice, szPath[0] == '\\' ? szPath + 1 : szPath); // Load .txt
 
     while (fscanf(f, "%s", szPath) != EOF)
     {
         L3DModel* pMesh = new L3DModel;
-        pMesh->Create(piDevice, szPath);
+        pMesh->Create(piDevice, szPath[0] == '\\' ? szPath + 1 : szPath);
         AttachActor(pMesh);
     }
 }
@@ -278,11 +360,12 @@ Exit0:
     return;
 }
 
-void L3DModel::_InitSingleModel(ID3D11Device* piDevice, const char* szFileName)
+// _InitSingleModel
+void L3DModel::_InitMesh(ID3D11Device* piDevice, const char* szFileName)
 {
     HRESULT hr = E_FAIL;
 
-    char szMaterialName[MAX_PATH];
+    std::filesystem::path materialPath;
 
     m_p3DMesh = new L3DMesh;
     BOOL_ERROR_EXIT(m_p3DMesh);
@@ -290,16 +373,12 @@ void L3DModel::_InitSingleModel(ID3D11Device* piDevice, const char* szFileName)
     hr = m_p3DMesh->Create(piDevice, szFileName);
     HRESULT_ERROR_EXIT(hr);
 
-    strcpy(szMaterialName, szFileName);
-    hr = L3D::ReplaceExtName(szMaterialName, ".JsonInspack");
-    if (SUCCEEDED(hr))
-        _LoadMaterialFromJson(piDevice, szMaterialName);
+    materialPath = m_Path.replace_extension(".JsonInspack");
+    if (std::filesystem::exists(materialPath))
+        _LoadMaterialFromJson(piDevice, materialPath.c_str());
 
     _CreateBoneMatrix();
     _InitRenderUnits();
-
-    hr = ResetTransform();
-    HRESULT_ERROR_EXIT(hr);
 
 Exit0:
     return;
@@ -335,4 +414,26 @@ void L3DModel::_InitRenderUnits()
         unit.m_piSubsetSharedCB = m_RenderData.SubsetCB[i];
         unit.m_pMaterial = pMaterial;
     }
+}
+
+HRESULT L3DModel::_FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& BindExtraInfo)
+{
+    if (m_p3DMesh)
+    {
+        for (int i = 0; i < m_p3DMesh->m_pL3DBone->m_pBoneInfo->Socket.size(); i++)
+        {
+            const auto& socket = m_p3DMesh->m_pL3DBone->m_pBoneInfo->Socket[i];
+            if (szSocketName == socket.sSocketName)
+            {
+                BindExtraInfo.pModel = this;
+                BindExtraInfo.uBindIndex = i;
+                return S_OK;
+            }
+        }
+    }
+
+    for (const auto& child : m_ChildList)
+        return child->_FindSocket(szSocketName, BindExtraInfo);
+
+    return S_OK;
 }

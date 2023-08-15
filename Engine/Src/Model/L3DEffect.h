@@ -7,6 +7,27 @@
 
 #include "L3DMaterialConfig.h"
 
+class L3DInclude : public ID3DInclude
+{
+public:
+    L3DInclude(const char* szFileName);
+    virtual ~L3DInclude();
+
+    virtual HRESULT STDMETHODCALLTYPE Open(
+        D3D_INCLUDE_TYPE IncludeType,
+        LPCSTR pFileName,
+        LPCVOID pParentData,
+        LPCVOID* ppData,
+        UINT* pBytes
+    );
+
+    virtual HRESULT STDMETHODCALLTYPE Close(LPCVOID pData);
+
+protected:
+    std::string m_sName;
+    std::vector<char*> m_piBufferList;
+};
+
 struct ID3DX11Effect;
 struct ID3DX11EffectTechnique;
 struct ID3DX11EffectConstantBuffer;
@@ -21,7 +42,7 @@ struct EFFECT_SHADER
 class L3DEffect
 {
 public:
-    HRESULT Create(ID3D11Device* piDevice, RUNTIME_MACRO eMacro);
+    HRESULT Create(ID3D11Device* piDevice, const char* szMaterial, RUNTIME_MACRO eMacro);
 
     ID3DX11EffectTechnique* GetTechniqueByName(const char* szTechniqueName);
     ID3DX11EffectConstantBuffer* GetConstantBufferByRegister(int nIndex);
