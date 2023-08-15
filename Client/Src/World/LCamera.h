@@ -12,6 +12,9 @@ public:
     void SetYaw(float fYaw);
     void SetPitch(float fPitch);
 
+    void AddYaw(float fYaw);
+    void AddPitch(float fPitch);
+
     void Update();
 
 private:
@@ -25,4 +28,6 @@ private:
 
     XMVECTOR m_vTarget = XMVectorZero();
     XMVECTOR m_vPostion = XMVectorZero();
+
+    void _Format(float& fValue);
 };

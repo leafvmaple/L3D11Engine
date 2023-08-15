@@ -12,7 +12,6 @@ public:
     void Update(float fDeltaTime);
 
     LCamera* m_pCamera = nullptr;
-
 private:
     ILScene* m_piScene = nullptr;
 };

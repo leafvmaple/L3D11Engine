@@ -19,13 +19,12 @@ public:
         LPCVOID pParentData,
         LPCVOID* ppData,
         UINT* pBytes
-    );
+    ) override;
 
-    virtual HRESULT STDMETHODCALLTYPE Close(LPCVOID pData);
+    virtual HRESULT STDMETHODCALLTYPE Close(LPCVOID pData) override;
 
 protected:
     std::string m_sName;
-    std::vector<char*> m_piBufferList;
 };
 
 struct ID3DX11Effect;

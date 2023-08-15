@@ -7,6 +7,7 @@
 class L3DENGINE_CLASS IL3DEngine;
 
 class LScene;
+class LInput;
 
 class LClient
 {
@@ -27,6 +28,7 @@ private:
     int m_nFrame = 0;
 
     LScene* m_pScene = nullptr;
+    LInput* m_pInput = nullptr;
 
     LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void InitL3DWindow(HINSTANCE hInstance, L3D_WINDOW_PARAM& m_WindowParam);

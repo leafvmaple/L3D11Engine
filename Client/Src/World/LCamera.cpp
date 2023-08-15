@@ -15,11 +15,23 @@ void LCamera::SetSightDistance(float fSightDis)
 void LCamera::SetYaw(float fYaw)
 {
     m_fYaw = fYaw;
+    _Format(m_fYaw);
 }
 
 void LCamera::SetPitch(float fPitch)
 {
     m_fPitch = fPitch;
+    _Format(m_fPitch);
+}
+
+void LCamera::AddYaw(float fYaw)
+{
+    SetYaw(m_fYaw + fYaw);
+}
+
+void LCamera::AddPitch(float fPitch)
+{
+    SetPitch(m_fPitch + fPitch);
 }
 
 void LCamera::Update()
@@ -32,4 +44,12 @@ void LCamera::Update()
 
     m_piCamera->SetTarget(m_vTarget);
     m_piCamera->SetPosition(m_vPostion);
+}
+
+void LCamera::_Format(float& fValue)
+{
+    while (fValue > XM_2PI)
+        fValue -= XM_2PI;
+    while (fValue < -XM_2PI)
+        fValue += XM_2PI;
 }

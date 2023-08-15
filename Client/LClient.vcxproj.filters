@@ -32,6 +32,9 @@
     <ClCompile Include="Src\World\LScene.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
+    <ClCompile Include="Src\World\LInput.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Object\LCharacter.h">
@@ -50,6 +53,9 @@
       <Filter>Source Files\World</Filter>
     </ClInclude>
     <ClInclude Include="Src\World\LScene.h">
+      <Filter>Source Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\World\LInput.h">
       <Filter>Source Files\World</Filter>
     </ClInclude>
   </ItemGroup>

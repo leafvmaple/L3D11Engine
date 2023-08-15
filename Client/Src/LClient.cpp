@@ -4,6 +4,7 @@
 #include "Object/LCharacter.h"
 #include "World/LScene.h"
 #include "World/LCamera.h"
+#include "World/LInput.h"
 
 extern LClient* g_pClient = new LClient;
 
@@ -37,6 +38,8 @@ HRESULT LClient::Init(HINSTANCE hInstance)
 
     m_pScene = new LScene;
     m_pScene->Create("Res/maps/唐门登陆界面/唐门登陆界面.jsonmap");
+
+    m_pInput = new LInput;
 
     m_fLastTime = (float)timeGetTime();
 
@@ -111,12 +114,6 @@ LRESULT LClient::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
     }
-    case WM_MOUSEWHEEL:
-    {
-        if (m_pScene)
-            m_pScene->m_pCamera->SetSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);
-        break;
-    }
     case WM_KEYDOWN:
     {
         if (wParam == VK_ESCAPE)
@@ -124,6 +121,7 @@ LRESULT LClient::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
     }
     default:
+        m_pInput->ProcessInput(uMsg, wParam, lParam, m_pScene);
         break;
     }
 

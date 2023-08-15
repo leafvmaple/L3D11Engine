@@ -55,8 +55,6 @@ HRESULT STDMETHODCALLTYPE L3DInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR 
     *pBytes = nFileLen;
     *ppData = pBuffer;
 
-    m_piBufferList.push_back(pBuffer);
-
     hReuslt = S_OK;
 Exit0:
     return hReuslt;
@@ -96,11 +94,6 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, const char* szMaterial, RUNTIM
     {
         USES_CONVERSION;
         hr = D3DCompileFromFile(A2CW((LPCSTR)gs_ShaderTemplate[eMacro].value), 0, &include, 0, "fx_5_0", dwShaderFlags, 0, &pCompiledShader, &pCompilationMsgs);
-        if (FAILED(hr))
-        {
-            
-            strcpy(error, (const char*)pCompilationMsgs->GetBufferPointer());
-        }
         HRESULT_ERROR_EXIT(hr);
     }
 

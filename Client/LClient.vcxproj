@@ -23,6 +23,7 @@
     <ClCompile Include="Src\LObjectMgr.cpp" />
     <ClCompile Include="Src\Object\LCharacter.cpp" />
     <ClCompile Include="Src\World\LCamera.cpp" />
+    <ClCompile Include="Src\World\LInput.cpp" />
     <ClCompile Include="Src\World\LScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="Src\Object\LCharacter.h" />
     <ClInclude Include="Src\Object\LModel.h" />
     <ClInclude Include="Src\World\LCamera.h" />
+    <ClInclude Include="Src\World\LInput.h" />
     <ClInclude Include="Src\World\LScene.h" />
   </ItemGroup>
   <ItemGroup>
