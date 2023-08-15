@@ -19,6 +19,8 @@ void LScene::Create(const char* szFileName)
     pCharacter = LObjectMgr::Instance().CreateModel<LCharacter>("data/source/player/F1/部件/Mdl/F1.mdl");
     pCharacter->LoadPart(IL3DEngine::Instance(), "data/source/player/F1/部件/F1_0000_head.mesh");
     pCharacter->LoadPart(IL3DEngine::Instance(), "data/source/player/F1/部件/F1_1000_body.mesh");
+    pCharacter->LoadPart(IL3DEngine::Instance(), "data/source/player/F1/部件/F1_1000_hand.mesh");
+    pCharacter->LoadPart(IL3DEngine::Instance(), "data/source/player/F1/部件/F1_1000_leg.mesh");
     pCharacter->LoadPart(IL3DEngine::Instance(), "data/source/player/F1/部件/f1_new_face.Mesh", "s_face");
     pCharacter->AppendRenderEntity(m_piScene);
     pCharacter->SetPosition(XMFLOAT3(0, 0, 0));

@@ -85,9 +85,20 @@ HRESULT L3DMesh::LoadMeshData(const char* szFileName, MESH_FILE_DATA* pMeshData)
     pMeshData->dwFacesCount  = pHead->MeshHead.dwNumFaces;
     pMeshData->dwSubsetCount = pHead->MeshHead.dwNumSubset;
     
-    bBin         = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_TOBIN); // TODO
-    bHasPxPose   = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_ADDITIVE_PX_POSE); // TODO
-    bSubsetShort = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_SUBSETSHORT);
+    if (pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_NEWBIT))
+    {
+        bBin = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_TOBIN); // TODO
+        bHasPxPose = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_ADDITIVE_PX_POSE); // TODO
+        bSubsetShort = pHead->VersionHead.dwVersion & (0x80000000 >> VERSION_BIT_SUBSETSHORT);
+    }
+    else
+    {
+        assert(pHead->VersionHead.dwVersion < _MESH_FILE_VERSION_HEAD::s_dwDeltaVersionMeshToBin);
+
+        bBin = false;
+        bSubsetShort = pHead->VersionHead.dwVersion >= 1;
+        bHasPxPose = pHead->VersionHead.dwVersion >= 2;
+    }
 
     // Position
     if (pHead->MeshHead.Blocks.PositionBlock)
