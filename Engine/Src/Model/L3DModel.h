@@ -10,6 +10,8 @@
 #include "L3DInterface.h"
 #include "L3DMaterialDefine.h"
 
+#include "Define/L3DSceneDefine.h"
+
 #include "rapidjson/include/rapidjson/document.h"
 
 class L3DMesh;
@@ -79,7 +81,7 @@ public:
     void UpdateTransform();
 
     void UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption);
-    void GetRenderUnit(std::vector<L3DRenderUnit*>& RenderQueue);
+    void GetRenderUnit(SCENE_RENDER_QUEUES& RenderQueue);
 
 private:
     struct MODEL_FIX_VARIBLES

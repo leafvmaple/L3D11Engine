@@ -200,11 +200,15 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
 }
 
 
-void L3DModel::GetRenderUnit(std::vector<L3DRenderUnit*>& RenderQueue)
+void L3DModel::GetRenderUnit(SCENE_RENDER_QUEUES& RenderQueue)
 {
     // TODO
     for (auto& unit : m_RenderData.RenderUnits)
-        RenderQueue.push_back(&unit);
+    {
+        RenderQueue.GBufferQueue.push_back(&unit);
+        if (unit.m_pMaterial->m_eBlendMode == BLEND_SOFTMASKED)
+            RenderQueue.TransparencyQueue.push_back(&unit);
+    }
 }
 
 void L3DModel::_UpdateTransform()
@@ -254,18 +258,11 @@ void L3DModel::_UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const
         m_RenderData.ModelVariables.pModelParams->SetRawValue(&MeshCB, 0, sizeof(MESH_SHARED_CB));
 }
 
-__declspec(align(16)) struct SKIN_SUBSET_CONST
-{
-    XMFLOAT4A   ModelColor;
-    BOOL        EnableAlphaTest;
-    float       AlphaReference;
-};
-
 void L3DModel::_UpdateSubsetConst(unsigned int iSubset)
 {
     SKIN_SUBSET_CONST subsetConst;
 
-    m_MaterialPack[iSubset]->GetRenderStateValue(&subsetConst.EnableAlphaTest, &subsetConst.AlphaReference);
+    m_MaterialPack[iSubset]->GetRenderStateValue(subsetConst);
     m_RenderData.SubsetCB[iSubset]->SetRawValue(&subsetConst, 0, sizeof(SKIN_SUBSET_CONST));
 }
 

@@ -39,11 +39,6 @@ public:
     virtual ILCamera* Get3DCamera();
 
 private:
-    struct SCENE_RENDER_QUEUES
-    {
-        std::vector<L3DRenderUnit*> GBuffer;
-    };
-
     void _CreateCamera();
     HRESULT _CreatePathTable(const char* szFileName, SCENE_PATH_TABLE* pPathTable);
 

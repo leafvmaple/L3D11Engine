@@ -94,6 +94,8 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, const char* szMaterial, RUNTIM
     {
         USES_CONVERSION;
         hr = D3DCompileFromFile(A2CW((LPCSTR)gs_ShaderTemplate[eMacro].value), 0, &include, 0, "fx_5_0", dwShaderFlags, 0, &pCompiledShader, &pCompilationMsgs);
+        if (FAILED(hr))
+            strcpy(error, (const char*)pCompilationMsgs->GetBufferPointer());
         HRESULT_ERROR_EXIT(hr);
     }
 

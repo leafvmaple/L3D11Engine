@@ -13,9 +13,10 @@ struct MTLSYS_MESH_SHARED_CB
 
 cbuffer SubsetConstParam : register (b3)
 {
-    float4  ModelColor      = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    bool    EnableAlphaTest = false;
-    float   AlphaReference  = 0.f;
+    float4 ModelColor      = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    bool   EnableAlphaTest = false;
+    float  AlphaReference  = 0.f;
+    float  AlphaReference2 = 0.f;
 
 };
 
@@ -66,7 +67,7 @@ struct ParamsMainPixelNode
     float   Fresnel;
     float   Roughness;
     float3  Emissive;
-    float   Opacity;
+    float   Opacity; // 透明度
     float   PixelDepthOffset;
     float3  Ambient;
     float	AO;
@@ -143,7 +144,7 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-float4 PS(VertexOut pin) : SV_Target
+float4 PixelShaderMain(VertexOut pin, uniform bool RenderSoftMask) : SV_Target
 {
     float4 retColor = 0;
     float3 color = 0;
@@ -155,8 +156,23 @@ float4 PS(VertexOut pin) : SV_Target
 
     if (EnableAlphaTest)
     {
-        if (PixelMainNode.Opacity < AlphaReference)
-            discard;
+        if (RenderSoftMask)
+        {
+            if (PixelMainNode.Opacity < AlphaReference2)
+                discard;
+        }
+        else
+        {
+            if (PixelMainNode.Opacity < AlphaReference)
+                discard;
+        }
+        
+    }
+
+    if (RenderSoftMask)
+    {
+        PixelMainNode.Opacity = PixelMainNode.Opacity / AlphaReference;
+        PixelMainNode.Opacity = saturate(PixelMainNode.Opacity); // 限制在[0, 1]
     }
 
     color = PixelMainNode.Albedo;
@@ -169,12 +185,22 @@ float4 PS(VertexOut pin) : SV_Target
     return retColor;
 }
 
+PixelShader MainPixelShader = CompileShader(ps_5_0, PixelShaderMain(false));
+PixelShader SoftMaskShader  = CompileShader(ps_5_0, PixelShaderMain(true));
+
 technique11 Color
 {
     pass P0
     {
-        SetVertexShader( CompileShader( vs_5_0, VS() ) );
-        SetGeometryShader( NULL );
-        SetPixelShader( CompileShader( ps_5_0, PS() ) );
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetPixelShader(MainPixelShader);
+    }
+}
+technique11 ColorSoftMask
+{
+    pass p0
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetPixelShader(SoftMaskShader);
     }
 }

@@ -31,7 +31,6 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PAS
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
 
-    MESH_SHARED_CB MeshCB;
     XMMATRIX* pBoneMatrices = nullptr;
 
     Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);

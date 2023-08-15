@@ -27,6 +27,7 @@ struct RENDER_PASS_TABLE
 
 static RENDER_PASS_TABLE g_MaterialPassDeclares[] = {
     {RENDER_PASS::COLOR, "Color", 0},
+    {RENDER_PASS::COLORSOFTMASK, "ColorSoftMask", 0}
 };
 
 HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData, RUNTIME_MACRO eMacro)
@@ -37,7 +38,8 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
 
     m_eBlendMode = (BlendMode)InstanceData.uBlendMode;
     m_dwAlphaRef = InstanceData.uAlphaRef;
-    m_AlphaTestSwitch = m_eBlendMode == BLEND_MASKED;
+    m_dwAlphaRef2 = InstanceData.uAlphaRef2;
+    m_AlphaTestSwitch = (m_eBlendMode == BLEND_MASKED || m_eBlendMode == BLEND_SOFTMASKED);
 
     for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
         _PlaceTextureValue(piDevice, iter->first, iter->second);
@@ -52,9 +54,8 @@ HRESULT L3DMaterial::Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePas
 {
     ID3DX11EffectPass* pEffectPass = nullptr;
 
-    // _GetRenderPass
     _UpdateCommonCB();
-    _UpdateTechniques(ePass, &pEffectPass);
+    _UpdateTechniques(ePass, &pEffectPass); // In _GetRenderPass
     _UpdateTextures();
 
     pEffectPass->Apply(0, pDeviceContext);
@@ -124,10 +125,11 @@ Exit0:
 }
 
 
-void L3DMaterial::GetRenderStateValue(BOOL* pEnableAlphaTest, float* pAlphaRef)
+void L3DMaterial::GetRenderStateValue(SKIN_SUBSET_CONST& subsetConst)
 {
-    *pEnableAlphaTest = m_AlphaTestSwitch;
-    *pAlphaRef = m_dwAlphaRef / 255.f;
+    subsetConst.EnableAlphaTest = m_AlphaTestSwitch;
+    subsetConst.AlphaReference = m_dwAlphaRef / 255.f;
+    subsetConst.AlphaReference2 = m_dwAlphaRef2 / 255.f;
 }
 
 HRESULT L3DMaterial::_PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName)
@@ -155,7 +157,7 @@ HRESULT L3DMaterial::_UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** pp
     RENDER_PASS_TABLE& passTable = g_MaterialPassDeclares[nPass];
 
     pEffectTechnique = m_pEffect->GetTechniqueByName(passTable.szTechniqueName);
-    *ppEffectPass = pEffectTechnique->GetPassByIndex(nPass);
+    *ppEffectPass = pEffectTechnique->GetPassByIndex(0); // p0
 
     return S_OK;
 }
@@ -233,5 +235,6 @@ void L3DMaterialPack::_LoadInstanceFromJson(const rapidjson::Value& JsonObject, 
     // RenderState
     const auto& RenderStateObject = JsonObject["RenderState"];
     InstanceData.uAlphaRef = RenderStateObject["AlphaRef"].GetInt();
+    InstanceData.uAlphaRef2 = RenderStateObject["AlphaRef2"].GetInt();
     InstanceData.uBlendMode = RenderStateObject["BlendMode"].GetInt();
 }

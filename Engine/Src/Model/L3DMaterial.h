@@ -17,6 +17,8 @@
 class L3DMaterialDefine;
 class L3DEffect;
 
+struct subsetConst;
+
 struct ID3DX11EffectPass;
 struct ID3DX11EffectConstantBuffer;
 struct ID3DX11EffectShaderResourceVariable;
@@ -26,6 +28,7 @@ struct MATERIAL_INSTANCE_DATA
     char szDefineName[MAX_PATH];
     UINT32 uBlendMode;
     UINT32 uAlphaRef;
+    UINT32 uAlphaRef2;
 
     std::unordered_map<std::string, std::string> TextureArray;
 };
@@ -36,10 +39,19 @@ enum class MATERIAL_INDIV_CB
     SUBSET,
 };
 
+__declspec(align(16)) struct SKIN_SUBSET_CONST
+{
+    XMFLOAT4A   ModelColor;
+    BOOL        EnableAlphaTest;
+    float       AlphaReference;
+    float       AlphaReference2;
+};
+
 enum BlendMode
 {
     BLEND_OPAQUE,
     BLEND_MASKED,
+    BLEND_SOFTMASKED = 5,
 };
 
 class L3DMaterial
@@ -51,10 +63,11 @@ public:
     HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
     HRESULT SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer* pSharedCB);
 
-    void GetRenderStateValue(BOOL* pEnableAlphaTest, float* pAlphaRef);
+    void GetRenderStateValue(SKIN_SUBSET_CONST & subsetConst);
 
     ~L3DMaterial() {}
 
+    BlendMode m_eBlendMode = BLEND_OPAQUE;
 private:
     struct PASS_TEXTURE
     {
@@ -75,7 +88,8 @@ private:
 
     BOOL m_AlphaTestSwitch = false;
     unsigned int m_dwAlphaRef = 0;
-    BlendMode m_eBlendMode = BLEND_OPAQUE;
+    unsigned int m_dwAlphaRef2 = 0;
+
 
     std::vector<TEXTURE_DATA> m_vecTextures;
 };

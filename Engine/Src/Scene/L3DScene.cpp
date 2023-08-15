@@ -163,13 +163,13 @@ void L3DScene::_CommitConstData(const SCENE_RENDER_OPTION& RenderOption)
 
 void L3DScene::_RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption)
 {
-    m_RenderQueues.GBuffer.clear();
+    m_RenderQueues.GBufferQueue.clear();
 
     for (auto& pModel : m_VisibleModel)
-        pModel->GetRenderUnit(m_RenderQueues.GBuffer);
+        pModel->GetRenderUnit(m_RenderQueues);
 
     _UpdateCommonConstData(RenderOption);
 
-    for (auto& pRenderUnit : m_RenderQueues.GBuffer)
+    for (auto& pRenderUnit : m_RenderQueues.GBufferQueue)
         pRenderUnit->ApplyProcess(RenderOption, RENDER_PASS::COLOR);
 }
