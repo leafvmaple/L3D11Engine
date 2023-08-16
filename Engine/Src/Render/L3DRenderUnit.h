@@ -41,7 +41,7 @@ public:
     ID3DX11EffectConstantBuffer* m_piSubsetSharedCB = nullptr;
     MODEL_FIX_VARIBLES m_ModelVariables;
 
-    std::shared_ptr<L3DMaterial> m_pMaterial = nullptr;
+    L3DMaterial* m_pMaterial = nullptr;
 
 private:
     XMMATRIX m_MatrixWorld = XMMatrixIdentity();

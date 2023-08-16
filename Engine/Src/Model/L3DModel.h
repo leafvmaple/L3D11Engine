@@ -7,6 +7,7 @@
 #include <functional>
 #include <filesystem>
 
+#include "L3DMaterial.h"
 #include "L3DInterface.h"
 #include "L3DMaterialDefine.h"
 
@@ -142,6 +143,9 @@ private:
     XMFLOAT3 m_Scale;
 
     XMFLOAT4X4 m_World;
+
+    int m_nLOD = 0;
+    int m_nGroup = 0;
 
     std::unordered_map<std::wstring, std::function<void(ID3D11Device* piDevice, const char* szFileName)>> m_InitFuncs = {
         std::make_pair(L".mdl", std::bind(&L3DModel::_InitModel, this, std::placeholders::_1, std::placeholders::_2)),

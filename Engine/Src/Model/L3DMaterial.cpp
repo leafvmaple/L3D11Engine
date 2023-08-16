@@ -194,19 +194,22 @@ void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& Insta
     LFileReader::ReadJson(szFileName, JsonDocument);
 
     const auto& LODArray = JsonDocument["LOD"];
+    InstancePack.resize(LODArray.Size());
     for (int i = 0; i < LODArray.Size(); i++)
     {
         const auto& GroupArray = LODArray[i]["Group"];
+        InstancePack[i].resize(GroupArray.Size());
         for (int j = 0; j < GroupArray.Size(); j++)
         {
             const auto& SubsetArray = GroupArray[j]["Subset"];
+            InstancePack[i][j].resize(SubsetArray.Size());
             for (int k = 0; k < SubsetArray.Size(); k++)
-            {
+            { 
                 MATERIAL_INSTANCE_DATA InstanceData;
                 _LoadInstanceFromJson(SubsetArray[k], InstanceData);
 
-                auto pInstance = InstancePack.emplace_back(new L3DMaterial);
-                pInstance->Create(piDevice, InstanceData, eMacro);
+                auto& pInstance = InstancePack[i][j][k];
+                pInstance.Create(piDevice, InstanceData, eMacro);
             }
         }
     }

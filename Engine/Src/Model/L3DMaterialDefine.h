@@ -29,4 +29,4 @@ private:
 	std::vector<MaterialTextureTable> m_vecTexture;
 };
 
-typedef std::vector<std::shared_ptr<L3DMaterial>> MATERIALS_PACK;
+typedef std::vector<std::vector<std::vector<L3DMaterial>>> MATERIALS_PACK;
