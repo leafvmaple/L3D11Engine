@@ -11,9 +11,6 @@ void CalculateMainPixelNode(in out MaterialPixelParameters Parameters, in out Pa
 {
     float4 local1 = _0_local1_Texture.Sample(g_Sampler_0, Parameters.TexCoords.xy);
     MainNodeParam.Albedo  = local1.rgb;
-    MainNodeParam.Fresnel = 0.5f;
-    MainNodeParam.AO      = 1.0f;
     MainNodeParam.Opacity = local1.a;
-    MainNodeParam.PixelDepthOffset = 0.0f;
 }
 

@@ -11,6 +11,7 @@
 static const char* VERTEX_SHADER_ID_NAME[] =
 {
     "VERTEX_SHADER_BOX",
+    "VERTEX_SHADER_CI_MESH",
     "VERTEX_SHADER_CI_SKINMESH",
 };
 

@@ -9,7 +9,7 @@ cbuffer cbPerObject
 	float4x4 gWorldViewProj; 
 };
 
-struct VertexIn
+struct VertexInput
 {
 	float3 PosL  : POSITION;
     float3 Normal: NORMAL;
@@ -20,15 +20,15 @@ struct VertexIn
     float4 Tangent :  TANGENT;
 };
 
-struct VertexOut
+struct VertexOutput
 {
 	float4 PosH  : SV_POSITION;
     float4 Color : COLOR;
 };
 
-VertexOut VS(VertexIn vin)
+VertexOutput VS(VertexInput vin)
 {
-	VertexOut vout;
+	VertexOutput vout;
 	
 	// Transform to homogeneous clip space.
 	vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
@@ -39,7 +39,7 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-float4 PS(VertexOut pin) : SV_Target
+float4 PS(VertexOutput pin) : SV_Target
 {
     return pin.Color;
 }

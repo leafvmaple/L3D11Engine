@@ -22,6 +22,7 @@ void LScene::Create(const char* szFileName)
     pCharacter->LoadPart("data/source/player/F1/部件/F1_1000_hand.mesh");
     pCharacter->LoadPart("data/source/player/F1/部件/F1_1000_leg.mesh");
     pCharacter->LoadSocket("data/source/player/F1/部件/f1_new_face.Mesh", "s_face");
+    pCharacter->LoadSocket("data/source/item/weapon/brush/RH_brush_001.Mesh", "s_rh");
 
     pCharacter->AppendRenderEntity(m_piScene);
     pCharacter->SetPosition(XMFLOAT3(0, 0, 0));

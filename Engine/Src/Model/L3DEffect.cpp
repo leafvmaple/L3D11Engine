@@ -19,8 +19,7 @@ struct _MacroKeyValue
 
 static _MacroKeyValue gs_ShaderTemplate[] = {
     { RUNTIME_MACRO_MESH,        MATERIAL_SHADER_ROOT"MeshShader.fx5" },
-    // { RUNTIME_MACRO_SKIN_MESH,   MATERIAL_SHADER_ROOT"SkinMeshShader.fx5"},
-    { RUNTIME_MACRO_SKIN_MESH,   MATERIAL_SHADER_ROOT"SimpleSkinMeshShader.fx5"},
+    { RUNTIME_MACRO_SKIN_MESH,   MATERIAL_SHADER_ROOT"SkinMeshShader.fx5"},
 };
 
 L3DInclude::L3DInclude(const char* szFileName)

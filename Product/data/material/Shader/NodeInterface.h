@@ -1,37 +1,27 @@
-struct MaterialPixelParameters
+#ifndef __NODE_INTERFACE_H_
+#define __NODE_INTERFACE_H_
+
+struct MaterialVertexParameters
 {
-    float3  WorldNormal;
-    float3  WorldPosition; 
-    float3  VertexPosition;
-    float3  VertexNormal;
-    float4  ScreenPosition;
-	float4	OutPosition;
-    float4  VertexColor;
-    float3  Tangent;
-    float3  Binormal;
-    float   FogFactor;
-    float4  ModelColor;
-    float3  ModelColorOffset;
-	float4  ParticleVertexColor;
-	float4  WeightHeightMapTexcoord;
+    float4 VertexPosition;
+    float4 VertexColor;
+
+	float2 TexCoords;
 
 	float4x4 MatrixWorld;
-	float4x4 MatrixWorldInverse;
-	float4x4 MatrixWorldInverseTranspose;
-	
-	float2  ScreenMotion;
-	float   MotionPrecision;
-	float   IsMoving;
-	float   IsFrontFace;
-
-	float	BaseLayerHeight;
-	float	CurrentLayerHeight;
-	float	PreviousLayerHeight;
-
-    float   CurrentLayerMask;
-    float   CurrentLayerInfo;
-
-	float2  SplineUV;
-	float3  SplineDir;
-	float   SplineT;
 };
+
+struct MaterialPixelParameters
+{
+    float2 TexCoords;
+};
+
+struct ParamsMainPixelNode
+{
+    float3  Albedo;
+    float3  Emissive;
+    float   Opacity; // 透明度
+    float3  Ambient;
+};
+
+#endif

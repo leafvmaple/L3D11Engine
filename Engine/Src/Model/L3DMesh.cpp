@@ -356,17 +356,26 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
     {
         if (pFileData->pSkin)
         {
-            if (pFileData->pUV3) {}
-            //pRetFillInfo->eInputLayout = L3D_DYNAMIC_INPUT_LAYOUT_CI_SKINMESH_UV3;
-            else if (pFileData->pUV2) {}
-            //pRetFillInfo->eInputLayout = L3D_DYNAMIC_INPUT_LAYOUT_CI_SKINMESH_UV2;
+            if (pFileData->pUV3)
+                assert(false);
+            else if (pFileData->pUV2)
+                assert(false);
             else if (pFileData->pUV1)
                 pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_SKINMESH;
             else
                 assert(false);
         }
         else
-            assert(false);
+        {
+            if (pFileData->pUV3)
+                assert(false);
+            else if (pFileData->pUV2)
+                assert(false);
+            else if (pFileData->pUV1)
+                pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_MESH;
+            else
+                assert(false);
+        }
     }
     else
         pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_BOX;

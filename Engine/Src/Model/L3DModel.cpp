@@ -433,7 +433,8 @@ HRESULT L3DModel::_FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& Bin
     }
 
     for (const auto& child : m_ChildList)
-        return child->_FindSocket(szSocketName, BindExtraInfo);
+        if (SUCCEEDED(child->_FindSocket(szSocketName, BindExtraInfo)))
+            return S_OK;
 
-    return S_OK;
+    return E_FAIL;
 }
