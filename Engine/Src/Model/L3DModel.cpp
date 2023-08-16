@@ -48,15 +48,13 @@ void L3DModel::BindToSocket(L3DModel* pModel, const char* szSocketName)
     m_BindInfo.sBindTarget = szSocketName;
 
     pModel->_FindSocket(szSocketName, m_BindInfo.extraInfo);
+    m_BindInfo.extraInfo.pModel->m_ChildList.emplace_back(this);
 }
 
 void L3DModel::GetAllModel(std::vector<L3DModel*>& models)
 {
     if (m_p3DMesh)
-    {
         models.push_back(this);
-        return;
-    }
 
     for (const auto& child : m_ChildList)
         child->GetAllModel(models);
@@ -158,7 +156,7 @@ HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitT
     if (m_pSkeleton)
         m_p3DAniController[nSplitType]->SetBoneAniInfo(
             m_pSkeleton->m_nNumBones,
-            m_pSkeleton->m_BoneInfo.data(),
+            &m_pSkeleton->m_BoneInfo,
             m_pSkeleton->m_uFirsetBaseBoneIndex
         );
 
@@ -170,8 +168,12 @@ HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitT
 
 void L3DModel::PrimaryUpdate()
 {
+    _UpdateTransform();
     _FrameMove();
     _UpdateAnimation();
+
+    for (auto& child : m_ChildList)
+        child->PrimaryUpdate();
 }
 
 
@@ -188,6 +190,7 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
     std::vector<XMMATRIX> matBone;
     MESH_SHARED_CB MeshCB;
 
+    // matBone是相对于原始骨骼位置的偏移值
     matBone.resize(m_BoneCurMatrix.size());
     for (int i = 0; i < m_BoneCurMatrix.size(); i++)
         matBone[i] = XMMatrixMultiply(m_p3DMesh->m_pL3DBone->m_pBoneInfo->BoneOffset[i], m_BoneCurMatrix[i]);
@@ -278,12 +281,12 @@ void L3DModel::_UpdateAnimation()
 void L3DModel::_UpdateBuffer()
 {
     HRESULT hResult = E_FAIL;
-    XMMATRIX* pBoneMatrixAll = nullptr;
+    std::vector<XMMATRIX>* pBoneMatrixAll = nullptr;
     int* pSkeletonIndies = nullptr;
 
     BOOL_SUCCESS_EXIT(!m_p3DAniController[SPLIT_ALL]);
 
-    pBoneMatrixAll = m_p3DAniController[SPLIT_ALL]->GetAnimationInfo()->BoneAni.pBoneMatrix;
+    pBoneMatrixAll = m_p3DAniController[SPLIT_ALL]->m_UpdateAniInfo.BoneAni.pBoneMatrix;
     BOOL_SUCCESS_EXIT(!pBoneMatrixAll);
 
     for (auto& pModel : m_ChildList)
@@ -298,7 +301,7 @@ void L3DModel::_UpdateBuffer()
         for (int i = 0; i < pMesh->m_dwBoneCount; i++)
         {
             unsigned int nIndex = pSkeletonIndies[i];
-            pModel->m_BoneCurMatrix[i] = pBoneMatrixAll[nIndex];
+            pModel->m_BoneCurMatrix[i] = (*pBoneMatrixAll)[nIndex];
         }
     }
 

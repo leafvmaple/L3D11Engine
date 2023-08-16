@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "L3DBone.h"
+#include "Utility/L3DString.h"
 
 class L3DMesh;
 
@@ -25,8 +26,8 @@ public:
     std::string m_sName;
 
 private:
-    void _LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo, std::vector<std::string>& childBone);
-    void _ConstructSkeleton(unsigned uIndex, const std::vector<std::string>& childBone);
+    void _LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo, std::vector<L3D::lstring>& childBone);
+    void _ConstructSkeleton(unsigned uIndex, const std::vector<L3D::lstring>& childBone);
 };
 
 class L3DSkeletonManager

@@ -197,8 +197,9 @@ void L3DBone::_CreateSocketInfo(const MESH_FILE_BONE_INFO& BoneInfo)
 
 unsigned int L3DBone::_FindBoneIndex(const char* szBoneName, const L3D_BONE_INFO* pBoneInfo)
 {
-    auto it = std::lower_bound(pBoneInfo->OrderBoneName.begin(), pBoneInfo->OrderBoneName.end(), szBoneName);
-    if (*it == szBoneName)
+    L3D::lstring boneName(szBoneName);
+    auto it = std::lower_bound(pBoneInfo->OrderBoneName.begin(), pBoneInfo->OrderBoneName.end(), boneName);
+    if (*it == boneName)
         return pBoneInfo->OrderIndex[it - pBoneInfo->OrderBoneName.begin()];
     return -1;
 }

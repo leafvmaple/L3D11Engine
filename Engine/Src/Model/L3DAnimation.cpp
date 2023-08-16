@@ -77,11 +77,37 @@ HRESULT L3DAnimation::UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 
 HRESULT L3DAnimation::GetCurFrame(DWORD dwAniPlayLen, DWORD dwPlayType, DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight)
 {
-    DWORD dwSpanTime = dwAniPlayLen % m_nAnimationLen;
+    switch (dwPlayType)
+    {
+    case ENU_ANIMATIONPLAY_CIRCLE:
+    {
+        DWORD dwSpanTime = dwAniPlayLen % m_nAnimationLen;
 
-    dwFrame   = (DWORD)(dwSpanTime / m_fFrameLength);
-    dwFrameTo = (dwFrame + 1) % m_dwNumFrames;
-    fWeight   = (dwSpanTime - dwFrame * m_fFrameLength) / m_fFrameLength;
+        dwFrame = (DWORD)(dwSpanTime / m_fFrameLength);
+        dwFrameTo = (dwFrame + 1) % m_dwNumFrames;
+        fWeight = (dwSpanTime - dwFrame * m_fFrameLength) / m_fFrameLength;
+
+        break;
+    }
+    case ENU_ANIMATIONPLAY_ONCE:
+    {
+        DWORD dwRepeatTimes = dwAniPlayLen / m_nAnimationLen;
+        if (dwRepeatTimes >= 1)
+        {
+            dwFrame = m_dwNumFrames - 1;
+            dwFrameTo = dwFrame;
+            fWeight = 1.0f;
+        }
+        else
+        {
+            dwFrame = (DWORD)(dwAniPlayLen / m_fFrameLength);
+            dwFrameTo = dwFrame + 1;
+            fWeight = (dwAniPlayLen - dwFrame * m_fFrameLength) / m_fFrameLength;
+        }
+
+        break;
+    }
+    }
 
     return S_OK;
 }
@@ -115,8 +141,8 @@ void L3DAnimation::RTS2Matrix(XMMATRIX& mResult, const RTS& rts)
 
 void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 {
-    XMMATRIX* pBoneMatrix = pUpdateAniInfo->BoneAni.pBoneMatrix;
-    const BONEINFO* pBoneInfo = pUpdateAniInfo->BoneAni.pBoneInfo;
+    XMMATRIX* pBoneMatrix = pUpdateAniInfo->BoneAni.pBoneMatrix->data();
+    const BONEINFO* pBoneInfo = pUpdateAniInfo->BoneAni.pBoneInfo->data();
     unsigned int uFirstBaseBoneIndex = pUpdateAniInfo->BoneAni.nFirsetBaseBoneIndex;
 
     for (unsigned nChild : pBoneInfo[uFirstBaseBoneIndex].ChildIndex)
@@ -145,7 +171,7 @@ HRESULT L3DAnimation::_UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo)
     dwFrameTo = pAnimationInfo->dwFrameTo;
     fWeight = pAnimationInfo->fWeight;
 
-    _GetBoneMatrix(dwFrame, dwFrameTo, fWeight, pAnimationInfo->BoneAni.pBoneMatrix);
+    _GetBoneMatrix(dwFrame, dwFrameTo, fWeight, pAnimationInfo->BoneAni.pBoneMatrix->data());
 
     return S_OK;
 }
@@ -168,7 +194,7 @@ HRESULT L3DAnmationController::UpdateAnimation()
     return S_OK;
 }
 
-void L3DAnmationController::SetBoneAniInfo(unsigned uBoneCount, const BONEINFO* pBoneInfo, unsigned int nFirsetBaseBoneIndex)
+void L3DAnmationController::SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex)
 {
     m_BoneMatrix.resize(uBoneCount);
     for (auto& bone : m_BoneMatrix)
@@ -176,7 +202,7 @@ void L3DAnmationController::SetBoneAniInfo(unsigned uBoneCount, const BONEINFO* 
 
     m_UpdateAniInfo.BoneAni.nBoneCount = uBoneCount;
     m_UpdateAniInfo.BoneAni.pBoneInfo = pBoneInfo;
-    m_UpdateAniInfo.BoneAni.pBoneMatrix = m_BoneMatrix.data();
+    m_UpdateAniInfo.BoneAni.pBoneMatrix = &m_BoneMatrix;
     m_UpdateAniInfo.BoneAni.nFirsetBaseBoneIndex = nFirsetBaseBoneIndex;
 }
 

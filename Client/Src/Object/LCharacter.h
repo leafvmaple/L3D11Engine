@@ -10,7 +10,8 @@ public:
     virtual HRESULT Display(IL3DEngine* p3DEngine, float fDeltaTime) { return S_OK; };
 
     HRESULT Create(IL3DEngine* p3DEngine, const char* szPath);
-    HRESULT LoadPart(IL3DEngine* p3DEngine, const char* szPath, const char* szSocketName = nullptr);
+    HRESULT LoadPart(const char* szPath);
+    HRESULT LoadSocket(const char* szPath, const char* szSocketName);
 
     HRESULT SetPosition(const XMFLOAT3& Position);
 
@@ -20,6 +21,8 @@ public:
 
 private:
     ILModel* m_pObject = nullptr;
+    IL3DEngine* m_p3DEngine = nullptr;
+
     std::vector<ILModel*> m_Parts;
 };
 

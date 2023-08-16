@@ -136,6 +136,7 @@ HRESULT L3DScene::_LoadEnvironmentSetting(ID3D11Device* piDevice, const SCENE_PA
 
 void L3DScene::_UpdateVisibleList()
 {
+    m_VisibleModel.clear();
     GetVisibleObjectAll(m_VisibleModel);
 
     // Cull In This

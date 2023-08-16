@@ -218,7 +218,7 @@ HRESULT L3DMesh::CreateMesh(const MESH_FILE_DATA* pMeshData, ID3D11Device* piDev
 
     VertexFillInfo(pMeshData, &FillInfo);
     CreateVertexAndIndexBuffer(piDevice, pMeshData, FillInfo);
-    CreateBoneInfo(pMeshData->BoneInfo);
+    _CreateBoneInfo(pMeshData->BoneInfo);
 
     m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     m_nVertexSize = FillInfo.uVertexSize;
@@ -504,7 +504,7 @@ void L3DMesh::CreateVertexAndIndexBuffer(ID3D11Device* piDevice, const MESH_FILE
     InitIndexBuffer<WORD>(piDevice, pMeshData, DXGI_FORMAT_R16_UINT);
 }
 
-void L3DMesh::CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)
+void L3DMesh::_CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)
 {
     m_pL3DBone = new(std::nothrow) L3DBone;
     m_pL3DBone->BindData(BoneInfo);

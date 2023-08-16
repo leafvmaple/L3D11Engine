@@ -222,6 +222,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\State\L3DState.h" />
     <ClInclude Include="Src\stdafx.h" />
     <ClInclude Include="Src\Utility\FilePath.h" />
+    <ClInclude Include="Src\Utility\L3DString.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">

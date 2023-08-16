@@ -13,9 +13,9 @@ struct ANIMATION_UPDATE_INFO
     float fWeight   = 0.f;
     struct _BoneAni
     {
-        XMMATRIX* pBoneMatrix = nullptr;
+        std::vector<XMMATRIX>* pBoneMatrix = nullptr;
         unsigned int nBoneCount = 0;
-        const BONEINFO* pBoneInfo = nullptr;
+        const std::vector<BONEINFO>* pBoneInfo = nullptr;
         unsigned int nFirsetBaseBoneIndex = 0;
     } BoneAni;
 };
@@ -53,18 +53,16 @@ class L3DAnmationController
 {
 public:
     HRESULT UpdateAnimation();
-    void SetBoneAniInfo(unsigned uBoneCount, const BONEINFO* pBoneInfo, unsigned int nFirsetBaseBoneIndex);
+    void SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex);
     HRESULT StartAnimation(L3DAnimation* pAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
 
     void FrameMove();
 
-    ANIMATION_UPDATE_INFO* GetAnimationInfo() { return &m_UpdateAniInfo; }
-
+    ANIMATION_UPDATE_INFO m_UpdateAniInfo;
 private:
     DWORD m_nPriority = 0;
     L3DAnimation* m_pAnimation[ANICTL_COUNT] = { nullptr };
 
-    ANIMATION_UPDATE_INFO m_UpdateAniInfo;
 
     ANIMATION_PLAY_TYPE m_nPlayType[ANICTL_COUNT] = { ENU_ANIMATIONPLAY_CIRCLE };
     unsigned int        m_nPlayTime[ANICTL_COUNT] = { 0 };

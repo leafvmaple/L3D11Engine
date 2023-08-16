@@ -10,22 +10,35 @@ HRESULT LCharacter::Create(IL3DEngine* p3DEngine, const char* szPath)
     hr = ILModel::Create(p3DEngine, szPath, &m_pObject);
     HRESULT_ERROR_EXIT(hr);
 
+    m_p3DEngine = p3DEngine;
+
     hResult = S_OK;
 Exit0:
     return hResult;
 }
 
 
-HRESULT LCharacter::LoadPart(IL3DEngine* p3DEngine, const char* szPath, const char* szSocketName)
+HRESULT LCharacter::LoadPart(const char* szPath)
 {
     ILModel* piModel = nullptr;
 
-    ILModel::Create(p3DEngine, szPath, &piModel);
+    ILModel::Create(m_p3DEngine, szPath, &piModel);
     m_Parts.emplace_back(piModel);
+
     m_pObject->AttachModel(piModel);
 
-    if (szSocketName)
-        piModel->BindToSocket(m_pObject, szSocketName);
+    return S_OK;
+}
+
+
+HRESULT LCharacter::LoadSocket(const char* szPath, const char* szSocketName)
+{
+    ILModel* piModel = nullptr;
+
+    ILModel::Create(m_p3DEngine, szPath, &piModel);
+    m_Parts.emplace_back(piModel);
+
+    piModel->BindToSocket(m_pObject, szSocketName);
 
     return S_OK;
 }

@@ -126,7 +126,7 @@ private:
     L3DSkeleton* m_pSkeleton = nullptr;
     L3DAnmationController* m_p3DAniController[SPLIT_COUNT] = { nullptr };
 
-    std::vector<XMMATRIX> m_BoneCurMatrix;
+    std::vector<XMMATRIX> m_BoneCurMatrix; // µ±Ç°¹Ç÷À¾ØÕóµÄÄæ
     std::vector<L3DModel*> m_ChildList;
 
     L3D_BIND_INFO m_BindInfo;

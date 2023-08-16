@@ -7,6 +7,8 @@
 #include "L3DFormat.h"
 #include "L3DInterface.h"
 
+#include "Utility/L3DString.h"
+
 struct MESH_FILE_DATA;
 struct MESH_FILE_BONE_INFO;
 struct SKIN;
@@ -15,14 +17,14 @@ class LBinaryReader;
 
 struct BONEINFO
 {
-	std::string sBoneName;
+	L3D::lstring sBoneName;
 	unsigned int uParentIndex = (unsigned)-1;
 	std::vector<unsigned int> ChildIndex;
 };
 
 struct SOCKETINFO
 {
-    std::string sSocketName;
+	L3D::lstring sSocketName;
     unsigned int uParentBoneIndex = (unsigned)-1;
 	XMFLOAT4X4 mOffset;
 };
@@ -34,7 +36,7 @@ struct L3D_BONE_INFO
 	std::vector<unsigned int> BaseBoneIndies;
 
 	std::vector<L3D_BOUND_BOX> BoneBox;
-	std::vector<XMMATRIX> BoneOffset; // ¹Ç÷ÀÆ«ÒÆÖµ
+	std::vector<XMMATRIX> BoneOffset; // ¹Ç÷ÀÆ«ÒÆÄæ¾ØÕó
 	std::vector<XMMATRIX> BoneInvPxPose;
 	std::vector<BONEINFO> BoneInfo;
 	unsigned int uSocketCount = 0;
