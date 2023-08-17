@@ -30,10 +30,12 @@ HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PAS
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-
     XMMATRIX* pBoneMatrices = nullptr;
 
     Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);
+
+    hr = m_pMaterial->ApplyRenderState(Param.piImmediateContext, Param.pStateTable);
+    HRESULT_ERROR_EXIT(hr);
 
     hr = m_pMaterial->Apply(Param.piImmediateContext, ePass);
     HRESULT_ERROR_EXIT(hr);

@@ -17,7 +17,7 @@
 class L3DMaterialDefine;
 class L3DEffect;
 
-struct subsetConst;
+struct L3D_STATE_TABLE;
 
 struct ID3DX11EffectPass;
 struct ID3DX11EffectConstantBuffer;
@@ -26,9 +26,10 @@ struct ID3DX11EffectShaderResourceVariable;
 struct MATERIAL_INSTANCE_DATA
 {
     char szDefineName[MAX_PATH];
-    UINT32 uBlendMode;
-    UINT32 uAlphaRef;
-    UINT32 uAlphaRef2;
+    UINT32 uBlendMode   = 0;
+    UINT32 uAlphaRef    = 0;
+    UINT32 uAlphaRef2   = 0;
+    UINT32 uTwoSideFlag = 0;
 
     std::unordered_map<std::string, std::string> TextureArray;
 };
@@ -58,6 +59,7 @@ class L3DMaterial
 {
 public:
     HRESULT Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData, RUNTIME_MACRO eMacro);
+    HRESULT ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable);
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass);
 
     HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
@@ -89,7 +91,7 @@ private:
     BOOL m_AlphaTestSwitch = false;
     unsigned int m_dwAlphaRef = 0;
     unsigned int m_dwAlphaRef2 = 0;
-
+    unsigned int m_dwTwoSide = 0;
 
     std::vector<TEXTURE_DATA> m_vecTextures;
 };

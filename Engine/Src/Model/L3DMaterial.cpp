@@ -6,6 +6,7 @@
 
 #include "L3DMaterial.h"
 #include "L3DEffect.h"
+#include "State/L3DState.h"
 
 #include "L3DInterface.h"
 #include "L3DMaterialConfig.h"
@@ -39,6 +40,8 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
     m_eBlendMode = (BlendMode)InstanceData.uBlendMode;
     m_dwAlphaRef = InstanceData.uAlphaRef;
     m_dwAlphaRef2 = InstanceData.uAlphaRef2;
+    m_dwTwoSide = InstanceData.uTwoSideFlag;
+
     m_AlphaTestSwitch = (m_eBlendMode == BLEND_MASKED || m_eBlendMode == BLEND_SOFTMASKED);
 
     for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
@@ -46,6 +49,18 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& Inst
 
     m_pEffect = new L3DEffect;
     m_pEffect->Create(piDevice, m_pMaterialDefine->m_szShaderName, eMacro);
+
+    return S_OK;
+}
+
+
+HRESULT L3DMaterial::ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable)
+{
+    RASTERIZER_STATE_ID eRasterizer = L3D_RASTERIZER_STATE_CULL_CLOCKWISE;
+
+    if (m_dwTwoSide > 0)
+        eRasterizer = L3D_RASTERIZER_STATE_CULL_NONE;
+    pDeviceContext->RSSetState(pStateTable->Rasterizer[eRasterizer]);
 
     return S_OK;
 }
@@ -239,5 +254,6 @@ void L3DMaterialPack::_LoadInstanceFromJson(const rapidjson::Value& JsonObject, 
     const auto& RenderStateObject = JsonObject["RenderState"];
     InstanceData.uAlphaRef = RenderStateObject["AlphaRef"].GetInt();
     InstanceData.uAlphaRef2 = RenderStateObject["AlphaRef2"].GetInt();
+    InstanceData.uTwoSideFlag = RenderStateObject["TwoSide"].GetInt();
     InstanceData.uBlendMode = RenderStateObject["BlendMode"].GetInt();
 }

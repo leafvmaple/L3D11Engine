@@ -145,7 +145,6 @@ void L3DScene::_UpdateVisibleList()
 void L3DScene::_UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption)
 {
     _CommitConstData(RenderOption);
-    RenderOption.piImmediateContext->RSSetState(RenderOption.pStateTable->Rasterizer[L3D_RASTERIZER_STATE_CULL_CLOCKWISE]);
 }
 
 void L3DScene::_UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
