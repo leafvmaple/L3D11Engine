@@ -19,7 +19,7 @@ struct BONEINFO
 {
 	L3D::lstring sBoneName;
 	unsigned int uParentIndex = (unsigned)-1;
-	std::vector<unsigned int> ChildIndex;
+	std::vector<unsigned int> ChildIndies; // ChildIndex
 };
 
 struct SOCKETINFO

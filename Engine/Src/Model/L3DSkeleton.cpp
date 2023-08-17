@@ -47,8 +47,7 @@ void L3DSkeleton::BindMesh(const L3DMesh* p3DMesh)
     for (int i = 0; i < p3DMesh->m_dwBoneCount; i++)
     {
         auto nBone = FindBone(p3DMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[i].sBoneName);
-        if (nBone)
-            skeletonBoneIndies[i] = *nBone;
+        skeletonBoneIndies[i] = nBone.value_or(-1);
     }
 
     g_SkeletonBoneManager.PushNewData(m_sName, p3DMesh->m_sName, skeletonBoneIndies);
@@ -89,7 +88,7 @@ void L3DSkeleton::_ConstructSkeleton(unsigned uIndex, const std::vector<L3D::lst
         auto nBone = FindBone(childBone[i]);
         if (nBone)
         {
-            Info.ChildIndex.push_back(*nBone);
+            Info.ChildIndies.push_back(*nBone);
             m_BoneInfo[*nBone].uParentIndex = uIndex;
         }
     }
@@ -100,11 +99,11 @@ void L3DSkeletonManager::PushNewData(std::string sKeletonName, std::string sMesh
     m_HashTable.insert(std::make_pair(std::make_pair(sKeletonName, sMeshName), skeletonIndies));
 }
 
-int* L3DSkeletonManager::GetData(std::string sKeletonName, std::string sMeshName)
+std::vector<int>* L3DSkeletonManager::GetData(std::string sKeletonName, std::string sMeshName)
 {
     auto value = m_HashTable.find(std::make_pair(sKeletonName, sMeshName));
     if (value != m_HashTable.end())
-        return value->second.data();
+        return &value->second;
 
     return nullptr;
 }

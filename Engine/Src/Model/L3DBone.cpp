@@ -156,11 +156,11 @@ void L3DBone::_CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)
         BONEINFO& Bone = m_pBoneInfo->BoneInfo[i];
         MESH_FILE_BONE_INFO::BONE& BoneInFile = BoneInfo.pBone[i];
 
-        Bone.ChildIndex.resize(BoneInFile.uChildCount);
+        Bone.ChildIndies.resize(BoneInFile.uChildCount);
         for (DWORD j = 0; j < BoneInFile.uChildCount; ++j)
         {
             uBoneIndex = _FindBoneIndex(BoneInFile.pChildNames[j], m_pBoneInfo);
-            Bone.ChildIndex[j] = uBoneIndex;
+            Bone.ChildIndies[j] = uBoneIndex;
             m_pBoneInfo->BoneInfo[uBoneIndex].uParentIndex = i;
         }
 

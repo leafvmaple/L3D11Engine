@@ -6,6 +6,7 @@
 #include "L3DTexture.h"
 #include "L3DAnimation.h"
 #include "L3DSkeleton.h"
+#include "L3DFlexible.h"
 
 #include "IO/LFileReader.h"
 #include "Utility/FilePath.h"
@@ -172,10 +173,12 @@ void L3DModel::PrimaryUpdate()
     _FrameMove();
     _UpdateAnimation();
 
+    if (m_pFlexible)
+        m_pFlexible->Update(m_BoneCurMatrix, m_World);
+
     for (auto& child : m_ChildList)
         child->PrimaryUpdate();
 }
-
 
 void L3DModel::UpdateTransform()
 {
@@ -282,7 +285,7 @@ void L3DModel::_UpdateBuffer()
 {
     HRESULT hResult = E_FAIL;
     std::vector<XMMATRIX>* pBoneMatrixAll = nullptr;
-    int* pSkeletonIndies = nullptr;
+    std::vector<int>* pSkeletonIndies = nullptr;
 
     BOOL_SUCCESS_EXIT(!m_p3DAniController[SPLIT_ALL]);
 
@@ -300,8 +303,9 @@ void L3DModel::_UpdateBuffer()
 
         for (int i = 0; i < pMesh->m_dwBoneCount; i++)
         {
-            unsigned int nIndex = pSkeletonIndies[i];
-            pModel->m_BoneCurMatrix[i] = (*pBoneMatrixAll)[nIndex];
+            unsigned int nIndex = (*pSkeletonIndies)[i];
+            if (nIndex != -1)
+                pModel->m_BoneCurMatrix[i] = (*pBoneMatrixAll)[nIndex];
         }
     }
 
@@ -379,6 +383,9 @@ void L3DModel::_InitMesh(ID3D11Device* piDevice, const char* szFileName)
 
     _CreateBoneMatrix();
     _InitRenderUnits();
+
+    m_pFlexible = new L3DFlexible;
+    m_pFlexible->InitFromMesh(m_p3DMesh);
 
 Exit0:
     return;

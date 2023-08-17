@@ -34,7 +34,7 @@ class L3DSkeletonManager
 {
 public:
     void PushNewData(std::string sKeletonName, std::string sMeshName, std::vector<int>& skeletonIndies);
-    int* GetData(std::string sKeletonName, std::string sMeshName);
+    std::vector<int>* GetData(std::string sKeletonName, std::string sMeshName);
 private:
     struct StringHash
     {

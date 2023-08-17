@@ -13,5 +13,10 @@ namespace L3D
         {
             std::transform(this->begin(), this->end(), this->begin(), tolower);
         }
+
+        bool IsFlexibleBone() const
+        {
+            return this->_Starts_with("fbr");
+        }
     };
 }
