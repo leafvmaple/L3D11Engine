@@ -522,5 +522,5 @@ void L3DMesh::_CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo)
 
     m_BoneMatrix.resize(m_dwBoneCount);
     for (unsigned int i = 0; i < m_dwBoneCount; i++)
-        m_BoneMatrix[i] = XMMatrixInverse(nullptr, m_pL3DBone->m_pBoneInfo->BoneOffset[i]);
+        m_BoneMatrix[i] = XMMatrixInverse(nullptr, m_pL3DBone->m_BoneOffset[i]);
 }

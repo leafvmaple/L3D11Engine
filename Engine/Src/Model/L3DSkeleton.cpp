@@ -46,7 +46,7 @@ void L3DSkeleton::BindMesh(const L3DMesh* p3DMesh)
     skeletonBoneIndies.resize(p3DMesh->m_dwBoneCount);
     for (int i = 0; i < p3DMesh->m_dwBoneCount; i++)
     {
-        auto nBone = FindBone(p3DMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[i].sBoneName);
+        auto nBone = FindBone(p3DMesh->m_pL3DBone->m_BoneInfo[i].sBoneName);
         skeletonBoneIndies[i] = nBone.value_or(-1);
     }
 

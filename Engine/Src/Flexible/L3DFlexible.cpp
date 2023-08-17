@@ -1,17 +1,18 @@
 #include "stdafx.h"
 #include "L3DFlexible.h"
-#include "L3DMesh.h"
-#include "L3DBone.h"
+
+#include "Model/L3DMesh.h"
+#include "Model/L3DBone.h"
 
 void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
 {
     for (int i = 0; i < pMesh->m_dwBoneCount; i++) 
     {
-        const auto& boneInfo = pMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[i];
+        const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[i];
         if (boneInfo.sBoneName.IsFlexibleBone())
         {
-            int nParentIndex = pMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[i].uParentIndex;
-            const auto& parentInfo = pMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[nParentIndex];
+            int nParentIndex = pMesh->m_pL3DBone->m_BoneInfo[i].uParentIndex;
+            const auto& parentInfo = pMesh->m_pL3DBone->m_BoneInfo[nParentIndex];
             FLEXIBLE_BONE* pDriverBone = nullptr;
 
             if (m_vecDriverBone.find(nParentIndex) == m_vecDriverBone.end())
@@ -19,7 +20,7 @@ void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
 
             pDriverBone = &m_vecDriverBone[nParentIndex];
 
-            XMStoreFloat4x4(&pDriverBone->InitPose, XMMatrixInverse(nullptr, pMesh->m_pL3DBone->m_pBoneInfo->BoneOffset[nParentIndex]));
+            XMStoreFloat4x4(&pDriverBone->InitPose, XMMatrixInverse(nullptr, pMesh->m_pL3DBone->m_BoneOffset[nParentIndex]));
             pDriverBone->WorldPose = pDriverBone->InitPose;
 
             _AppendBoneOfChainFromMesh(pMesh, pDriverBone, i);
@@ -70,12 +71,12 @@ void L3DFlexible::_UpdateFromAni()
 
 void L3DFlexible::_AppendBoneOfChainFromMesh(L3DMesh* pMesh, FLEXIBLE_BONE* pDriverBone, int nIndex)
 {
-    const auto& boneInfo = pMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[nIndex];
+    const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[nIndex];
     auto& bone = m_vecNormalBone.emplace_back(FLEXIBLE_BONE{ nIndex, boneInfo.sBoneName });
 
-    XMStoreFloat4x4(&bone.InitPose, XMMatrixInverse(nullptr, pMesh->m_pL3DBone->m_pBoneInfo->BoneInvPxPose[nIndex]));
+    XMStoreFloat4x4(&bone.InitPose, XMMatrixInverse(nullptr, pMesh->m_pL3DBone->m_BoneInvPxPose[nIndex]));
     pDriverBone->vecBoneChain.push_back(m_vecNormalBone.size() - 1);
 
-    for (auto childIndex : pMesh->m_pL3DBone->m_pBoneInfo->BoneInfo[nIndex].ChildIndies)
+    for (auto childIndex : pMesh->m_pL3DBone->m_BoneInfo[nIndex].ChildIndies)
         _AppendBoneOfChainFromMesh(pMesh, pDriverBone, childIndex);
 }

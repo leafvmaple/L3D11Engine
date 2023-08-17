@@ -29,24 +29,6 @@ struct SOCKETINFO
 	XMFLOAT4X4 mOffset;
 };
 
-struct L3D_BONE_INFO
-{
-	unsigned int uBoneCount = 0;
-
-	std::vector<unsigned int> BaseBoneIndies;
-
-	std::vector<L3D_BOUND_BOX> BoneBox;
-	std::vector<XMMATRIX> BoneOffset; // ¹Ç÷ÀÆ«ÒÆÄæ¾ØÕó
-	std::vector<XMMATRIX> BoneInvPxPose;
-	std::vector<BONEINFO> BoneInfo;
-	unsigned int uSocketCount = 0;
-
-	std::vector<std::string> OrderBoneName;
-	std::vector<unsigned int> OrderIndex;
-
-	std::vector<SOCKETINFO> Socket;
-};
-
 class L3DBone
 {
 public:
@@ -57,10 +39,23 @@ public:
 	static HRESULT Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
 	static HRESULT FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount);
 
-	L3D_BONE_INFO* m_pBoneInfo = nullptr;
+    unsigned int m_uBoneCount = 0;
+
+    std::vector<unsigned int> m_BaseBoneIndies;
+
+    std::vector<L3D_BOUND_BOX> m_BoneBox;
+    std::vector<XMMATRIX> m_BoneOffset; // ¹Ç÷ÀÆ«ÒÆÄæ¾ØÕó
+    std::vector<XMMATRIX> m_BoneInvPxPose;
+    std::vector<BONEINFO> m_BoneInfo;
+    unsigned int m_uSocketCount = 0;
+
+    std::vector<std::string> m_OrderBoneName;
+    std::vector<unsigned int> m_OrderIndex;
+
+    std::vector<SOCKETINFO> m_Socket;
 
 private:
 	void _CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo);
 	void _CreateSocketInfo(const MESH_FILE_BONE_INFO& BoneInfo);
-	unsigned int _FindBoneIndex(const char* szBoneName, const L3D_BONE_INFO* pBoneInfo);
+	unsigned int _FindBoneIndex(const char* szBoneName);
 };

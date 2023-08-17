@@ -119,7 +119,7 @@
     <ClCompile Include="Src\Model\L3DSkeleton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Model\L3DFlexible.cpp">
+    <ClCompile Include="Src\Flexible\L3DFlexible.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,7 +212,7 @@
     <ClInclude Include="Src\Component\L3DEngineTimer.h" />
     <ClInclude Include="Src\Model\L3DSkeleton.h" />
     <ClInclude Include="Src\Utility\L3DString.h" />
-    <ClInclude Include="Src\Model\L3DFlexible.h" />
+    <ClInclude Include="Src\Flexible\L3DFlexible.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">

@@ -6,7 +6,8 @@
 #include "L3DTexture.h"
 #include "L3DAnimation.h"
 #include "L3DSkeleton.h"
-#include "L3DFlexible.h"
+
+#include "Flexible/L3DFlexible.h"
 
 #include "IO/LFileReader.h"
 #include "Utility/FilePath.h"
@@ -70,7 +71,7 @@ void L3DModel::GetWorldMatrix(XMFLOAT4X4& matrix)
 void L3DModel::GetSocketMatrix(int nSocketIndex, XMFLOAT4X4& matrix)
 {
     XMMATRIX mSocketCurMatrix;
-    SOCKETINFO& Socket = m_p3DMesh->m_pL3DBone->m_pBoneInfo->Socket[nSocketIndex];
+    SOCKETINFO& Socket = m_p3DMesh->m_pL3DBone->m_Socket[nSocketIndex];
 
     mSocketCurMatrix = XMMatrixMultiply(XMLoadFloat4x4(&Socket.mOffset), m_BoneCurMatrix[Socket.uParentBoneIndex]);
     XMStoreFloat4x4(&matrix, XMMatrixMultiply(mSocketCurMatrix, XMLoadFloat4x4(&m_World)));
@@ -196,7 +197,7 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
     // matBone是相对于原始骨骼位置的偏移值
     matBone.resize(m_BoneCurMatrix.size());
     for (int i = 0; i < m_BoneCurMatrix.size(); i++)
-        matBone[i] = XMMatrixMultiply(m_p3DMesh->m_pL3DBone->m_pBoneInfo->BoneOffset[i], m_BoneCurMatrix[i]);
+        matBone[i] = XMMatrixMultiply(m_p3DMesh->m_pL3DBone->m_BoneOffset[i], m_BoneCurMatrix[i]);
 
     MeshCB.MatrixWorld = m_World;
 
@@ -427,9 +428,9 @@ HRESULT L3DModel::_FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& Bin
 {
     if (m_p3DMesh)
     {
-        for (int i = 0; i < m_p3DMesh->m_pL3DBone->m_pBoneInfo->Socket.size(); i++)
+        for (int i = 0; i < m_p3DMesh->m_pL3DBone->m_Socket.size(); i++)
         {
-            const auto& socket = m_p3DMesh->m_pL3DBone->m_pBoneInfo->Socket[i];
+            const auto& socket = m_p3DMesh->m_pL3DBone->m_Socket[i];
             if (szSocketName == socket.sSocketName)
             {
                 BindExtraInfo.pModel = this;

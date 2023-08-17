@@ -173,7 +173,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\Model\L3DAnimation.cpp" />
     <ClCompile Include="Src\Model\L3DBone.cpp" />
     <ClCompile Include="Src\Model\L3DEffect.cpp" />
-    <ClCompile Include="Src\Model\L3DFlexible.cpp" />
+    <ClCompile Include="Src\Flexible\L3DFlexible.cpp" />
     <ClCompile Include="Src\Model\L3DMaterial.cpp" />
     <ClCompile Include="Src\Model\L3DMaterialDefine.cpp" />
     <ClCompile Include="Src\Model\L3DMesh.cpp" />
@@ -208,7 +208,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Model\L3DAnimation.h" />
     <ClInclude Include="Src\Model\L3DBone.h" />
     <ClInclude Include="Src\Model\L3DEffect.h" />
-    <ClInclude Include="Src\Model\L3DFlexible.h" />
+    <ClInclude Include="Src\Flexible\L3DFlexible.h" />
     <ClInclude Include="Src\Model\L3DMaterial.h" />
     <ClInclude Include="Src\Model\L3DMaterialDefine.h" />
     <ClInclude Include="Src\Model\L3DMesh.h" />
