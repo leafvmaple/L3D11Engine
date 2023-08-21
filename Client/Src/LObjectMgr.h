@@ -42,8 +42,6 @@ public:
 
     HRESULT Update(float fDeltaTime);
 
-    BOOL IsActive();
-
 private:
     std::list<LModel*> m_ObjectList;
     std::list<LScene*> m_SceneList;

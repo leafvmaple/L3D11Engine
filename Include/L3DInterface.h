@@ -170,7 +170,6 @@ public:
 
     virtual HRESULT FrameMove(float fDeltaTime) = 0;
 
-    virtual BOOL IsActive() = 0;
     virtual ID3D11Device* GetDevice() const = 0;
 
     static IL3DEngine* Instance();

@@ -27,11 +27,15 @@ private:
     float m_fTimeElapsed = 0.f;
     int m_nFrame = 0;
 
+    BOOL m_bActive = true;
+
     LScene* m_pScene = nullptr;
     LInput* m_pInput = nullptr;
 
     LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void InitL3DWindow(HINSTANCE hInstance, L3D_WINDOW_PARAM& m_WindowParam);
+
+    void _UpdateMessage();
 };
 
 extern LClient* g_pClient;

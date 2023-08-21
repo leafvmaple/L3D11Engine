@@ -13,7 +13,6 @@
 #include "Model/L3DShader.h"
 #include "State/L3DState.h"
 
-#include "Input/L3DInput.h"
 #include "Camera/L3DCamera.h"
 #include "Component/L3DWindow.h"
 #include "Component/L3DTimer.h"
@@ -41,8 +40,7 @@ static const D3D_FEATURE_LEVEL FEATURE_LEVEL_ARRAY_1[] =
 extern ID3D11Device* g_p3DDevice = nullptr;
 
 L3DEngine::L3DEngine()
-: m_bActive(false)
-, m_CurSampFilter(m_SampFilter[GRAPHICS_LEVEL_MAX])
+: m_CurSampFilter(m_SampFilter[GRAPHICS_LEVEL_MAX])
 {
     memset(&m_WindowParam, 0, sizeof(m_WindowParam));
 }
@@ -75,8 +73,6 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
     // Temp Ç¿ÖÆË¢ÐÂ
     g_Timer.Update();
 
-    m_bActive = TRUE;
-
     hResult = S_OK;
 Exit0:
     return hResult;
@@ -90,9 +86,6 @@ HRESULT L3DEngine::FrameMove(float fDeltaTime)
     SCENE_RENDER_OPTION RenderOption;
 
     g_Timer.Update();
-
-    hr = UpdateMessage();
-    HRESULT_ERROR_EXIT(hr);
 
     RenderOption.piDevice = m_Device.piDevice;
     RenderOption.piImmediateContext = m_Device.piImmediateContext;
@@ -109,12 +102,6 @@ Exit0:
     return hResult;
 }
 
-BOOL L3DEngine::IsActive()
-{
-    return m_bActive;
-}
-
-
 ID3D11Device* L3DEngine::GetDevice() const
 {
     return m_Device.piDevice;
@@ -126,7 +113,7 @@ HRESULT L3DEngine::AttachScene(L3DScene* pScene)
 }
 
 HRESULT L3DEngine::Uninit()
-{\
+{
     SAFE_DELETE(m_pLog);
 
     return S_OK;
@@ -193,22 +180,4 @@ HRESULT L3DEngine::_CreateDeivice()
 	hResult = S_OK;
 Exit0:
 	return hResult;
-}
-
-HRESULT L3DEngine::UpdateMessage()
-{
-    MSG Msg;
-
-    ::ZeroMemory(&Msg, sizeof(MSG));
-
-    while(::PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
-    {
-        ::TranslateMessage(&Msg);
-        ::DispatchMessage(&Msg);
-
-        if (Msg.message == WM_QUIT)
-            m_bActive = FALSE;
-    }
-
-    return S_OK;
 }

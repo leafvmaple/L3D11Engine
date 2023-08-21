@@ -65,8 +65,3 @@ HRESULT LObjectMgr::Update(float fDeltaTime)
 
     return S_OK;
 }
-
-BOOL LObjectMgr::IsActive()
-{
-    return IL3DEngine::Instance()->IsActive();
-}

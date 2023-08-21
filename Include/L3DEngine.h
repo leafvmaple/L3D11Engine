@@ -27,7 +27,6 @@ public:
     
     virtual HRESULT FrameMove(float fDeltaTime);
 
-    virtual BOOL IsActive();
     virtual ID3D11Device* GetDevice() const;
 
 public:
@@ -79,14 +78,10 @@ private:
 
     ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT];
 
-    BOOL m_bActive;
-
 private:
     HRESULT InitSamplerFilter();
 
     HRESULT _SetupD3D();
     HRESULT _CreateTargetWindow(HWND hWnd);
     HRESULT _CreateDeivice();
-
-    HRESULT UpdateMessage();
 };

@@ -58,6 +58,8 @@ HRESULT LClient::Update()
     fCurTime = (float)timeGetTime();
     fDeltaTime = (fCurTime - m_fLastTime) * 0.001f;
 
+    _UpdateMessage();
+
     m_pScene->Update(fDeltaTime);
     LObjectMgr::Instance().Update(fDeltaTime);
 
@@ -80,7 +82,7 @@ void LClient::Uninit()
 
 BOOL LClient::IsActive()
 {
-    return LObjectMgr::Instance().IsActive();
+    return m_bActive;
 }
 
 HRESULT LClient::ShowFPS(float fDeltaTime)
@@ -111,7 +113,7 @@ LRESULT LClient::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
     {
-        PostQuitMessage(0);
+        m_bActive = false;
         break;
     }
     case WM_KEYDOWN:
@@ -120,9 +122,16 @@ LRESULT LClient::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hWnd);
         break;
     }
+    case WM_QUIT:
+    {
+        m_bActive = false;
+        break;
+    }
     default:
+    {
         m_pInput->ProcessInput(uMsg, wParam, lParam, m_pScene);
         break;
+    }
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -153,6 +162,20 @@ void LClient::InitL3DWindow(HINSTANCE hInstance, L3D_WINDOW_PARAM& Param)
 
     ShowWindow(Param.wnd, SW_SHOWDEFAULT);
     UpdateWindow(Param.wnd);
+}
+
+
+void LClient::_UpdateMessage()
+{
+    MSG Msg;
+
+    ::ZeroMemory(&Msg, sizeof(MSG));
+
+    while (::PeekMessage(&Msg, 0, 0, 0, PM_REMOVE))
+    {
+        ::TranslateMessage(&Msg);
+        ::DispatchMessage(&Msg);
+    }
 }
 
 INT WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
