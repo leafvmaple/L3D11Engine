@@ -15,6 +15,10 @@ public:
     void AddYaw(float fYaw);
     void AddPitch(float fPitch);
 
+    void SetTarget(const XMFLOAT3& vTarget);
+    void GetTarget(XMFLOAT3& vTarget);
+    void MoveTarget(const XMVECTOR& vTarget);
+
     void Update();
 
 private:

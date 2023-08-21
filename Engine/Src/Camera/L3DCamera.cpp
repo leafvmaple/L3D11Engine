@@ -30,13 +30,11 @@ HRESULT L3DCamera::UpdateSightDistance(float fSightDis)
     return S_OK;
 }
 
-
 void L3DCamera::SetTarget(const XMVECTOR vTarget)
 {
     m_vTarget = vTarget;
     _UpdateViewMatrix();
 }
-
 
 void L3DCamera::SetPosition(const XMVECTOR vPosition)
 {

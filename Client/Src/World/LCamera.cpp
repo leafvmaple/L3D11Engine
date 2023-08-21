@@ -34,6 +34,21 @@ void LCamera::AddPitch(float fPitch)
     SetPitch(m_fPitch + fPitch);
 }
 
+void LCamera::SetTarget(const XMFLOAT3& vTarget)
+{
+    m_vTarget = XMLoadFloat3(&vTarget);
+}
+
+void LCamera::GetTarget(XMFLOAT3& vTarget)
+{
+    XMStoreFloat3(&vTarget, m_vTarget);
+}
+
+void LCamera::MoveTarget(const XMVECTOR& vTarget)
+{
+    m_vTarget += vTarget;
+}
+
 void LCamera::Update()
 {
     float x = m_fSightDis * sinf(m_fPitch) * cosf(m_fYaw);

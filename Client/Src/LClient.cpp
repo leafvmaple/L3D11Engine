@@ -116,16 +116,19 @@ LRESULT LClient::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_bActive = false;
         break;
     }
-    case WM_KEYDOWN:
-    {
-        if (wParam == VK_ESCAPE)
-            DestroyWindow(hWnd);
-        break;
-    }
+    
     case WM_QUIT:
     {
         m_bActive = false;
         break;
+    }
+    case WM_KEYDOWN:
+    {
+        if (wParam == VK_ESCAPE)
+        {
+            DestroyWindow(hWnd);
+            break;
+        }
     }
     default:
     {

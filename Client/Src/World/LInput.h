@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 class LScene;
+class LCamera;
 
 class LInput
 {
@@ -16,4 +17,8 @@ private:
 
     float m_fStepX = 0.1f;
     float m_fStepY = 0.05f;
+
+    float m_fUpStep = 5.0f;
+
+    void _CameraTargetUp(LCamera* pCamera, float y);
 };
