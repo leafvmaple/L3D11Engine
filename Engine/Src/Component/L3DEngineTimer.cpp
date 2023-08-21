@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "L3DEngineTimer.h"
-#include <Windows.h>
+#include <timeapi.h>
 
 void L3DEngineTimer::Update()
 {

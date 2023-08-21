@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+#include "spdlog/spdlog.h"
 
 #define BOOL_ERROR_RETURN(Condition) \
     if (!(Condition)) {              \
@@ -26,6 +27,12 @@
 #define BOOL_ERROR_EXIT(Condition)   \
     if (!(Condition)) {               \
         goto Exit0;                        \
+    }
+
+#define BOOL_ERROR_LOG_EXIT(Condition, FORMAT, ...)   \
+    if (!(Condition)) {                     \
+        spdlog::error(FORMAT, __VA_ARGS__); \
+        goto Exit0;                         \
     }
 
 #define BOOL_SUCCESS_BREAK(Condition) \
@@ -64,6 +71,12 @@
 #define HRESULT_ERROR_EXIT(hr)    \
     if (!SUCCEEDED(hr)) {         \
         goto Exit0;                    \
+    }
+
+#define HRESULT_ERROR_LOG_EXIT(hr, FORMAT, ...)    \
+    if (!SUCCEEDED(hr)) {                          \
+        spdlog::error(FORMAT, __VA_ARGS__);        \
+        goto Exit0;                                \
     }
 
 #define HRESULT_SUCCESS_BREAK(hr) \

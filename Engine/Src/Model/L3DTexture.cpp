@@ -37,12 +37,12 @@ HRESULT L3DTexture::Create(ID3D11Device* piDevice, const char* szFileName)
 		if (!strcmp(szBaseName, ".dds"))
 		{
 			hr = LoadFromDDSFile(wzName, DDS_FLAGS_NONE, nullptr, LoadedImage);
-			HRESULT_ERROR_EXIT(hr);
+			HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", szName);
 		}
 		else if (!strcmp(szBaseName, ".tga"))
 		{
 			hr = LoadFromTGAFile(wzName, nullptr, LoadedImage);
-			HRESULT_ERROR_EXIT(hr);
+			HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", szName);
 		}
 	}
 
