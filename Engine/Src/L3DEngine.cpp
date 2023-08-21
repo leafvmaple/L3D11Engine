@@ -16,10 +16,10 @@
 #include "Input/L3DInput.h"
 #include "Camera/L3DCamera.h"
 #include "Component/L3DWindow.h"
-#include "Component/L3DEngineTimer.h"
+#include "Component/L3DTimer.h"
+#include "Component/L3DLog.h"
 
 #include "Render/L3DMaterialSystem.h"
-#include "spdlog/sinks/basic_file_sink.h"
 
 #include "L3DFormat.h"
 
@@ -58,8 +58,8 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 
     m_WindowParam = WindowParam;
 
-    auto logger = spdlog::basic_logger_st("engine", "logs/engine-log.txt");
-    spdlog::set_default_logger(logger);
+    m_pLog = new L3DLog;
+    BOOL_ERROR_EXIT(m_pLog);
 
     hr = _SetupD3D();
     HRESULT_ERROR_EXIT(hr);
@@ -126,8 +126,9 @@ HRESULT L3DEngine::AttachScene(L3DScene* pScene)
 }
 
 HRESULT L3DEngine::Uninit()
-{
-    spdlog::default_logger()->flush();
+{\
+    SAFE_DELETE(m_pLog);
+
     return S_OK;
 }
 

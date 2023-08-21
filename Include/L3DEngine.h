@@ -14,6 +14,7 @@ class L3DWindow;
 class L3DInput;
 class L3DModel;
 class L3DScene;
+class L3DLog;
 
 class L3DEngine : public IL3DEngine
 {
@@ -44,6 +45,7 @@ private:
     L3D_STATE_TABLE* m_pStateTable = nullptr;
 
     std::shared_ptr<L3DWindow> m_pWindow = nullptr;
+    L3DLog* m_pLog = nullptr;
 
     L3D_WINDOW_PARAM m_WindowParam;
 

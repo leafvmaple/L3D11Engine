@@ -164,7 +164,8 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\Camera\L3DCamera.cpp" />
-    <ClCompile Include="Src\Component\L3DEngineTimer.cpp" />
+    <ClCompile Include="Src\Component\L3DLog.cpp" />
+    <ClCompile Include="Src\Component\L3DTimer.cpp" />
     <ClCompile Include="Src\Component\L3DWindow.cpp" />
     <ClCompile Include="Src\Input\L3DInput.cpp" />
     <ClCompile Include="Src\IO\LFileReader.cpp" />
@@ -199,7 +200,8 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="..\Include\L3DInterface.h" />
     <ClInclude Include="..\Include\LExports.h" />
     <ClInclude Include="Src\Camera\L3DCamera.h" />
-    <ClInclude Include="Src\Component\L3DEngineTimer.h" />
+    <ClInclude Include="Src\Component\L3DLog.h" />
+    <ClInclude Include="Src\Component\L3DTimer.h" />
     <ClInclude Include="Src\Component\L3DWindow.h" />
     <ClInclude Include="Src\Define\L3DCameraDefine.h" />
     <ClInclude Include="Src\Define\L3DSceneDefine.h" />

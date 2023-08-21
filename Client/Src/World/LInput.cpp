@@ -4,8 +4,8 @@
 
 void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pScene)
 {
-	switch (uMsg)
-	{
+    switch (uMsg)
+    {
     case WM_MOUSEWHEEL:
     {
         if (pScene)
@@ -40,7 +40,7 @@ void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pS
         }
         break;
     }
-	default:
-		break;
-	}
+    default:
+        break;
+    }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-class L3DEngineTimer
+class L3DTimer
 {
 public:
     void Update();
@@ -11,4 +11,4 @@ private:
     unsigned int m_nNowTime = 0;
 };
 
-extern L3DEngineTimer g_Timer;
+extern L3DTimer g_Timer;

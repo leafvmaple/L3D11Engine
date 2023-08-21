@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "L3DEngineTimer.h"
+#include "L3DTimer.h"
 #include <timeapi.h>
 
-void L3DEngineTimer::Update()
+void L3DTimer::Update()
 {
     m_nNowTime = timeGetTime();
 }
 
-L3DEngineTimer g_Timer;
+L3DTimer g_Timer;

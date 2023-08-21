@@ -9,7 +9,7 @@ void LScene::Create(const char* szFileName)
 {
     LCharacter* pCharacter = nullptr;
 
-    ILScene::Create(IL3DEngine::Instance(), "maps/唐门登陆界面/唐门登陆界面.jsonmap", &m_piScene);
+    ILScene::Create(IL3DEngine::Instance(), szFileName, &m_piScene);
     
     m_pCamera = new LCamera;
     m_pCamera->Init(m_piScene->Get3DCamera());

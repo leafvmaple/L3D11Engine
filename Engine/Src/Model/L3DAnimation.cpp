@@ -2,7 +2,7 @@
 #include "L3DAnimation.h"
 
 #include "IO/LFileReader.h"
-#include "Component/L3DEngineTimer.h"
+#include "Component/L3DTimer.h"
 
 #define ANI_STRING_SIZE 30
 const unsigned	ANI_FILE_MASK = 0x414E494D;
