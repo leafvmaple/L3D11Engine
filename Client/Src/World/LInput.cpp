@@ -3,6 +3,12 @@
 #include "LCamera.h"
 #include "LAssert.h"
 
+
+void LInput::Init(HWND pWnd)
+{
+    m_pWnd = pWnd;
+}
+
 void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pScene)
 {
     BOOL_ERROR_EXIT(pScene);
@@ -16,10 +22,19 @@ void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pS
     }
     case WM_LBUTTONDOWN:
     {
-        m_nCursorX = LOWORD(lParam);
-        m_nCursorY = HIWORD(lParam);
+        switch (wParam)
+        {
+        case VK_ESCAPE:
+            DestroyWindow(m_pWnd);
+            break;
+        default:
+            m_nCursorX = LOWORD(lParam);
+            m_nCursorY = HIWORD(lParam);
 
-        m_bLButtonDown = true;
+            m_bLButtonDown = true;
+            break;
+        }
+       
         break;
     }
     case WM_LBUTTONUP:

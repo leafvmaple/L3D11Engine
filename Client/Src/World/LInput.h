@@ -7,9 +7,11 @@ class LCamera;
 class LInput
 {
 public:
+    void Init(HWND pWnd);
     void ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pScene);
 
 private:
+    HWND m_pWnd = nullptr;
     BOOL m_bLButtonDown = false;
 
     int m_nCursorX = 0;

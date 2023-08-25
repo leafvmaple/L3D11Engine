@@ -75,7 +75,7 @@ private:
     {
         ID3DX11EffectShaderResourceVariable* pEffectSRVariable;
         L3DTexture* pTexture;
-    };
+    };  
 
     HRESULT _PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName);
 

@@ -40,6 +40,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     m_pScene->Create("Res/maps/唐门登陆界面/唐门登陆界面.jsonmap");
 
     m_pInput = new LInput;
+    m_pInput->Init(WindowParam.wnd);
 
     m_fLastTime = (float)timeGetTime();
 
@@ -121,14 +122,6 @@ LRESULT LClient::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         m_bActive = false;
         break;
-    }
-    case WM_KEYDOWN:
-    {
-        if (wParam == VK_ESCAPE)
-        {
-            DestroyWindow(hWnd);
-            break;
-        }
     }
     default:
     {

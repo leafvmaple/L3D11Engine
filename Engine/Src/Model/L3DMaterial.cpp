@@ -12,6 +12,8 @@
 #include "L3DMaterialConfig.h"
 #include "L3DMaterialDefine.h"
 
+#include "IMaterial.h"
+
 #include "IO/LFileReader.h"
 
 #include "Render/L3DMaterialSystem.h"
@@ -205,6 +207,12 @@ void L3DMaterial::_UpdateCommonCB()
 
 void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
 {
+    MATERIAL_DESC desc;
+    MATERIAL_SOURCE* pSource = nullptr;
+
+    // desc.szFileName = szFileName;
+    // LoadMaterial(&desc, pSource);
+
     rapidjson::Document JsonDocument;
     LFileReader::ReadJson(szFileName, JsonDocument);
 
