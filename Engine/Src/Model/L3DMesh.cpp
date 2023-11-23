@@ -228,6 +228,18 @@ Exit0:
     return S_OK;
 }
 
+// Helper function to fill VERTEX_FILL_INFO::_ELEM
+void FillElem(VERTEX_FILL_INFO::_ELEM*& pElem, unsigned& uElemId, unsigned uSourceStride, byte* sourceData, unsigned& uVertexSize)
+{
+    pElem->DestStride = uSourceStride;
+    pElem->SourceStride = uSourceStride;
+    pElem->SourceData = sourceData;
+
+    uVertexSize += pElem->DestStride;
+    ++pElem;
+    ++uElemId;
+}
+
 // KG3D_GetVertexFillInfo
 HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INFO* pFillInfo)
 {
@@ -238,56 +250,30 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
     VERTEX_FILL_INFO::_ELEM* pElem = nullptr;
 
     pElem = &pFillInfo->Element[0];
-    uSourceStride = sizeof(XMFLOAT3);
-    pElem->DestStride = sizeof(XMFLOAT3);
-    pElem->SourceStride = uSourceStride;
-    pElem->SourceData = (byte*)pFileData->pPos;
-
+    FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pPos, pFillInfo->uVertexSize);
     pFillInfo->VertexDesc.bHasPosition = true;
-    pFillInfo->uVertexSize = pElem->DestStride;
 
     // Auto convert XMFLOAT3->float4
     if (pFileData->pNormals)
     {
-        ++pElem;
-        uElemId++;
-        uSourceStride = sizeof(XMFLOAT3);
-        pElem->DestStride = sizeof(XMFLOAT3);
-        pElem->SourceStride = uSourceStride;
-        pElem->SourceData = (byte*)pFileData->pNormals;
-
+        FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pNormals, pFillInfo->uVertexSize);
         pFillInfo->VertexDesc.bHasNormal = true;
-        pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_NORMAL] = uElemId;
     }
 
     // Auto convert XMCOLOR->float4
     if (pFileData->pDiffuse)
     {
-        ++pElem;
-        uElemId++;
-        uSourceStride = sizeof(XMCOLOR);
-        pElem->DestStride = sizeof(XMCOLOR);
-        pElem->SourceStride = uSourceStride;
-        pElem->SourceData = (byte*)pFileData->pDiffuse;
-
+        FillElem(pElem, uElemId, sizeof(XMCOLOR), (byte*)pFileData->pDiffuse, pFillInfo->uVertexSize);
         pFillInfo->VertexDesc.bHasDiffuse = true;
-        pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_DIFFUSE] = uElemId;
     }
 
     // TEXCOORD0 XMFLOAT3->float2
     if (pFileData->pUV1)
     {
-        ++pElem;
-        uElemId++;
-        uSourceStride = sizeof(XMFLOAT3);
-        pElem->DestStride = sizeof(XMFLOAT2);
-        pElem->SourceStride = uSourceStride;
-        pElem->SourceData = (byte*)pFileData->pUV1;
-
+        FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pUV1, pFillInfo->uVertexSize);
         pFillInfo->VertexDesc.uUVCount = 1;
-        pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV1] = uElemId;
     }
 
