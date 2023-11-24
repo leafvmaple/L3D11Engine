@@ -35,7 +35,7 @@ struct ID3DX11EffectShaderResourceVariable;
 struct EFFECT_SHADER
 {
     std::string name;
-    ID3DX11EffectShaderResourceVariable* pSRVaraible;
+    ID3DX11EffectShaderResourceVariable* pSRVariable;
 };
 
 class L3DEffect

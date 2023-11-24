@@ -229,15 +229,20 @@ Exit0:
 }
 
 // Helper function to fill VERTEX_FILL_INFO::_ELEM
-void FillElem(VERTEX_FILL_INFO::_ELEM*& pElem, unsigned& uElemId, unsigned uSourceStride, byte* sourceData, unsigned& uVertexSize)
+void FillElem(VERTEX_FILL_INFO::_ELEM*& pElem, unsigned& uElemId, unsigned uSourceStride, unsigned uDestStride, byte* sourceData, unsigned& uVertexSize)
 {
-    pElem->DestStride = uSourceStride;
+    pElem->DestStride = uDestStride;
     pElem->SourceStride = uSourceStride;
     pElem->SourceData = sourceData;
 
-    uVertexSize += pElem->DestStride;
+    uVertexSize += uDestStride;
     ++pElem;
     ++uElemId;
+}
+
+void FillElem(VERTEX_FILL_INFO::_ELEM*& pElem, unsigned& uElemId, unsigned uStride, byte* sourceData, unsigned& uVertexSize)
+{
+    FillElem(pElem, uElemId, uStride, uStride, sourceData, uVertexSize);
 }
 
 // KG3D_GetVertexFillInfo
@@ -250,59 +255,45 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
     VERTEX_FILL_INFO::_ELEM* pElem = nullptr;
 
     pElem = &pFillInfo->Element[0];
-    FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pPos, pFillInfo->uVertexSize);
     pFillInfo->VertexDesc.bHasPosition = true;
+    FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pPos, pFillInfo->uVertexSize);
 
     // Auto convert XMFLOAT3->float4
     if (pFileData->pNormals)
     {
-        FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pNormals, pFillInfo->uVertexSize);
         pFillInfo->VertexDesc.bHasNormal = true;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_NORMAL] = uElemId;
+        FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pNormals, pFillInfo->uVertexSize);
     }
 
     // Auto convert XMCOLOR->float4
     if (pFileData->pDiffuse)
     {
-        FillElem(pElem, uElemId, sizeof(XMCOLOR), (byte*)pFileData->pDiffuse, pFillInfo->uVertexSize);
         pFillInfo->VertexDesc.bHasDiffuse = true;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_DIFFUSE] = uElemId;
+        FillElem(pElem, uElemId, sizeof(XMCOLOR), (byte*)pFileData->pDiffuse, pFillInfo->uVertexSize);
     }
 
     // TEXCOORD0 XMFLOAT3->float2
     if (pFileData->pUV1)
     {
-        FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pUV1, pFillInfo->uVertexSize);
         pFillInfo->VertexDesc.uUVCount = 1;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV1] = uElemId;
+        FillElem(pElem, uElemId, sizeof(XMFLOAT3), sizeof(XMFLOAT2), (byte*)pFileData->pUV1, pFillInfo->uVertexSize);
     }
 
     if (pFileData->pUV2)
     {
-        ++pElem;
-        uElemId++;
-        uSourceStride = sizeof(XMFLOAT3);
-        pElem->DestStride = sizeof(XMFLOAT2);
-        pElem->SourceStride = uSourceStride;
-        pElem->SourceData = (byte*)pFileData->pUV2;
-
         pFillInfo->VertexDesc.uUVCount = 2;
-        pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV2] = uElemId;
+        FillElem(pElem, uElemId, sizeof(XMFLOAT3), sizeof(XMFLOAT2), (byte*)pFileData->pUV2, pFillInfo->uVertexSize);
     }
 
     if (pFileData->pUV3)
     {
-        ++pElem;
-        uElemId++;
-        uSourceStride = sizeof(XMFLOAT3);
-        pElem->DestStride = sizeof(XMFLOAT2);
-        pElem->SourceStride = uSourceStride;
-        pElem->SourceData = (byte*)pFileData->pUV3;
-
         pFillInfo->VertexDesc.uUVCount = 3;
-        pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV3] = uElemId;
+        FillElem(pElem, uElemId, sizeof(XMFLOAT3), sizeof(XMFLOAT2), (byte*)pFileData->pUV3, pFillInfo->uVertexSize);
     }
 
     // BONEWEIGHTS0 && BONEINDICES0
@@ -311,57 +302,28 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
         BOOL_ERROR_EXIT(pFileData->pNormals);
         BOOL_ERROR_EXIT(pFileData->pUV1);
 
-        ++pElem;
-        uElemId++;
-        uSourceStride = sizeof(pFileData->pSkin[0]);
-        pElem->DestStride = uSourceStride;
-        pElem->SourceStride = uSourceStride;
-        pElem->SourceData = (byte*)pFileData->pSkin;
-
         pFillInfo->VertexDesc.bHasSkinInfo = true;
-        pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_SKIN] = uElemId;
+        FillElem(pElem, uElemId, sizeof(pFileData->pSkin[0]), (byte*)pFileData->pSkin, pFillInfo->uVertexSize);
     }
 
     if (pFileData->pTangent)
     {
         BOOL_ERROR_EXIT(pFileData->pNormals);
 
-        ++pElem;
-        uElemId++;
-        pElem->DestStride = sizeof(XMFLOAT4);
-        pElem->SourceStride = sizeof(XMFLOAT4);
-        pElem->SourceData = (byte*)pFileData->pTangent;
-
         pFillInfo->VertexDesc.bHasTangent = true;
-        pFillInfo->uVertexSize += pElem->DestStride;
         pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_TANGENT] = uElemId;
+        FillElem(pElem, uElemId, sizeof(XMFLOAT4), (byte*)pFileData->pTangent, pFillInfo->uVertexSize);
     }
 
     if (pFileData->pTangent)
     {
-        if (pFileData->pSkin)
-        {
-            if (pFileData->pUV3)
-                assert(false);
-            else if (pFileData->pUV2)
-                assert(false);
-            else if (pFileData->pUV1)
-                pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_SKINMESH;
-            else
-                assert(false);
-        }
+        if (pFileData->pUV3 || pFileData->pUV2)
+            assert(false);
+        else if (pFileData->pUV1)
+            pFillInfo->eInputLayout = pFileData->pSkin ? L3D_INPUT_LAYOUT_CI_SKINMESH : L3D_INPUT_LAYOUT_CI_MESH;
         else
-        {
-            if (pFileData->pUV3)
-                assert(false);
-            else if (pFileData->pUV2)
-                assert(false);
-            else if (pFileData->pUV1)
-                pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_CI_MESH;
-            else
-                assert(false);
-        }
+            assert(false);
     }
     else
         pFillInfo->eInputLayout = L3D_INPUT_LAYOUT_BOX;

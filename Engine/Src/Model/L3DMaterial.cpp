@@ -21,16 +21,18 @@
 #include "FX11/inc/d3dx11effect.h"
 
 
-struct RENDER_PASS_TABLE
-{
+static struct RENDER_PASS_TABLE {
     RENDER_PASS ePass;
     const char* szTechniqueName;
-    unsigned    uPassSlot;
+    unsigned    uPassSlot = 0;
+} g_MaterialPassDeclares[] = {
+    { RENDER_PASS::COLOR, "Color"},
+    { RENDER_PASS::COLORSOFTMASK, "ColorSoftMask"}
 };
 
-static RENDER_PASS_TABLE g_MaterialPassDeclares[] = {
-    {RENDER_PASS::COLOR, "Color", 0},
-    {RENDER_PASS::COLORSOFTMASK, "ColorSoftMask", 0}
+static std::unordered_map<MATERIAL_INDIV_CB, const char*> g_MaterialCBMap = {
+    { MATERIAL_INDIV_CB::SUBSET, "SubsetConstParam" },
+    { MATERIAL_INDIV_CB::MODELSHARED, "ModelSharedParam" }
 };
 
 HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET& Subset, RUNTIME_MACRO eMacro)
@@ -39,7 +41,7 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET
     m_pMaterialDefine->Create(Subset.Define.szName);
     m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
 
-    m_eBlendMode  = (BlendMode)Subset.nBlendMode;
+    m_eBlendMode  = static_cast<BlendMode>(Subset.nBlendMode);
     m_dwAlphaRef  = Subset.nAlphaRef;
     m_dwAlphaRef2 = Subset.nAlphaRef2;
     m_dwTwoSide   = Subset.nTwoSideFlag;
@@ -87,22 +89,9 @@ HRESULT L3DMaterial::CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11Effect
     HRESULT hResult = E_FAIL;
 
     BOOL_ERROR_EXIT(m_pEffect);
+    assert(g_MaterialCBMap.find(eCBType) != g_MaterialCBMap.end());
 
-    switch (eCBType)
-    {
-    case MATERIAL_INDIV_CB::SUBSET:
-    {
-        *pEffectCB = m_pEffect->GetConstantBufferByName("SubsetConstParam");
-        break;
-    }
-    case MATERIAL_INDIV_CB::MODELSHARED:
-    {
-        *pEffectCB = m_pEffect->GetConstantBufferByName("ModelSharedParam");
-        break;
-    }
-    default:
-        break;
-    }
+    *pEffectCB = m_pEffect->GetConstantBufferByName(g_MaterialCBMap[eCBType]);
 
     hResult = S_OK;
 Exit0:
@@ -112,29 +101,16 @@ Exit0:
 HRESULT L3DMaterial::SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer* pSharedCB)
 {
     HRESULT hResult = E_FAIL;
-    ID3DX11EffectConstantBuffer* pCB = nullptr;
+    ID3DX11EffectConstantBuffer* pEffectCB = nullptr;
     ID3D11Buffer* pBuffer = nullptr;
 
     BOOL_ERROR_EXIT(m_pEffect);
+    assert(g_MaterialCBMap.find(eCBType) != g_MaterialCBMap.end());
 
-    switch (eCBType)
-    { 
-    case MATERIAL_INDIV_CB::SUBSET:
-    {
-        pCB = m_pEffect->GetConstantBufferByName("SubsetConstParam");
-        break;
-    }
-    case MATERIAL_INDIV_CB::MODELSHARED:
-    {
-        pCB = m_pEffect->GetConstantBufferByName("ModelSharedParam");
-        break;
-    }
-    default:
-        break;
-    }
+    pEffectCB = m_pEffect->GetConstantBufferByName(g_MaterialCBMap[eCBType]);
 
     pSharedCB->GetConstantBuffer(&pBuffer);
-    pCB->SetConstantBuffer(pBuffer);
+    pEffectCB->SetConstantBuffer(pBuffer);
 
     hResult = S_OK;
 Exit0:
@@ -190,7 +166,7 @@ HRESULT L3DMaterial::_UpdateTextures()
         for (auto it : m_vecTextures)
         {
             if (it.sRegisterName == itEffect.name)
-                it.pTexture->Apply(itEffect.pSRVaraible);
+                it.pTexture->Apply(itEffect.pSRVariable);
         }
     }
 
