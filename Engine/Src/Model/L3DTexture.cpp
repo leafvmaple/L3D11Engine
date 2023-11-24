@@ -13,71 +13,65 @@ using namespace DirectX;
 
 HRESULT L3DTexture::Create(ID3D11Device* piDevice, const char* szFileName)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
-	ScratchImage LoadedImage;
-	ID3D11Resource* piResource = nullptr;
-	ID3D11ShaderResourceView* piSRV = nullptr;
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+    ScratchImage LoadedImage;
+    ID3D11Resource* piResource = nullptr;
+    ID3D11ShaderResourceView* piSRV = nullptr;
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
-	char szName[MAX_PATH];
-	char szBaseName[MAX_PATH];
+    std::filesystem::path filename(szFileName);
+    std::filesystem::path ddsName = filename;
 
-	strcpy(szName, szFileName);
+    ddsName.replace_extension(".dds");
+    if (std::filesystem::exists(ddsName))
+        std::swap(ddsName, filename);
 
-	L3D::ReplaceExtName(szName, ".dds");
-	L3D::GetExtName(szName, szBaseName, MAX_PATH);
+    std::filesystem::path extension = filename.extension();
 
-	{
-		USES_CONVERSION;
+    if (extension == ".dds")
+    {
+        hr = LoadFromDDSFile(filename.wstring().c_str(), DDS_FLAGS_NONE, nullptr, LoadedImage);
+        HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", filename.string());
+    }
+    else if (extension == ".tga")
+    {
+        hr = LoadFromTGAFile(filename.wstring().c_str(), nullptr, LoadedImage);
+        HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", filename.string());
+    }
 
-		const wchar_t* wzName = A2CW(szName);
-		BOOL_ERROR_EXIT(wzName);
+    hr = CreateTexture(piDevice, LoadedImage.GetImages(), LoadedImage.GetImageCount(), LoadedImage.GetMetadata(), &piResource);
+    HRESULT_ERROR_EXIT(hr);
 
-		if (!strcmp(szBaseName, ".dds"))
-		{
-			hr = LoadFromDDSFile(wzName, DDS_FLAGS_NONE, nullptr, LoadedImage);
-			HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", szName);
-		}
-		else if (!strcmp(szBaseName, ".tga"))
-		{
-			hr = LoadFromTGAFile(wzName, nullptr, LoadedImage);
-			HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", szName);
-		}
-	}
+    hr = piResource->QueryInterface(IID_ID3D11Texture2D, (void**)&m_piTexture);
+    HRESULT_ERROR_EXIT(hr);
 
-	hr = CreateTexture(piDevice, LoadedImage.GetImages(), LoadedImage.GetImageCount(), LoadedImage.GetMetadata(), &piResource);
-	HRESULT_ERROR_EXIT(hr);
+    /*if (IsCompressed(LoadedImage.GetMetadata().format))
+    {
+        ScratchImage DecompressImage;
 
-	hr = piResource->QueryInterface(IID_ID3D11Texture2D, (void**)&m_piTexture);
-	HRESULT_ERROR_EXIT(hr);
+        hr = Decompress(*LoadedImage.GetImage(0, 0, 0), DXGI_FORMAT_R8G8B8A8_UNORM, DecompressImage);
+        HRESULT_ERROR_EXIT(hr);
 
-	/*if (IsCompressed(LoadedImage.GetMetadata().format))
-	{
-		ScratchImage DecompressImage;
+        LoadedImage = std::move(DecompressImage);
+    }*/
 
-		hr = Decompress(*LoadedImage.GetImage(0, 0, 0), DXGI_FORMAT_R8G8B8A8_UNORM, DecompressImage);
-		HRESULT_ERROR_EXIT(hr);
+    srvDesc.Format        = LoadedImage.GetMetadata().format;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 
-		LoadedImage = std::move(DecompressImage);
-	}*/
+    srvDesc.Texture2D.MipLevels       = -1;
+    srvDesc.Texture2D.MostDetailedMip = 0;
 
-	srvDesc.Format        = LoadedImage.GetMetadata().format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    hr = piDevice->CreateShaderResourceView(piResource, &srvDesc, &m_piTextureView);
+    HRESULT_ERROR_EXIT(hr);
 
-	srvDesc.Texture2D.MipLevels       = -1;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-
-	hr = piDevice->CreateShaderResourceView(piResource, &srvDesc, &m_piTextureView);
-	HRESULT_ERROR_EXIT(hr);
-
-	hResult = S_OK;
+    hResult = S_OK;
 Exit0:
-	return hResult;
+    return hResult;
 
 }
 
 HRESULT L3DTexture::Apply(ID3DX11EffectShaderResourceVariable* pEffectSRVariable)
 {
-	return pEffectSRVariable->SetResource(m_piTextureView);
+    return pEffectSRVariable->SetResource(m_piTextureView);
 }
