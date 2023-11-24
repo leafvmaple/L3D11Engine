@@ -18,6 +18,7 @@ class L3DMaterialDefine;
 class L3DEffect;
 
 struct L3D_STATE_TABLE;
+struct MATERIAL_SOURCE_SUBSET;
 
 struct ID3DX11EffectPass;
 struct ID3DX11EffectConstantBuffer;
@@ -58,7 +59,7 @@ enum BlendMode
 class L3DMaterial
 {
 public:
-    HRESULT Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData, RUNTIME_MACRO eMacro);
+    HRESULT Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET& Subsett, RUNTIME_MACRO eMacro);
     HRESULT ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable);
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass);
 
@@ -100,6 +101,4 @@ class L3DMaterialPack
 {
 public:
     static void LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
-private:
-    static void _LoadInstanceFromJson(const rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData);
 };

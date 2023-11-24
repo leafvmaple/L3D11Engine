@@ -17,16 +17,20 @@ void _LoadDefine(const char* szFileName, MATERIAL_DEFINE& Define)
 
     auto& ParamObjectArray = JsonDocument["Param"];
     Define.nParam = ParamObjectArray.Size();
-    Define.pParam = new MATERIAL_DEFINE::_Param[Define.nParam];
+    Define.pParam = new MATERIAL_DEFINE::_Param[ParamObjectArray.Size()];
 
     for (int i = 0; i < ParamObjectArray.Size(); i++)
     {
         const auto& ParamObject = ParamObjectArray[i];
         auto& Param = Define.pParam[i];
+        const char* szType = ParamObject["Type"].GetString();
 
         strcpy_s(Param.szName, ParamObject["Name"].GetString());
         strcpy_s(Param.szRegister, ParamObject["RegisterName"].GetString());
-        strcpy_s(Param.szValue, ParamObject["Value"].GetString());
+        if (ParamObject["Value"].IsString())
+            strcpy_s(Param.szValue, ParamObject["Value"].GetString());
+        else if (ParamObject["Value"].IsFloat())
+            Param.fValue = ParamObject["Value"].GetFloat();
     }
 }
 
@@ -34,24 +38,28 @@ void _LoadSubset(const rapidjson::Value& JsonObject, MATERIAL_SOURCE_SUBSET& Sub
 {
     const auto& InfoObject = JsonObject["Info"];
     const char* szValue = InfoObject["RefPath"].GetString();
-    // strcpy_s(Subset.szDefineName, szValue);
 
     _LoadDefine(szValue, Subset.Define);
 
     // Param
     const auto& ParamArray = JsonObject["Param"];
-
-    Subset.nParam = ParamArray.Size();
-    Subset.pParam = new MATERIAL_SOURCE_SUBSET::_Param[Subset.nParam];
+    Subset.pTexture = new MATERIAL_SOURCE_SUBSET::_Param[ParamArray.Size()];
 
     for (int i = 0; i < ParamArray.Size(); i++)
     {
         const auto& ParamObject = ParamArray[i].GetObjectW();
-        auto& Param = Subset.pParam[i];
+        const char* szType = ParamObject["Type"].GetString();
 
-        strcpy_s(Param.szName, ParamObject["Name"].GetString());
-        strcpy_s(Param.szType, ParamObject["Type"].GetString());
-        strcpy_s(Param.szValue, ParamObject["Value"].GetString());
+        if (!strcmp(szType, "Texture"))
+        {
+            auto& Texture = Subset.pTexture[Subset.nTexture];
+
+            strcpy_s(Texture.szName, ParamObject["Name"].GetString());
+            strcpy_s(Texture.szType, szType);
+            strcpy_s(Texture.szValue, ParamObject["Value"].GetString());
+
+            Subset.nTexture++;
+        }
     }
 
     // RenderState

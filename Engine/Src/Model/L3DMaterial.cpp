@@ -33,21 +33,21 @@ static RENDER_PASS_TABLE g_MaterialPassDeclares[] = {
     {RENDER_PASS::COLORSOFTMASK, "ColorSoftMask", 0}
 };
 
-HRESULT L3DMaterial::Create(ID3D11Device* piDevice, MATERIAL_INSTANCE_DATA& InstanceData, RUNTIME_MACRO eMacro)
+HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET& Subset, RUNTIME_MACRO eMacro)
 {
     m_pMaterialDefine = new L3DMaterialDefine;
-    m_pMaterialDefine->Create(InstanceData.szDefineName);
+    m_pMaterialDefine->Create(Subset.Define.szName);
     m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
 
-    m_eBlendMode = (BlendMode)InstanceData.uBlendMode;
-    m_dwAlphaRef = InstanceData.uAlphaRef;
-    m_dwAlphaRef2 = InstanceData.uAlphaRef2;
-    m_dwTwoSide = InstanceData.uTwoSideFlag;
+    m_eBlendMode  = (BlendMode)Subset.nBlendMode;
+    m_dwAlphaRef  = Subset.nAlphaRef;
+    m_dwAlphaRef2 = Subset.nAlphaRef2;
+    m_dwTwoSide   = Subset.nTwoSideFlag;
 
     m_AlphaTestSwitch = (m_eBlendMode == BLEND_MASKED || m_eBlendMode == BLEND_SOFTMASKED);
 
-    for (auto iter = InstanceData.TextureArray.cbegin(), iend = InstanceData.TextureArray.cend(); iter != iend; ++iter)
-        _PlaceTextureValue(piDevice, iter->first, iter->second);
+    for (int i = 0; i < Subset.nTexture; i++)
+        _PlaceTextureValue(piDevice, Subset.pTexture[i].szName, Subset.pTexture[i].szValue);
 
     m_pEffect = new L3DEffect;
     m_pEffect->Create(piDevice, m_pMaterialDefine->m_szShaderName, eMacro);
@@ -118,7 +118,7 @@ HRESULT L3DMaterial::SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectCon
     BOOL_ERROR_EXIT(m_pEffect);
 
     switch (eCBType)
-    {
+    { 
     case MATERIAL_INDIV_CB::SUBSET:
     {
         pCB = m_pEffect->GetConstantBufferByName("SubsetConstParam");
@@ -210,58 +210,28 @@ void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& Insta
     MATERIAL_DESC desc;
     MATERIAL_SOURCE* pSource = nullptr;
 
-    // desc.szFileName = szFileName;
-    // LoadMaterial(&desc, pSource);
+    desc.szFileName = szFileName;
+    LoadMaterial(&desc, pSource);
 
-    rapidjson::Document JsonDocument;
-    LFileReader::ReadJson(szFileName, JsonDocument);
-
-    const auto& LODArray = JsonDocument["LOD"];
-    InstancePack.resize(LODArray.Size());
-    for (int i = 0; i < LODArray.Size(); i++)
+    InstancePack.resize(pSource->nLOD);
+    for (int i = 0; i < pSource->nLOD; i++)
     {
-        const auto& GroupArray = LODArray[i]["Group"];
-        InstancePack[i].resize(GroupArray.Size());
-        for (int j = 0; j < GroupArray.Size(); j++)
+        const auto& LOD = pSource->pLOD[i];
+        InstancePack[i].resize(LOD.nGroup);
+        for (int j = 0; j < LOD.nGroup; j++)
         {
-            const auto& SubsetArray = GroupArray[j]["Subset"];
-            InstancePack[i][j].resize(SubsetArray.Size());
-            for (int k = 0; k < SubsetArray.Size(); k++)
-            { 
-                MATERIAL_INSTANCE_DATA InstanceData;
-                _LoadInstanceFromJson(SubsetArray[k], InstanceData);
+            const auto& Group = LOD.pGroup[j];
+            InstancePack[i][j].resize(Group.nSubset);
+            for (int k = 0; k < Group.nSubset; k++)
+            {
+                const auto& Subset = Group.pSubset[k];
+                auto& Instance = InstancePack[i][j][k];
 
-                auto& pInstance = InstancePack[i][j][k];
-                pInstance.Create(piDevice, InstanceData, eMacro);
+                Instance.Create(piDevice, Subset, eMacro);
             }
         }
     }
+
+    pSource->Release();
 }
 
-void L3DMaterialPack::_LoadInstanceFromJson(const rapidjson::Value& JsonObject, MATERIAL_INSTANCE_DATA& InstanceData)
-{
-    // Info
-    const auto& InfoObject = JsonObject["Info"];
-    const char* szValue = InfoObject["RefPath"].GetString();
-    strcpy_s(InstanceData.szDefineName, szValue);
-
-    // Param
-    const auto& ParamArray = JsonObject["Param"];
-    for (int i = 0; i < ParamArray.Size(); i++)
-    {
-        const auto& ParamObject = ParamArray[i].GetObjectW();
-
-        const char* szName = ParamObject["Name"].GetString();
-        std::string szType = ParamObject["Type"].GetString();
-
-        if (szType == "Texture")
-            InstanceData.TextureArray[szName] = ParamObject["Value"].GetString();
-    }
-
-    // RenderState
-    const auto& RenderStateObject = JsonObject["RenderState"];
-    InstanceData.uAlphaRef = RenderStateObject["AlphaRef"].GetInt();
-    InstanceData.uAlphaRef2 = RenderStateObject["AlphaRef2"].GetInt();
-    InstanceData.uTwoSideFlag = RenderStateObject["TwoSide"].GetInt();
-    InstanceData.uBlendMode = RenderStateObject["BlendMode"].GetInt();
-}

@@ -10,39 +10,47 @@ struct MATERIAL_DESC
 
 struct MATERIAL_DEFINE
 {
-    char szName[MAX_PATH];
-    char szShaderName[MAX_PATH];
+    char szName[MAX_PATH] = { 0 };
+    char szShaderName[MAX_PATH] = { 0 };
 
     unsigned int nParam = 0;
     struct _Param
     {
-        char szName[MAX_PATH] = { 0 };
+        char szName[MAX_PATH]     = { 0 };
         char szRegister[MAX_PATH] = { 0 };
-        char szValue[MAX_PATH] = { 0 };
+        union
+        {
+            char szValue[MAX_PATH] = { 0 };
+            float fValue;
+        };
     }* pParam = nullptr;
+
+    ~MATERIAL_DEFINE()
+    {
+        SAFE_DELETE_ARRAY(pParam);
+    }
 };
 
 struct MATERIAL_SOURCE_SUBSET
 {
-    char szDefineName[MAX_PATH] = { 0 };
     unsigned int nBlendMode   = 0;
     unsigned int nAlphaRef    = 0;
     unsigned int nAlphaRef2   = 0;
     unsigned int nTwoSideFlag = 0;
 
-    unsigned int nParam = 0;
+    unsigned int nTexture = 0;
     struct _Param
     {
         char szName[MAX_PATH]  = { 0 };
         char szType[MAX_PATH]  = { 0 };
         char szValue[MAX_PATH] = { 0 };
-    }* pParam = nullptr;
+    }* pTexture = nullptr;
 
     MATERIAL_DEFINE Define;
 
     ~MATERIAL_SOURCE_SUBSET()
     {
-        SAFE_DELETE_ARRAY(pParam);
+        SAFE_DELETE_ARRAY(pTexture);
     }
 };
 
@@ -80,4 +88,4 @@ struct MATERIAL_SOURCE : LUnknown
     };
 };
 
-L3DENGINE_API void LoadMaterial(MATERIAL_DESC* pDesc, MATERIAL_SOURCE*& pSource);\
+L3DENGINE_API void LoadMaterial(MATERIAL_DESC* pDesc, MATERIAL_SOURCE*& pSource);

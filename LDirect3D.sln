@@ -10,6 +10,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LEngine", "Engine\LEngine.v
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LClient", "Client\LClient.vcxproj", "{508AFAAF-6BC2-4F4D-96CC-64311FD324BA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{84C36928-B66E-4EBF-98AB-A671BA29014F} = {84C36928-B66E-4EBF-98AB-A671BA29014F}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{765A42CA-67D7-4204-AD1F-25F69B22AE77}"
 EndProject
