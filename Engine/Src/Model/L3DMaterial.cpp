@@ -214,6 +214,7 @@ void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& Insta
     LoadMaterial(&desc, pSource);
 
     InstancePack.resize(pSource->nLOD);
+#pragma omp parallel for
     for (int i = 0; i < pSource->nLOD; i++)
     {
         const auto& LOD = pSource->pLOD[i];
