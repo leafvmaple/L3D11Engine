@@ -385,20 +385,21 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
 {
     struct _INDEX_DATA
     {
-        std::vector<DWORD> IndexBuffer;
-        DWORD IndexMin = std::numeric_limits<DWORD>::max();
-        DWORD IndexMax = 0;
+        std::vector<DWORD> Indies;
+        DWORD nMinIndex = std::numeric_limits<DWORD>::max();
+        DWORD nMaxIndex = 0;
     };
 
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     DWORD nTotalCount = 0;
-    DWORD nSubIndex = 0;
     std::map<int, _INDEX_DATA> IndexBufferList;
     std::vector<_INDEX_TYPE> arrIndies;
 
     D3D11_BUFFER_DESC desc;
     D3D11_SUBRESOURCE_DATA InitData;
+
+    arrIndies.reserve(pMeshData->dwFacesCount * 3); //‘§∑÷≈‰ø’º‰
 
     for (int i = 0; i < pMeshData->dwFacesCount; i++)
     {
@@ -406,30 +407,25 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_FILE_DATA* p
         DWORD nIndex1 = pMeshData->pIndex[i * 3 + 1];
         DWORD nIndex2 = pMeshData->pIndex[i * 3 + 2];
 
-        DWORD IndexMin = std::min(nIndex0, std::min(nIndex1, nIndex2));
-        DWORD IndexMax = std::max(nIndex0, std::max(nIndex1, nIndex2));
+        auto& IndexData = IndexBufferList[pMeshData->pSubset[i]];
+        IndexData.Indies.emplace_back(nIndex0);
+        IndexData.Indies.emplace_back(nIndex1);
+        IndexData.Indies.emplace_back(nIndex2);
 
-        auto SubsetIndex = pMeshData->pSubset[i];
-
-        auto& IndexData = IndexBufferList[SubsetIndex];
-        IndexData.IndexBuffer.push_back(nIndex0);
-        IndexData.IndexBuffer.push_back(nIndex1);
-        IndexData.IndexBuffer.push_back(nIndex2);
-
-        IndexData.IndexMin = std::min(IndexData.IndexMin, IndexMin);
-        IndexData.IndexMax = std::max(IndexData.IndexMax, IndexMax);
+        IndexData.nMinIndex = std::min({IndexData.nMinIndex, nIndex0, nIndex1, nIndex2});
+        IndexData.nMaxIndex = std::max({IndexData.nMaxIndex, nIndex0, nIndex1, nIndex2});
     }
 
     assert(IndexBufferList.size() == pMeshData->dwSubsetCount);
 
-    for (auto indexBuff : IndexBufferList)
+    for (auto subset : IndexBufferList)
     {
-        DWORD nCount = indexBuff.second.IndexBuffer.size();
+        DWORD nCount = subset.second.Indies.size();
 
-        for (auto index : indexBuff.second.IndexBuffer)
-            arrIndies.push_back(static_cast<_INDEX_TYPE>(index));
+        for (auto index : subset.second.Indies)
+            arrIndies.emplace_back(static_cast<_INDEX_TYPE>(index));
 
-        m_Subset.push_back({ (DWORD)nCount, nTotalCount, indexBuff.second.IndexMin, indexBuff.second.IndexMax - indexBuff.second.IndexMin + 1 });
+        m_Subset.emplace_back(_SUBSET{ (DWORD)nCount, nTotalCount, subset.second.nMinIndex, subset.second.nMaxIndex - subset.second.nMinIndex + 1 });
         nTotalCount += nCount;
     }
 

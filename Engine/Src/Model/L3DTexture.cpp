@@ -20,13 +20,9 @@ HRESULT L3DTexture::Create(ID3D11Device* piDevice, const char* szFileName)
     ID3D11ShaderResourceView* piSRV = nullptr;
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
-    std::filesystem::path filename(szFileName);
-    std::filesystem::path ddsName = filename;
+    std::filesystem::path filename = szFileName;
 
-    ddsName.replace_extension(".dds");
-    if (std::filesystem::exists(ddsName))
-        std::swap(ddsName, filename);
-
+    L3D::TryReplaceExtension(filename, ".dds");
     std::filesystem::path extension = filename.extension();
 
     if (extension == ".dds")

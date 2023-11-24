@@ -16,4 +16,6 @@ namespace L3D
     HRESULT ReplaceExtName(char* szFileName, const char* ExtName);
 
     void PathFormat(const char* szFileName, std::filesystem::path& path);
+
+    void TryReplaceExtension(std::filesystem::path& path, const std::filesystem::path& ext);
 }

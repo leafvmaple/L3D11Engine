@@ -89,4 +89,14 @@ namespace L3D
     {
         path = relative(std::filesystem::path(szFileName));
     }
+
+    void TryReplaceExtension(std::filesystem::path& path, const std::filesystem::path& ext)
+    {
+        std::filesystem::path tmp = path;
+
+        tmp.replace_extension(ext);
+        if (std::filesystem::exists(tmp))
+            path.replace_extension(ext);
+    }
+
 }

@@ -206,9 +206,7 @@ HRESULT L3DWindow::_CreateSwapChainRTV(ID3D11Device* piDevice, IDXGISwapChain* p
 Exit0:
     SAFE_RELEASE(piSwapChainBuffer);
     if (FAILED(hResult))
-    {
         SAFE_RELEASE(m_piRenderTargetView);
-    }
     return hResult;
 }
 
