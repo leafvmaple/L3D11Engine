@@ -87,7 +87,7 @@ namespace L3D
 
     void PathFormat(const char* szFileName, std::filesystem::path& path)
     {
-        path = relative(std::filesystem::path(szFileName));
+        path = relative(std::filesystem::absolute(szFileName));
     }
 
     void TryReplaceExtension(std::filesystem::path& path, const std::filesystem::path& ext)
