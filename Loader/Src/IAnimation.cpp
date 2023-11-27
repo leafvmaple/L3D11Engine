@@ -6,7 +6,7 @@ unsigned int FrameToTime(DWORD dwFrame, float fFrameLength)
 	return (unsigned int)(fFrameLength * dwFrame + 0.5f);
 }
 
-void LoadFromFile(ANIMATION_DESC* pDesc, ANIMATION_SOURCE*& pSource)
+void LoadAnimation(ANIMATION_DESC* pDesc, ANIMATION_SOURCE*& pSource)
 {
 	LBinaryReader Reader;
 
@@ -31,21 +31,14 @@ void LoadFromFile(ANIMATION_DESC* pDesc, ANIMATION_SOURCE*& pSource)
 	pSource->fFrameLength = pBoneAni->fFrameLength;
 	pSource->nAnimationLength = FrameToTime(pBoneAni->dwNumFrames - 1, pBoneAni->fFrameLength);
 
-	pSource->pBoneNames = new char[pSource->nBonesCount][MAX_PATH];
+	pSource->pBoneNames = new char[pSource->nBonesCount][ANI_STRING_SIZE];
+	for (int i = 0; i < pSource->nBonesCount; i++)
+		Reader.Copy(pSource->pBoneNames[i], ANI_STRING_SIZE);
+
+	pSource->pBoneRTS = new RTS*[pSource->nBonesCount];
 	for (int i = 0; i < pSource->nBonesCount; i++)
 	{
-		char* pszBoneName = nullptr;
-		Reader.Convert(pszBoneName, ANI_STRING_SIZE);
-		strcpy(pSource->pBoneNames[i], pszBoneName);
+		pSource->pBoneRTS[i] = new RTS[pSource->nFrameCount];
+		Reader.Copy(pSource->pBoneRTS[i], pSource->nFrameCount);
 	}
-
-	/*m_BoneRTS.resize(m_dwNumBone);
-	for (int i = 0; i < m_dwNumBone; i++)
-	{
-		m_BoneRTS[i].resize(m_dwNumFrames);
-		Reader.Copy(m_BoneRTS[i].data(), m_dwNumFrames);
-	}
-
-	m_szName = szAnimation;
-	*/
 }

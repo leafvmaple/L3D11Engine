@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include "IAnimation.h"
+
 struct ANIMATION_UPDATE_INFO
 {
     DWORD dwFrame   = 0;

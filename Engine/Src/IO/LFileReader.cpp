@@ -21,7 +21,7 @@ HRESULT LFileReader::Read(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen)
 	{
 		BOOL_ERROR_BREAK(ppBuffer);
 
-		_wfopen_s(&pFile, cszFileName, TEXT("rb"));
+		_wfopen_s(&pFile, cszFileName, L"rb");
 		BOOL_ERROR_BREAK(pFile);
 
 		fseek(pFile, 0, SEEK_END);
@@ -109,7 +109,7 @@ HRESULT LBinaryReader::Init(LPCWSTR cszFileName)
 	FILE* pFile = nullptr;
 	size_t nFileLen = 0;
 
-	_wfopen_s(&pFile, cszFileName, TEXT("rb"));
+	_wfopen_s(&pFile, cszFileName, L"rb");
 	BOOL_ERROR_EXIT(pFile);
 
 	fseek(pFile, 0, SEEK_END);

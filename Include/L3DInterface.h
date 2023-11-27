@@ -136,15 +136,6 @@ enum ANIMATION_PLAY_TYPE
     ENU_ANIMATIONPLAY_FORCE_DWORD = 0xffffffff,
 };
 
-struct RTS
-{
-    XMFLOAT3 Translation;
-    XMFLOAT3 Scale;
-    XMFLOAT4 Rotation;
-    float Sign;
-    XMFLOAT4 SRotation;
-};
-
 class L3DENGINE_CLASS IL3DEngine
 {
 public:

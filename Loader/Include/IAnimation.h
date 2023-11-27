@@ -3,6 +3,11 @@
 #include "LInterface.h"
 #include "LAssert.h"
 
+#include <d3d11.h>
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
 #define ANI_STRING_SIZE 30
 const unsigned	ANI_FILE_MASK = 0x414E494D;
 
@@ -41,7 +46,16 @@ struct _BONE_ANI
 
 struct ANIMATION_DESC
 {
-	const wchar_t* szFileName = nullptr;
+	const char* szFileName = nullptr;
+};
+
+struct RTS
+{
+    XMFLOAT3 Translation;
+    XMFLOAT3 Scale;
+    XMFLOAT4 Rotation;
+    float Sign;
+    XMFLOAT4 SRotation;
 };
 
 struct ANIMATION_SOURCE : LUnknown
@@ -50,10 +64,22 @@ struct ANIMATION_SOURCE : LUnknown
 
 	int nBonesCount = 0;
 	int nFrameCount = 0;
-	int fFrameLength = 0;
+	float fFrameLength = 0;
 	int nAnimationLength = 0;
 
-	char (*pBoneNames)[MAX_PATH] = nullptr;
+	char (*pBoneNames)[ANI_STRING_SIZE] = nullptr;
+	RTS** pBoneRTS = nullptr;
+
+	~ANIMATION_SOURCE()
+	{
+		SAFE_DELETE_ARRAY(pBoneNames);
+		if (nBonesCount > 0)
+        {
+            for (int i = 0; i < nBonesCount; i++)
+                SAFE_DELETE_ARRAY(pBoneRTS[i]);
+            SAFE_DELETE_ARRAY(pBoneRTS);
+        }
+	}
 };
 
-L3DENGINE_API void LoadFromFile(ANIMATION_DESC *pDesc, ANIMATION_SOURCE*& pSource);
+L3DENGINE_API void LoadAnimation(ANIMATION_DESC*pDesc, ANIMATION_SOURCE*& pSource);

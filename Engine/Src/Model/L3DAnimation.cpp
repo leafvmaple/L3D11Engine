@@ -1,68 +1,32 @@
 #include "stdafx.h"
 #include "L3DAnimation.h"
 
-#include "IO/LFileReader.h"
 #include "Component/L3DTimer.h"
 
-#define ANI_STRING_SIZE 30
-const unsigned	ANI_FILE_MASK = 0x414E494D;
-
-#pragma pack(push,1)
-struct _ANI_FILE_HEADER
-{
-    DWORD dwMask;
-    DWORD dwBlockLength;
-    DWORD dwNumAnimations;
-    DWORD dwType;
-    char  strDesc[ANI_STRING_SIZE];
-};
-
-struct _BONE_ANI
-{
-    DWORD dwNumBones;
-    DWORD dwNumFrames;
-    float fFrameLength;
-};
-
-DWORD FrameToTime(DWORD dwFrame, float fFrameLength)
-{
-    return (DWORD)(fFrameLength * dwFrame + 0.5f);
-}
+#include "IAnimation.h"
 
 HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
 {
-    LBinaryReader Reader;
+    ANIMATION_DESC desc { szAnimation };
+    ANIMATION_SOURCE* pSource = nullptr;
 
-    _ANI_FILE_HEADER* pHead = nullptr;
-    _BONE_ANI* pBoneAni = nullptr;
+    LoadAnimation(&desc, pSource);
 
-    Reader.Init(szAnimation);
-    Reader.Convert(pHead);
-
-    assert(pHead->dwType == ANIMATION_BONE_RTS);
-    assert(pHead->dwMask == ANI_FILE_MASK);
-
-    m_dwAniType = pHead->dwType;
-
-    Reader.Convert(pBoneAni);
-    m_dwNumBone = pBoneAni->dwNumBones;
-    m_dwNumFrames = pBoneAni->dwNumFrames;
-    m_fFrameLength = pBoneAni->fFrameLength;
-    m_nAnimationLen = FrameToTime(m_dwNumFrames - 1, m_fFrameLength);
+    m_dwNumBone = pSource->nBonesCount;
+    m_dwNumFrames = pSource->nFrameCount;
+    m_fFrameLength = pSource->fFrameLength;
+    m_nAnimationLen = pSource->nAnimationLength;
 
     m_BoneNames.resize(m_dwNumBone);
     for (int i = 0; i < m_dwNumBone; i++)
-    {
-        char* pszBoneName = nullptr;
-        Reader.Convert(pszBoneName, ANI_STRING_SIZE);
-        m_BoneNames[i] = pszBoneName;
-    }
+        m_BoneNames[i] = pSource->pBoneNames[i];
 
     m_BoneRTS.resize(m_dwNumBone);
     for (int i = 0; i < m_dwNumBone; i++)
     {
         m_BoneRTS[i].resize(m_dwNumFrames);
-        Reader.Copy(m_BoneRTS[i].data(), m_dwNumFrames);
+        for (int j = 0; j < m_dwNumFrames; j++)
+            m_BoneRTS[i][j] = std::move(pSource->pBoneRTS[i][j]);
     }
 
     m_szName = szAnimation;

@@ -24,7 +24,7 @@ HRESULT L3DMaterialDefine::Create(const char* szFileName)
         auto& ParamObjectArray = JsonDocument["Param"];
         for (auto iter = ParamObjectArray.Begin(), iend = ParamObjectArray.End(); iter != iend; ++iter)
         {
-            auto ParamObject = iter->GetObjectW();
+            auto ParamObject = iter->GetObject();
             std::string sType = ParamObject["Type"].GetString();
 
             if (sType == "Texture")

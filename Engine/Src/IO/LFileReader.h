@@ -43,7 +43,7 @@ public:
 		m_pCursor += nLen;
 	}
 
-	void Copy(TCHAR pModel[], size_t nLen = 0)
+	void Copy(wchar_t pModel[], size_t nLen = 0)
 	{
 		if (!nLen)
 			nLen = strlen((LPCSTR)m_pCursor);
@@ -117,7 +117,7 @@ public:
 		return pBuffer + nLen;
 	}
 
-	static BYTE* Copy(BYTE* pBuffer, TCHAR pModel[], size_t nLen = 0)
+	static BYTE* Copy(BYTE* pBuffer, wchar_t pModel[], size_t nLen = 0)
 	{
 		if (!nLen)
 			nLen = strlen((LPCSTR)pBuffer);
