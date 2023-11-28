@@ -129,11 +129,11 @@ enum ANIMATION_CONTROLLER_PRIORITY
     ANICTL_FORCEDWORD = 0xffffffff,
 };
 
-enum ANIMATION_PLAY_TYPE
+enum class AnimationPlayType
 {
-    ENU_ANIMATIONPLAY_CIRCLE,  // 循环播放动作
-    ENU_ANIMATIONPLAY_ONCE,    // 单次播放动作
-    ENU_ANIMATIONPLAY_FORCE_DWORD = 0xffffffff,
+    Circle,  // 循环播放动作
+    Once,    // 单次播放动作
+    ForceDword = -1,
 };
 
 class L3DENGINE_CLASS IL3DEngine
@@ -171,8 +171,8 @@ public:
     virtual HRESULT SetRotation(const XMFLOAT4& Rotation) = 0;
     virtual HRESULT SetScale(const XMFLOAT3& Scale) = 0;
 
-    virtual HRESULT PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) = 0;
-    virtual HRESULT PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) = 0;
+    virtual HRESULT PlayAnimation(const char* szAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) = 0;
+    virtual HRESULT PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) = 0;
 };
 
 class L3DENGINE_CLASS ILCamera

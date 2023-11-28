@@ -137,13 +137,13 @@ HRESULT L3DModel::SetScale(const XMFLOAT3& Scale)
     return S_OK;
 }
 
-HRESULT L3DModel::PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+HRESULT L3DModel::PlayAnimation(const char* szAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
     return PlaySplitAnimation(szAnimation, SPLIT_ALL, nPlayType, nPriority);
 }
 
 
-HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
     L3DAnimation* pAnimation = nullptr;
 

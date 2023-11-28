@@ -27,10 +27,9 @@ class L3DAnimation
 public:
     HRESULT LoadFromFile(const char* szAnimation);
     HRESULT UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo);
-    HRESULT GetCurFrame(DWORD dwAniPlayLen, DWORD dwPlayType, DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight);
+    HRESULT GetCurFrame(DWORD dwAniPlayLen, AnimationPlayType dwPlayType, DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight);
 
     static void InterpolateRTSKeyFrame(RTS* pResult, const RTS& rtsA, const RTS& rtsB, float fWeight);
-    static void RTS2Matrix(XMMATRIX& mResult, const RTS& rts);
 
     void UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo);
 
@@ -56,7 +55,7 @@ class L3DAnmationController
 public:
     HRESULT UpdateAnimation();
     void SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex);
-    HRESULT StartAnimation(L3DAnimation* pAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
+    HRESULT StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
 
     void FrameMove();
 
@@ -66,10 +65,10 @@ private:
     L3DAnimation* m_pAnimation[ANICTL_COUNT] = { nullptr };
 
 
-    ANIMATION_PLAY_TYPE m_nPlayType[ANICTL_COUNT] = { ENU_ANIMATIONPLAY_CIRCLE };
+    AnimationPlayType   m_nPlayType[ANICTL_COUNT] = { AnimationPlayType::Circle };
     unsigned int        m_nPlayTime[ANICTL_COUNT] = { 0 };
     unsigned int        m_nLastTime[ANICTL_COUNT] = { 0 };
-    unsigned int    m_uCurrentFrame[ANICTL_COUNT] = { 0 };
+    unsigned int        m_uCurrentFrame[ANICTL_COUNT] = { 0 };
 
     std::vector<XMMATRIX> m_BoneMatrix;
 };

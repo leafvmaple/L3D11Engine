@@ -76,8 +76,8 @@ public:
     virtual HRESULT SetRotation(const XMFLOAT4& Rotation) override;
     virtual HRESULT SetScale(const XMFLOAT3& Scale) override;
 
-    virtual HRESULT PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) override;
-    virtual HRESULT PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) override;
+    virtual HRESULT PlayAnimation(const char* szAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) override;
+    virtual HRESULT PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitType, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority) override;
 
     void PrimaryUpdate();
     void UpdateTransform();

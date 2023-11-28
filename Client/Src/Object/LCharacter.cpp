@@ -59,7 +59,7 @@ Exit0:
 }
 
 
-HRESULT LCharacter::PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+HRESULT LCharacter::PlayAnimation(const char* szAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
     return m_pObject->PlayAnimation(szAnimation, nPlayType, nPriority);
 }

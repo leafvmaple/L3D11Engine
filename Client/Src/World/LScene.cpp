@@ -28,7 +28,7 @@ void LScene::Create(const char* szFileName)
 
     pCharacter->AppendRenderEntity(m_piScene);
     pCharacter->SetPosition(XMFLOAT3(0, 0, 0));
-    pCharacter->PlayAnimation("data/source/player/F1/动作/F1b01bi持武器普通待机01a.ani", ENU_ANIMATIONPLAY_CIRCLE, ANICTL_PRIMARY);
+    pCharacter->PlayAnimation("data/source/player/F1/动作/F1b01bi持武器普通待机01a.ani", AnimationPlayType::Circle, ANICTL_PRIMARY);
 }
 
 void LScene::Update(float fDeltaTime)

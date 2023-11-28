@@ -2,6 +2,7 @@
 #include "L3DAnimation.h"
 
 #include "Component/L3DTimer.h"
+#include "Utility/L3DMaths.h"
 
 #include "IAnimation.h"
 
@@ -18,14 +19,14 @@ HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
     m_nAnimationLen = pSource->nAnimationLength;
 
     m_BoneNames.resize(m_dwNumBone);
-    for (int i = 0; i < m_dwNumBone; i++)
+    for (unsigned int i = 0; i < m_dwNumBone; i++)
         m_BoneNames[i] = pSource->pBoneNames[i];
 
     m_BoneRTS.resize(m_dwNumBone);
-    for (int i = 0; i < m_dwNumBone; i++)
+    for (unsigned int i = 0; i < m_dwNumBone; i++)
     {
         m_BoneRTS[i].resize(m_dwNumFrames);
-        for (int j = 0; j < m_dwNumFrames; j++)
+        for (unsigned int j = 0; j < m_dwNumFrames; j++)
             m_BoneRTS[i][j] = std::move(pSource->pBoneRTS[i][j]);
     }
 
@@ -39,23 +40,20 @@ HRESULT L3DAnimation::UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
     return _UpdateRTSRealTime(pUpdateAniInfo);
 }
 
-HRESULT L3DAnimation::GetCurFrame(DWORD dwAniPlayLen, DWORD dwPlayType, DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight)
+HRESULT L3DAnimation::GetCurFrame(DWORD dwAniPlayLen, AnimationPlayType dwPlayType, DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight)
 {
+    DWORD dwSpanTime = dwAniPlayLen % m_nAnimationLen;
+    DWORD dwRepeatTimes = dwAniPlayLen / m_nAnimationLen;
+
+    dwFrame = (DWORD)(dwSpanTime / m_fFrameLength);
+    fWeight = (dwSpanTime - dwFrame * m_fFrameLength) / m_fFrameLength;
+
     switch (dwPlayType)
     {
-    case ENU_ANIMATIONPLAY_CIRCLE:
-    {
-        DWORD dwSpanTime = dwAniPlayLen % m_nAnimationLen;
-
-        dwFrame = (DWORD)(dwSpanTime / m_fFrameLength);
+    case AnimationPlayType::Circle:
         dwFrameTo = (dwFrame + 1) % m_dwNumFrames;
-        fWeight = (dwSpanTime - dwFrame * m_fFrameLength) / m_fFrameLength;
-
         break;
-    }
-    case ENU_ANIMATIONPLAY_ONCE:
-    {
-        DWORD dwRepeatTimes = dwAniPlayLen / m_nAnimationLen;
+    case AnimationPlayType::Once:
         if (dwRepeatTimes >= 1)
         {
             dwFrame = m_dwNumFrames - 1;
@@ -64,13 +62,9 @@ HRESULT L3DAnimation::GetCurFrame(DWORD dwAniPlayLen, DWORD dwPlayType, DWORD& d
         }
         else
         {
-            dwFrame = (DWORD)(dwAniPlayLen / m_fFrameLength);
             dwFrameTo = dwFrame + 1;
-            fWeight = (dwAniPlayLen - dwFrame * m_fFrameLength) / m_fFrameLength;
         }
-
         break;
-    }
     }
 
     return S_OK;
@@ -78,29 +72,12 @@ HRESULT L3DAnimation::GetCurFrame(DWORD dwAniPlayLen, DWORD dwPlayType, DWORD& d
 
 void L3DAnimation::InterpolateRTSKeyFrame(RTS* pResult, const RTS& rtsA, const RTS& rtsB, float fWeight)
 {
-    XMStoreFloat4(&pResult->SRotation, XMQuaternionSlerp(XMLoadFloat4(&rtsA.SRotation), XMLoadFloat4(&rtsB.SRotation), fWeight));
-    XMStoreFloat4(&pResult->Rotation, XMQuaternionSlerp(XMLoadFloat4(&rtsA.Rotation), XMLoadFloat4(&rtsB.Rotation), fWeight));
-    XMStoreFloat3(&pResult->Scale, XMVectorLerp(XMLoadFloat3(&rtsA.Scale), XMLoadFloat3(&rtsB.Scale), fWeight));
-    XMStoreFloat3(&pResult->Translation, XMVectorLerp(XMLoadFloat3(&rtsA.Translation), XMLoadFloat3(&rtsB.Translation), fWeight));
+    L3D::XMFloat4Slerp(&pResult->SRotation, &rtsA.SRotation, &rtsB.SRotation, fWeight);
+    L3D::XMFloat4Slerp(&pResult->Rotation, &rtsA.Rotation, &rtsB.Rotation, fWeight);
+    L3D::XMFloat3Slerp(&pResult->Scale, &rtsA.Scale, &rtsB.Scale, fWeight);
+    L3D::XMFloat3Slerp(&pResult->Translation, &rtsA.Translation, &rtsB.Translation, fWeight);
+
     pResult->Sign = rtsA.Sign;
-}
-
-void L3DAnimation::RTS2Matrix(XMMATRIX& mResult, const RTS& rts)
-{
-    XMMATRIX mRot, mScale, mScaleSignAndTrans;
-    XMFLOAT4X4 m;
-
-    mRot = XMMatrixTranspose(XMMatrixRotationQuaternion(XMLoadFloat4(&rts.Rotation)));
-    mScale = XMMatrixScaling(rts.Scale.x, rts.Scale.y, rts.Scale.z);
-
-    // construct matScaleSign * matTrans
-    mScaleSignAndTrans.r[0] = XMVectorSet(rts.Sign, 0, 0, 0);
-    mScaleSignAndTrans.r[1] = XMVectorSet(0, rts.Sign, 0, 0);
-    mScaleSignAndTrans.r[2] = XMVectorSet(0, 0, rts.Sign, 0);
-    mScaleSignAndTrans.r[3] = XMVectorSet(rts.Translation.x, rts.Translation.y, rts.Translation.z, 1.0f);
-
-    mResult = XMMatrixMultiply(mScale, mRot);
-    mResult = XMMatrixMultiply(mResult, mScaleSignAndTrans);
 }
 
 void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
@@ -119,7 +96,7 @@ HRESULT L3DAnimation::_GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeig
     for (DWORD i = 0; i < m_dwNumBone; i++)
     {
         InterpolateRTSKeyFrame(&rts, m_BoneRTS[i][dwFrame], m_BoneRTS[i][dwFrameTo], fWeight);
-        RTS2Matrix(pResult[i], rts);
+        L3D::RTS2Matrix(pResult[i], rts);
     }
 
     return S_OK;
@@ -170,7 +147,7 @@ void L3DAnmationController::SetBoneAniInfo(unsigned uBoneCount, const std::vecto
     m_UpdateAniInfo.BoneAni.nFirsetBaseBoneIndex = nFirsetBaseBoneIndex;
 }
 
-HRESULT L3DAnmationController::StartAnimation(L3DAnimation* pAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+HRESULT L3DAnmationController::StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
     DWORD dwFrame = 0;
     DWORD dwFrameTo = 0;

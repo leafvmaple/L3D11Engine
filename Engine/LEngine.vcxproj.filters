@@ -107,6 +107,9 @@
     <ClCompile Include="Src\Render\L3DMaterialSystem.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Model\L3DAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Src\Component\L3DTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -119,8 +122,8 @@
     <ClCompile Include="Src\Component\L3DLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Model\L3DAnimation.cpp">
-      <Filter>Source Files\Model</Filter>
+    <ClCompile Include="Src\Utility\L3DMaths.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -205,14 +208,13 @@
     <ClInclude Include="Src\Render\L3DMaterialSystem.h">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Model\L3DAnimation.h" />
     <ClInclude Include="Src\Component\L3DTimer.h" />
     <ClInclude Include="Src\Model\L3DSkeleton.h" />
     <ClInclude Include="Src\Utility\L3DString.h" />
     <ClInclude Include="Src\Flexible\L3DFlexible.h" />
     <ClInclude Include="Src\Component\L3DLog.h" />
-    <ClInclude Include="Src\Model\L3DAnimation.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
+    <ClInclude Include="Src\Utility\L3DMaths.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">

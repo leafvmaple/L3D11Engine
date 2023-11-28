@@ -15,7 +15,7 @@ public:
 
     HRESULT SetPosition(const XMFLOAT3& Position);
 
-    HRESULT PlayAnimation(const char* szAnimation, ANIMATION_PLAY_TYPE nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
+    HRESULT PlayAnimation(const char* szAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
 
     void AppendRenderEntity(ILScene* piScene);
 
