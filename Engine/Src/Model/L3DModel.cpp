@@ -178,8 +178,7 @@ void L3DModel::PrimaryUpdate()
     if (m_pFlexible)
         m_pFlexible->Update(m_BoneCurMatrix, m_World);
 
-    for (auto& child : m_ChildList)
-        child->PrimaryUpdate();
+    std::ranges::for_each(m_ChildList, [](auto& child) { child->PrimaryUpdate(); });
 }
 
 void L3DModel::UpdateTransform()

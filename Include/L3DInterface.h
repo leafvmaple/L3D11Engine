@@ -99,10 +99,10 @@ struct L3D_WINDOW_PARAM
 
 struct L3D_SCENE_RECT
 {
-    float fXStart;
-    float fZStart;
-    float fXWidth;
-    float fZWidth;
+    float fXStart = 0;
+    float fZStart = 0;
+    float fXWidth = 0;
+    float fZWidth = 0;
 };
 
 enum LOBJECT_TYPE

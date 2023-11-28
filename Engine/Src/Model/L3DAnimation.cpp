@@ -168,6 +168,7 @@ HRESULT L3DAnimationController::StartAnimation(L3DAnimation* pAnimation, Animati
     if (m_nPriority < nPriority)
         m_nPriority = nPriority;
 
+    assert(nPriority < _countof(m_pAnimation));
     SAFE_DELETE(m_pAnimation[nPriority]);
 
     m_pAnimation[nPriority] = pAnimation;
@@ -178,25 +179,14 @@ HRESULT L3DAnimationController::StartAnimation(L3DAnimation* pAnimation, Animati
 
 void L3DAnimationController::FrameMove()
 {
-    DWORD nFrame = 0;
-    DWORD nFrameTo = 0;
-    float fWeight = 0;
-
-    unsigned int nNowTime = g_Timer.GetNowTime();
-
     for (int nPriority = 0; nPriority < ANICTL_COUNT; nPriority++)
     {
         if (!m_pAnimation[nPriority])
             continue;
 
         m_pAnimation[nPriority]->FrameMove();
-        m_pAnimation[nPriority]->GetCurFrame(nFrame, nFrameTo, fWeight);
 
         if (m_nPriority == nPriority)
-        {
-            m_UpdateAniInfo.dwFrame = nFrame;
-            m_UpdateAniInfo.dwFrameTo = nFrameTo;
-            m_UpdateAniInfo.fWeight = fWeight;
-        }
+            m_pAnimation[nPriority]->GetCurFrame(m_UpdateAniInfo.dwFrame, m_UpdateAniInfo.dwFrameTo, m_UpdateAniInfo.fWeight);
     }
 }
