@@ -18,7 +18,7 @@ struct ANIMATION_UPDATE_INFO
         std::vector<XMMATRIX>* pBoneMatrix = nullptr;
         unsigned int nBoneCount = 0;
         const std::vector<BONEINFO>* pBoneInfo = nullptr;
-        unsigned int nFirsetBaseBoneIndex = 0;
+        unsigned int nFirstBaseBoneIndex = 0;
     } BoneAni;
 };
 
@@ -27,7 +27,11 @@ class L3DAnimation
 public:
     HRESULT LoadFromFile(const char* szAnimation);
     HRESULT UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo);
-    HRESULT GetCurFrame(DWORD dwAniPlayLen, AnimationPlayType dwPlayType, DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight);
+
+    HRESULT GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight);
+
+    void Reset(AnimationPlayType nPlayType);
+    void FrameMove();
 
     static void InterpolateRTSKeyFrame(RTS* pResult, const RTS& rtsA, const RTS& rtsB, float fWeight);
 
@@ -40,14 +44,19 @@ private:
     float m_fFrameLength = 0.f; // m_fFrameLength
     DWORD m_nAnimationLen = 0;  // m_nAnimationLen
 
+    AnimationPlayType   m_nPlayType = AnimationPlayType::Circle;
+    unsigned int        m_nPlayTime = 0;
+    unsigned int        m_nLastTime = 0;
+    unsigned int        m_uCurrentFrame = 0;
+
     std::string m_szName;
     std::vector<std::string> m_BoneNames;
     std::vector<std::vector<RTS>> m_BoneRTS;
 
-    HRESULT _GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, XMMATRIX* pResult);
+    HRESULT _GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, std::vector<XMMATRIX>& pResult);
     HRESULT _UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo);
 
-    void _UpdateToObj(std::vector<XMMATRIX>& pBoneMatrix, const std::vector<BONEINFO>& pBoneInfo, unsigned uIndex, const XMMATRIX& mBase);
+    void _UpdateToObj(std::vector<XMMATRIX>& pBoneMatrix, const std::vector<BONEINFO>& BoneInfo, unsigned int uIndex, const XMMATRIX& mBase);
 };
 
 class L3DAnmationController
@@ -63,12 +72,6 @@ public:
 private:
     DWORD m_nPriority = 0;
     L3DAnimation* m_pAnimation[ANICTL_COUNT] = { nullptr };
-
-
-    AnimationPlayType   m_nPlayType[ANICTL_COUNT] = { AnimationPlayType::Circle };
-    unsigned int        m_nPlayTime[ANICTL_COUNT] = { 0 };
-    unsigned int        m_nLastTime[ANICTL_COUNT] = { 0 };
-    unsigned int        m_uCurrentFrame[ANICTL_COUNT] = { 0 };
 
     std::vector<XMMATRIX> m_BoneMatrix;
 };

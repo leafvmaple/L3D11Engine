@@ -40,15 +40,15 @@ HRESULT L3DAnimation::UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
     return _UpdateRTSRealTime(pUpdateAniInfo);
 }
 
-HRESULT L3DAnimation::GetCurFrame(DWORD dwAniPlayLen, AnimationPlayType dwPlayType, DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight)
+HRESULT L3DAnimation::GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight)
 {
-    DWORD dwSpanTime = dwAniPlayLen % m_nAnimationLen;
-    DWORD dwRepeatTimes = dwAniPlayLen / m_nAnimationLen;
+    DWORD dwSpanTime = m_nPlayTime % m_nAnimationLen;
+    DWORD dwRepeatTimes = m_nPlayTime / m_nAnimationLen;
 
-    dwFrame = (DWORD)(dwSpanTime / m_fFrameLength);
+    dwFrame = m_uCurrentFrame;
     fWeight = (dwSpanTime - dwFrame * m_fFrameLength) / m_fFrameLength;
 
-    switch (dwPlayType)
+    switch (m_nPlayType)
     {
     case AnimationPlayType::Circle:
         dwFrameTo = (dwFrame + 1) % m_dwNumFrames;
@@ -70,6 +70,24 @@ HRESULT L3DAnimation::GetCurFrame(DWORD dwAniPlayLen, AnimationPlayType dwPlayTy
     return S_OK;
 }
 
+void L3DAnimation::Reset(AnimationPlayType nPlayType)
+{
+    m_nLastTime = g_Timer.GetNowTime();
+    m_nPlayType = nPlayType;
+    m_nPlayTime = 0;
+    m_uCurrentFrame = 0;
+}
+
+void L3DAnimation::FrameMove()
+{
+    unsigned int nNowTime = g_Timer.GetNowTime();
+
+    m_nPlayTime += nNowTime - m_nLastTime;
+    m_nLastTime = nNowTime;
+
+    m_uCurrentFrame = (DWORD)((m_nPlayTime % m_nAnimationLen) / m_fFrameLength);
+}
+
 void L3DAnimation::InterpolateRTSKeyFrame(RTS* pResult, const RTS& rtsA, const RTS& rtsB, float fWeight)
 {
     L3D::XMFloat4Slerp(&pResult->SRotation, &rtsA.SRotation, &rtsB.SRotation, fWeight);
@@ -84,13 +102,13 @@ void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 {
     auto& BoneMatrix = *pUpdateAniInfo->BoneAni.pBoneMatrix;
     const auto& BoneInfo = *pUpdateAniInfo->BoneAni.pBoneInfo;
-    unsigned int uFirstBaseBoneIndex = pUpdateAniInfo->BoneAni.nFirsetBaseBoneIndex;
+    unsigned int uFirstBaseBoneIndex = pUpdateAniInfo->BoneAni.nFirstBaseBoneIndex;
 
     for (unsigned int nChild : BoneInfo[uFirstBaseBoneIndex].ChildIndies)
         _UpdateToObj(BoneMatrix, BoneInfo, nChild, BoneMatrix[uFirstBaseBoneIndex]);
 }
 
-HRESULT L3DAnimation::_GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, XMMATRIX* pResult)
+HRESULT L3DAnimation::_GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, std::vector<XMMATRIX>& pResult)
 {
     RTS rts;
     for (DWORD i = 0; i < m_dwNumBone; i++)
@@ -112,7 +130,7 @@ HRESULT L3DAnimation::_UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo)
     dwFrameTo = pAnimationInfo->dwFrameTo;
     fWeight = pAnimationInfo->fWeight;
 
-    _GetBoneMatrix(dwFrame, dwFrameTo, fWeight, pAnimationInfo->BoneAni.pBoneMatrix->data());
+    _GetBoneMatrix(dwFrame, dwFrameTo, fWeight, *pAnimationInfo->BoneAni.pBoneMatrix);
 
     return S_OK;
 }
@@ -137,34 +155,23 @@ HRESULT L3DAnmationController::UpdateAnimation()
 
 void L3DAnmationController::SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex)
 {
-    m_BoneMatrix.resize(uBoneCount);
-    for (auto& bone : m_BoneMatrix)
-        bone = XMMatrixIdentity();
+    m_BoneMatrix.assign(uBoneCount, XMMatrixIdentity());
 
     m_UpdateAniInfo.BoneAni.nBoneCount = uBoneCount;
     m_UpdateAniInfo.BoneAni.pBoneInfo = pBoneInfo;
     m_UpdateAniInfo.BoneAni.pBoneMatrix = &m_BoneMatrix;
-    m_UpdateAniInfo.BoneAni.nFirsetBaseBoneIndex = nFirsetBaseBoneIndex;
+    m_UpdateAniInfo.BoneAni.nFirstBaseBoneIndex = nFirsetBaseBoneIndex;
 }
 
 HRESULT L3DAnmationController::StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
-    DWORD dwFrame = 0;
-    DWORD dwFrameTo = 0;
-    float fWeight = 0.f;
-
     if (m_nPriority < nPriority)
         m_nPriority = nPriority;
 
     SAFE_DELETE(m_pAnimation[nPriority]);
 
     m_pAnimation[nPriority] = pAnimation;
-    m_nPlayType[nPriority]  = nPlayType;
-    m_nLastTime[nPriority]  = g_Timer.GetNowTime();
-    m_nPlayTime[nPriority]  = 0;
-
-    pAnimation->GetCurFrame(0, nPlayType, dwFrame, dwFrameTo, fWeight);
-    m_uCurrentFrame[nPriority] = dwFrame;
+    pAnimation->Reset(nPlayType);
 
     return S_OK;
 }
@@ -182,13 +189,8 @@ void L3DAnmationController::FrameMove()
         if (!m_pAnimation[nPriority])
             continue;
 
-        DWORD nTime = (DWORD)(nNowTime - m_nLastTime[nPriority]);
-
-        m_nPlayTime[nPriority] += nTime;
-        m_nLastTime[nPriority] = nNowTime;
-
-        m_pAnimation[nPriority]->GetCurFrame(m_nPlayTime[nPriority], m_nPlayType[nPriority], nFrame, nFrameTo, fWeight);
-        m_uCurrentFrame[nPriority] = nFrame;
+        m_pAnimation[nPriority]->FrameMove();
+        m_pAnimation[nPriority]->GetCurFrame(nFrame, nFrameTo, fWeight);
 
         if (m_nPriority == nPriority)
         {

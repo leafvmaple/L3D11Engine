@@ -156,6 +156,7 @@ HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitT
     pAnimation->LoadFromFile(szAnimation);
 
     if (m_pSkeleton)
+        // 将骨架的骨骼信息传递给动画控制器
         m_p3DAniController[nSplitType]->SetBoneAniInfo(
             m_pSkeleton->m_nNumBones,
             &m_pSkeleton->m_BoneInfo,
