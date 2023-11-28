@@ -82,12 +82,12 @@ void L3DAnimation::InterpolateRTSKeyFrame(RTS* pResult, const RTS& rtsA, const R
 
 void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 {
-    XMMATRIX* pBoneMatrix = pUpdateAniInfo->BoneAni.pBoneMatrix->data();
-    const BONEINFO* pBoneInfo = pUpdateAniInfo->BoneAni.pBoneInfo->data();
+    auto& BoneMatrix = *pUpdateAniInfo->BoneAni.pBoneMatrix;
+    const auto& BoneInfo = *pUpdateAniInfo->BoneAni.pBoneInfo;
     unsigned int uFirstBaseBoneIndex = pUpdateAniInfo->BoneAni.nFirsetBaseBoneIndex;
 
-    for (unsigned nChild : pBoneInfo[uFirstBaseBoneIndex].ChildIndies)
-        _UpdateToObj(pBoneMatrix, pBoneInfo, nChild, pBoneMatrix[uFirstBaseBoneIndex]);
+    for (unsigned int nChild : BoneInfo[uFirstBaseBoneIndex].ChildIndies)
+        _UpdateToObj(BoneMatrix, BoneInfo, nChild, BoneMatrix[uFirstBaseBoneIndex]);
 }
 
 HRESULT L3DAnimation::_GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, XMMATRIX* pResult)
@@ -117,14 +117,14 @@ HRESULT L3DAnimation::_UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo)
     return S_OK;
 }
 
-void L3DAnimation::_UpdateToObj(XMMATRIX* pBoneMatrix, const BONEINFO* pBoneInfo, unsigned uIndex, const XMMATRIX& mBase)
+void L3DAnimation::_UpdateToObj(std::vector<XMMATRIX>& BoneMatrix, const std::vector<BONEINFO>& BoneInfo, unsigned int uIndex, const XMMATRIX& mBase)
 {
-    const BONEINFO& Bone = pBoneInfo[uIndex];
+    const BONEINFO& Bone = BoneInfo[uIndex];
 
-    pBoneMatrix[uIndex] = XMMatrixMultiply(pBoneMatrix[uIndex], mBase);
+    BoneMatrix[uIndex] = XMMatrixMultiply(BoneMatrix[uIndex], mBase);
 
-    for (unsigned nChild : Bone.ChildIndies)
-        _UpdateToObj(pBoneMatrix, pBoneInfo, nChild, pBoneMatrix[uIndex]);
+    for (unsigned int nChild : Bone.ChildIndies)
+        _UpdateToObj(BoneMatrix, BoneInfo, nChild, BoneMatrix[uIndex]);
 }
 
 HRESULT L3DAnmationController::UpdateAnimation()

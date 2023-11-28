@@ -34,11 +34,11 @@ public:
     void UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo);
 
 private:
-    DWORD m_dwAniType    = 0;
-    DWORD m_dwNumBone    = 0;
-    DWORD m_dwNumFrames  = 0;
-    float m_fFrameLength = 0.f;
-    DWORD m_nAnimationLen     = 0;
+    DWORD m_dwAniType    = 0;   // m_dwAniType
+    DWORD m_dwNumBone    = 0;   // m_dwNumBone
+    DWORD m_dwNumFrames  = 0;   // m_dwNumFrames
+    float m_fFrameLength = 0.f; // m_fFrameLength
+    DWORD m_nAnimationLen = 0;  // m_nAnimationLen
 
     std::string m_szName;
     std::vector<std::string> m_BoneNames;
@@ -47,7 +47,7 @@ private:
     HRESULT _GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, XMMATRIX* pResult);
     HRESULT _UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo);
 
-    void _UpdateToObj(XMMATRIX* pBoneMatrix, const BONEINFO* pBoneInfo, unsigned uIndex, const XMMATRIX& mBase);
+    void _UpdateToObj(std::vector<XMMATRIX>& pBoneMatrix, const std::vector<BONEINFO>& pBoneInfo, unsigned uIndex, const XMMATRIX& mBase);
 };
 
 class L3DAnmationController
