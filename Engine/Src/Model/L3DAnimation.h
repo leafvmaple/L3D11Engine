@@ -30,7 +30,7 @@ public:
 
     HRESULT GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight);
 
-    void Reset(AnimationPlayType nPlayType);
+    void Start(AnimationPlayType nPlayType);
     void FrameMove();
 
     static void InterpolateRTSKeyFrame(RTS* pResult, const RTS& rtsA, const RTS& rtsB, float fWeight);
@@ -59,7 +59,7 @@ private:
     void _UpdateToObj(std::vector<XMMATRIX>& pBoneMatrix, const std::vector<BONEINFO>& BoneInfo, unsigned int uIndex, const XMMATRIX& mBase);
 };
 
-class L3DAnmationController
+class L3DAnimationController
 {
 public:
     HRESULT UpdateAnimation();

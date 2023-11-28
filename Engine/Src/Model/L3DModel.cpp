@@ -150,7 +150,7 @@ HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitT
     assert(nSplitType == SPLIT_ALL);
 
     if (!m_p3DAniController[nSplitType])
-        m_p3DAniController[nSplitType] = new L3DAnmationController;
+        m_p3DAniController[nSplitType] = new L3DAnimationController;
 
     pAnimation = new L3DAnimation;
     pAnimation->LoadFromFile(szAnimation);

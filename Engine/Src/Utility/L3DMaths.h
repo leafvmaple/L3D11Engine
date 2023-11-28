@@ -11,7 +11,7 @@ namespace L3D {
     }
 
     inline void XMFloat4Slerp(XMFLOAT4* pResult, const XMFLOAT4* p0, const XMFLOAT4* p1, float fWeight) {
-        XMStoreFloat4(pResult, XMVectorLerp(XMLoadFloat4(p0), XMLoadFloat4(p1), fWeight));
+        XMStoreFloat4(pResult, XMQuaternionSlerp(XMLoadFloat4(p0), XMLoadFloat4(p1), fWeight));
     }
 
     void RTS2Matrix(XMMATRIX& mResult, const RTS& rts);

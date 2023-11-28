@@ -70,7 +70,7 @@ HRESULT L3DAnimation::GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeig
     return S_OK;
 }
 
-void L3DAnimation::Reset(AnimationPlayType nPlayType)
+void L3DAnimation::Start(AnimationPlayType nPlayType)
 {
     m_nLastTime = g_Timer.GetNowTime();
     m_nPlayType = nPlayType;
@@ -145,7 +145,7 @@ void L3DAnimation::_UpdateToObj(std::vector<XMMATRIX>& BoneMatrix, const std::ve
         _UpdateToObj(BoneMatrix, BoneInfo, nChild, BoneMatrix[uIndex]);
 }
 
-HRESULT L3DAnmationController::UpdateAnimation()
+HRESULT L3DAnimationController::UpdateAnimation()
 {
     m_pAnimation[m_nPriority]->UpdateAnimation(&m_UpdateAniInfo);
     m_pAnimation[m_nPriority]->UpdateBone(&m_UpdateAniInfo);
@@ -153,7 +153,7 @@ HRESULT L3DAnmationController::UpdateAnimation()
     return S_OK;
 }
 
-void L3DAnmationController::SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex)
+void L3DAnimationController::SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex)
 {
     m_BoneMatrix.assign(uBoneCount, XMMatrixIdentity());
 
@@ -163,7 +163,7 @@ void L3DAnmationController::SetBoneAniInfo(unsigned uBoneCount, const std::vecto
     m_UpdateAniInfo.BoneAni.nFirstBaseBoneIndex = nFirsetBaseBoneIndex;
 }
 
-HRESULT L3DAnmationController::StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+HRESULT L3DAnimationController::StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
     if (m_nPriority < nPriority)
         m_nPriority = nPriority;
@@ -171,12 +171,12 @@ HRESULT L3DAnmationController::StartAnimation(L3DAnimation* pAnimation, Animatio
     SAFE_DELETE(m_pAnimation[nPriority]);
 
     m_pAnimation[nPriority] = pAnimation;
-    pAnimation->Reset(nPlayType);
+    pAnimation->Start(nPlayType);
 
     return S_OK;
 }
 
-void L3DAnmationController::FrameMove()
+void L3DAnimationController::FrameMove()
 {
     DWORD nFrame = 0;
     DWORD nFrameTo = 0;

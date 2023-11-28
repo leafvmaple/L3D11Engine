@@ -22,7 +22,7 @@ class L3DMaterial;
 class L3DRenderUnit;
 class L3DTexture;
 class L3DFlexible;
-class L3DAnmationController;
+class L3DAnimationController;
 
 struct MATERIAL_INSTANCE_DATA;
 // Temp
@@ -127,7 +127,7 @@ private:
     L3DMesh* m_p3DMesh = nullptr;
     L3DSkeleton* m_pSkeleton = nullptr;
     L3DFlexible* m_pFlexible = nullptr;
-    L3DAnmationController* m_p3DAniController[SPLIT_COUNT] = { nullptr };
+    L3DAnimationController* m_p3DAniController[SPLIT_COUNT] = { nullptr };
 
     std::vector<XMMATRIX> m_BoneCurMatrix; // µ±Ç°¹Ç÷À¾ØÕóµÄÄæ
     std::vector<L3DModel*> m_ChildList;
