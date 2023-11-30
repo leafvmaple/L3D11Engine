@@ -15,7 +15,7 @@ struct ANIMATION_UPDATE_INFO
     float fWeight   = 0.f;
     struct _BoneAni
     {
-        std::vector<XMMATRIX>* pBoneMatrix = nullptr; // 旋转矩阵
+        std::vector<XMMATRIX>* pBoneMatrix = nullptr; // 变换矩阵
         unsigned int nBoneCount = 0;
         const std::vector<BONEINFO>* pBoneInfo = nullptr; // 骨骼基础信息
         unsigned int nFirstBaseBoneIndex = 0;

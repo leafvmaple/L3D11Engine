@@ -98,7 +98,7 @@ public:
     ID3D11Buffer* m_piIndexBuffer  = nullptr;
 
     std::vector<_SUBSET> m_Subset;
-    std::vector<XMMATRIX> m_BoneMatrix; // 骨骼偏移值的逆
+    std::vector<XMMATRIX> m_BoneMatrix; // 初始状态下(T Pose)骨骼的绝对（到原点）变换矩阵
 
     unsigned int m_nVertexSize  = 0;
     unsigned int m_dwBoneCount  = 0;

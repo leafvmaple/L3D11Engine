@@ -194,7 +194,7 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
     std::vector<XMMATRIX> matBone;
     MESH_SHARED_CB MeshCB;
 
-    // matBone是相对于原始骨骼位置的偏移值
+    // matBone是骨骼相对于初始状态(T Pose)的偏移值
     matBone.resize(m_BoneCurMatrix.size());
     for (int i = 0; i < m_BoneCurMatrix.size(); i++)
         matBone[i] = XMMatrixMultiply(m_p3DMesh->m_pL3DBone->m_BoneOffset[i], m_BoneCurMatrix[i]);
@@ -322,6 +322,7 @@ void L3DModel::_FrameMove()
 
 void L3DModel::_CreateBoneMatrix()
 {
+    // 初始化时使用初始状态的骨骼矩阵，保证无动作状态下的顶点位置为初始状态
     m_BoneCurMatrix = m_p3DMesh->m_BoneMatrix;
 }
 

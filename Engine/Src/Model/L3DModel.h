@@ -129,7 +129,7 @@ private:
     L3DFlexible* m_pFlexible = nullptr;
     L3DAnimationController* m_p3DAniController[SPLIT_COUNT] = { nullptr };
 
-    std::vector<XMMATRIX> m_BoneCurMatrix; // 当前骨骼矩阵的逆
+    std::vector<XMMATRIX> m_BoneCurMatrix; // 当前骨骼的绝对变换矩阵
     std::vector<L3DModel*> m_ChildList;
 
     L3D_BIND_INFO m_BindInfo;
@@ -144,7 +144,7 @@ private:
     XMFLOAT4 m_Rotation;
     XMFLOAT3 m_Scale;
 
-    XMFLOAT4X4 m_World;
+    XMFLOAT4X4 m_World; // 当前模型的世界变换矩阵
 
     int m_nLOD = 0;
     int m_nGroup = 0;

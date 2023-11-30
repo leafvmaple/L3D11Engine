@@ -14,18 +14,15 @@ void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
         {
             int nParentIndex = boneInfo.uParentIndex;
             const auto& parentInfo = pMesh->m_pL3DBone->m_BoneInfo[nParentIndex];
-            FLEXIBLE_BONE* pDriverBone = nullptr;
 
             auto it = m_vecDriverBone.find(nParentIndex);
             if (it == m_vecDriverBone.end())
-                it = m_vecDriverBone.emplace(nParentIndex, FLEXIBLE_BONE { nParentIndex, parentInfo.sBoneName }).first;
-            pDriverBone = &it->second;
+            {
+                it = m_vecDriverBone.emplace(nParentIndex, FLEXIBLE_BONE{ nParentIndex }).first;
+                XMStoreFloat4x4(&it->second.InitPose, pMesh->m_BoneMatrix[nParentIndex]);
+            }
 
-            const auto& boneOffset = pMesh->m_pL3DBone->m_BoneOffset[nParentIndex];
-            XMStoreFloat4x4(&pDriverBone->InitPose, XMMatrixInverse(nullptr, boneOffset));
-            pDriverBone->WorldPose = pDriverBone->InitPose;
-
-            _AppendBoneOfChainFromMesh(pMesh, pDriverBone, i);
+            _AppendBoneOfChainFromMesh(pMesh, &it->second, i);
         }
     }
 }
@@ -39,12 +36,14 @@ void L3DFlexible::Update(std::vector<XMMATRIX>& BoneMatrix, const XMFLOAT4X4& mW
     xmWorldInvert = XMMatrixInverse(nullptr, xmWorld);
 
     // TODO
+    // 将柔体父骨骼的绝对变换矩阵转为世界矩阵，方便在世界中进行物理模拟
     for (auto& it : m_vecDriverBone)
          XMStoreFloat4x4(&it.second.WorldPose, XMMatrixMultiply(BoneMatrix[it.second.nIndex], xmWorld));
 
     // if (m_FlexibleBodyUpdateState == KG3D_FLEX_UPDATE_FROM_ANI)
     _UpdateFromAni();
 
+    // 将柔体骨骼世界矩阵转回绝对矩阵
     for (auto& bone : m_vecNormalBone)
         BoneMatrix[bone.nIndex] = XMMatrixMultiply(XMLoadFloat4x4(&bone.WorldPose), xmWorldInvert);
 }
@@ -64,7 +63,7 @@ void L3DFlexible::_UpdateFromAni()
         for (auto child : driveBone.vecBoneChain)
         {
             FLEXIBLE_BONE& normalBone = m_vecNormalBone[child];
-            XMStoreFloat4x4(&(normalBone.WorldPose), XMLoadFloat4x4(&(normalBone.InitPose)) * xmMovement);
+            XMStoreFloat4x4(&normalBone.WorldPose, XMLoadFloat4x4(&normalBone.InitPose) * xmMovement);
         }
     }
 

@@ -102,7 +102,7 @@ void L3DAnimation::InterpolateRTSKeyFrame(RTS* pResult, const RTS& rtsA, const R
     pResult->Sign = rtsA.Sign;
 }
 
-// 递归获取骨骼到根骨骼的绝对旋转矩阵并更新到pBoneMatrix
+// 递归将相对变换矩阵更新为绝对变换矩阵
 void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 {
     auto& BoneMatrix = *pUpdateAniInfo->BoneAni.pBoneMatrix;
@@ -153,7 +153,7 @@ void L3DAnimation::_UpdateToObj(std::vector<XMMATRIX>& BoneMatrix, const std::ve
         _UpdateToObj(BoneMatrix, BoneInfo, nChild, BoneMatrix[uIndex]);
 }
 
-// 根据当前帧状态计算骨骼绝对旋转矩阵并更新到pBoneMatrix
+// 根据当前帧状态计算骨骼绝对变换矩阵并更新到pBoneMatrix
 HRESULT L3DAnimationController::UpdateAnimation()
 {
     m_pAnimation[m_nPriority]->UpdateAnimation(&m_UpdateAniInfo);
