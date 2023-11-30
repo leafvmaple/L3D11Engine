@@ -7,9 +7,9 @@
 // ∂¡»°»·ÃÂπ«˜¿
 void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
 {
-    for (int i = 0; i < pMesh->m_dwBoneCount; i++) 
+    for (int nBoneIndex = 0; nBoneIndex < pMesh->m_dwBoneCount; nBoneIndex++) 
     {
-        const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[i];
+        const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[nBoneIndex];
         if (boneInfo.sBoneName.IsFlexibleBone())
         {
             int nParentIndex = boneInfo.uParentIndex;
@@ -22,7 +22,7 @@ void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
                 XMStoreFloat4x4(&it->second.InitPose, pMesh->m_BoneMatrix[nParentIndex]);
             }
 
-            _AppendBoneOfChainFromMesh(pMesh, &it->second, i);
+            _AppendBoneOfChainFromMesh(pMesh, &it->second, nBoneIndex);
         }
     }
 }
