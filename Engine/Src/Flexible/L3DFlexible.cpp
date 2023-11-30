@@ -4,6 +4,7 @@
 #include "Model/L3DMesh.h"
 #include "Model/L3DBone.h"
 
+// ∂¡»°»·ÃÂπ«˜¿
 void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
 {
     for (int i = 0; i < pMesh->m_dwBoneCount; i++) 
@@ -11,16 +12,17 @@ void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
         const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[i];
         if (boneInfo.sBoneName.IsFlexibleBone())
         {
-            int nParentIndex = pMesh->m_pL3DBone->m_BoneInfo[i].uParentIndex;
+            int nParentIndex = boneInfo.uParentIndex;
             const auto& parentInfo = pMesh->m_pL3DBone->m_BoneInfo[nParentIndex];
             FLEXIBLE_BONE* pDriverBone = nullptr;
 
-            if (m_vecDriverBone.find(nParentIndex) == m_vecDriverBone.end())
-                m_vecDriverBone[nParentIndex] = FLEXIBLE_BONE { nParentIndex, parentInfo.sBoneName };
+            auto it = m_vecDriverBone.find(nParentIndex);
+            if (it == m_vecDriverBone.end())
+                it = m_vecDriverBone.emplace(nParentIndex, FLEXIBLE_BONE { nParentIndex, parentInfo.sBoneName }).first;
+            pDriverBone = &it->second;
 
-            pDriverBone = &m_vecDriverBone[nParentIndex];
-
-            XMStoreFloat4x4(&pDriverBone->InitPose, XMMatrixInverse(nullptr, pMesh->m_pL3DBone->m_BoneOffset[nParentIndex]));
+            const auto& boneOffset = pMesh->m_pL3DBone->m_BoneOffset[nParentIndex];
+            XMStoreFloat4x4(&pDriverBone->InitPose, XMMatrixInverse(nullptr, boneOffset));
             pDriverBone->WorldPose = pDriverBone->InitPose;
 
             _AppendBoneOfChainFromMesh(pMesh, pDriverBone, i);
@@ -77,6 +79,6 @@ void L3DFlexible::_AppendBoneOfChainFromMesh(L3DMesh* pMesh, FLEXIBLE_BONE* pDri
     XMStoreFloat4x4(&bone.InitPose, XMMatrixInverse(nullptr, pMesh->m_pL3DBone->m_BoneInvPxPose[nIndex]));
     pDriverBone->vecBoneChain.push_back(m_vecNormalBone.size() - 1);
 
-    for (auto childIndex : pMesh->m_pL3DBone->m_BoneInfo[nIndex].ChildIndies)
+    for (auto childIndex : boneInfo.ChildIndies)
         _AppendBoneOfChainFromMesh(pMesh, pDriverBone, childIndex);
 }

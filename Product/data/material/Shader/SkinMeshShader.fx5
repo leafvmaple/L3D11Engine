@@ -46,45 +46,24 @@ struct VertexOutput
 MaterialVertexParameters GetMaterialVertexParameters(VertexInput vin)
 {
     MaterialVertexParameters Params =(MaterialVertexParameters)0;
-    float4 position;
-    float3 normal;
-    float3 tangent;
 
-    float3x3 InvTransposeCustomMatrixBonesX = GetMatrixForNormal(g_CustomMatrixBones[vin.Indices.x]);
-    position = mul(vin.Position, g_CustomMatrixBones[vin.Indices.x]) * vin.Weights.x;
-    normal   = mul(vin.Normal, InvTransposeCustomMatrixBonesX) * vin.Weights.x;
-    tangent  = mul(vin.Tangent.xyz, InvTransposeCustomMatrixBonesX) * vin.Weights.x;
+    float4 position = mul(vin.Position, g_CustomMatrixBones[vin.Indices.x]) * vin.Weights.x;
 
     // 第二个关联的骨骼
     if (vin.Indices.y != 255)
-    {
-        float3x3 InvTransposeCustomMatrixBonesY = GetMatrixForNormal(g_CustomMatrixBones[vin.Indices.y]);
         position += mul(vin.Position, g_CustomMatrixBones[vin.Indices.y]) * vin.Weights.y;
-        normal += mul(vin.Normal, InvTransposeCustomMatrixBonesY) * vin.Weights.y;
-        tangent += mul(vin.Tangent.xyz, InvTransposeCustomMatrixBonesY) * vin.Weights.y;
-    }
+
     // 第三个关联的骨骼
     if (vin.Indices.z != 255)                                              
-    {
-        float3x3 InvTransposeCustomMatrixBonesZ = GetMatrixForNormal(g_CustomMatrixBones[vin.Indices.z]); 
-        position    += mul(vin.Position,      g_CustomMatrixBones[vin.Indices.z])           * vin.Weights.z;
-        normal      += mul(vin.Normal,        InvTransposeCustomMatrixBonesZ)					* vin.Weights.z;
-        tangent     += mul(vin.Tangent.xyz,   InvTransposeCustomMatrixBonesZ)					* vin.Weights.z;
-    }                                              
+        position += mul(vin.Position, g_CustomMatrixBones[vin.Indices.z]) * vin.Weights.z;
+                                             
     // 第四个关联的骨骼
     if (vin.Indices.w != 255)                                              
-    {
-        float3x3 InvTransposeCustomMatrixBonesW = GetMatrixForNormal(g_CustomMatrixBones[vin.Indices.w]);
-        position    += mul(vin.Position,      g_CustomMatrixBones[vin.Indices.w])           * vin.Weights.w;
-        normal      += mul(vin.Normal,        InvTransposeCustomMatrixBonesW)					* vin.Weights.w;
-        tangent     += mul(vin.Tangent.xyz,   InvTransposeCustomMatrixBonesW)					* vin.Weights.w;
-    }
+        position += mul(vin.Position, g_CustomMatrixBones[vin.Indices.w]) * vin.Weights.w;
 
     Params.VertexPosition = position;
     Params.VertexColor = vin.Color;
-
     Params.TexCoords = vin.TexCoords;
-
     Params.MatrixWorld = g_ModelParams.MatrixWorld;
 
     return Params;

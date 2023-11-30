@@ -217,7 +217,7 @@
     <ClInclude Include="Src\Utility\L3DMaths.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">
+    <FxCompile Include="..\Product\data\material\Shader\SkinMeshShader.fx5">
       <Filter>Shader Files</Filter>
     </FxCompile>
   </ItemGroup>

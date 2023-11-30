@@ -285,13 +285,13 @@ void L3DModel::_UpdateAnimation()
 void L3DModel::_UpdateBuffer()
 {
     HRESULT hResult = E_FAIL;
-    std::vector<XMMATRIX>* pBoneMatrixAll = nullptr;
+    std::vector<XMMATRIX>* pBoneMatrix = nullptr;
     std::vector<int>* pSkeletonIndies = nullptr;
 
     BOOL_SUCCESS_EXIT(!m_p3DAniController[SPLIT_ALL]);
 
-    pBoneMatrixAll = m_p3DAniController[SPLIT_ALL]->m_UpdateAniInfo.BoneAni.pBoneMatrix;
-    BOOL_SUCCESS_EXIT(!pBoneMatrixAll);
+    pBoneMatrix = m_p3DAniController[SPLIT_ALL]->m_UpdateAniInfo.BoneAni.pBoneMatrix;
+    BOOL_SUCCESS_EXIT(!pBoneMatrix);
 
     for (auto& pModel : m_ChildList)
     {
@@ -306,7 +306,7 @@ void L3DModel::_UpdateBuffer()
         {
             unsigned int nIndex = (*pSkeletonIndies)[i];
             if (nIndex != -1)
-                pModel->m_BoneCurMatrix[i] = (*pBoneMatrixAll)[nIndex];
+                pModel->m_BoneCurMatrix[i] = (*pBoneMatrix)[nIndex];
         }
     }
 

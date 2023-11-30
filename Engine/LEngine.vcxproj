@@ -233,7 +233,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Src\Utility\L3DMaths.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Client\Res\Shader\Material\SimpleSkinMeshShader.fx5">
+    <FxCompile Include="..\Product\data\material\Shader\SkinMeshShader.fx5">
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>

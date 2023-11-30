@@ -4,6 +4,7 @@
 #include "IAnimation.h"
 
 namespace L3D {
+    // RTS×ª¾ØÕó
     void RTS2Matrix(XMMATRIX& mResult, const RTS& rts) {
         XMMATRIX mRot = XMMatrixTranspose(XMMatrixRotationQuaternion(XMLoadFloat4(&rts.Rotation)));
         XMMATRIX mScale = XMMatrixScaling(rts.Scale.x, rts.Scale.y, rts.Scale.z);

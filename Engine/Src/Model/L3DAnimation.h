@@ -15,9 +15,9 @@ struct ANIMATION_UPDATE_INFO
     float fWeight   = 0.f;
     struct _BoneAni
     {
-        std::vector<XMMATRIX>* pBoneMatrix = nullptr;
+        std::vector<XMMATRIX>* pBoneMatrix = nullptr; // 旋转矩阵
         unsigned int nBoneCount = 0;
-        const std::vector<BONEINFO>* pBoneInfo = nullptr;
+        const std::vector<BONEINFO>* pBoneInfo = nullptr; // 骨骼基础信息
         unsigned int nFirstBaseBoneIndex = 0;
     } BoneAni;
 };
@@ -53,7 +53,7 @@ private:
     std::vector<std::string> m_BoneNames;
     std::vector<std::vector<RTS>> m_BoneRTS;
 
-    HRESULT _GetBoneMatrix(DWORD dwFrame, DWORD dwFrameTo, float fWeight, std::vector<XMMATRIX>& pResult);
+    HRESULT _GetBoneMatrix(std::vector<XMMATRIX>& pResult, DWORD dwFrame, DWORD dwFrameTo, float fWeight);
     HRESULT _UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo);
 
     void _UpdateToObj(std::vector<XMMATRIX>& pBoneMatrix, const std::vector<BONEINFO>& BoneInfo, unsigned int uIndex, const XMMATRIX& mBase);

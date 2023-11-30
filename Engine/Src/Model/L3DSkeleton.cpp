@@ -99,6 +99,7 @@ void L3DSkeletonManager::PushNewData(std::string sKeletonName, std::string sMesh
     m_HashTable.insert(std::make_pair(std::make_pair(sKeletonName, sMeshName), skeletonIndies));
 }
 
+// MeshBoneIndex -> SkeletonIndex
 std::vector<int>* L3DSkeletonManager::GetData(std::string sKeletonName, std::string sMeshName)
 {
     auto value = m_HashTable.find(std::make_pair(sKeletonName, sMeshName));
