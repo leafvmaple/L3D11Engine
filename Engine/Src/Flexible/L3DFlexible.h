@@ -9,7 +9,7 @@ class L3DMesh;
 
 struct FLEXIBLE_BONE
 {
-    int nIndex = 0;
+    int nIndex = 0; // 骨骼在BoneMatrix中的索引
     L3D::lstring pcszName;
     XMFLOAT4X4 InitPose;
     XMFLOAT4X4 WorldPose;
@@ -35,8 +35,8 @@ private:
 
     void _AppendBoneOfChainFromMesh(L3DMesh* pMesh, FLEXIBLE_BONE* pDriverBone, int nIndex);
 
-    std::unordered_map<int, FLEXIBLE_BONE> m_vecDriverBone;
-    std::vector<FLEXIBLE_BONE> m_vecNormalBone;
+    std::unordered_map<int, FLEXIBLE_BONE> m_vecDriverBone; // 柔体驱动骨骼信息数组
+    std::vector<FLEXIBLE_BONE> m_vecNormalBone; // 柔体骨骼信息数组
 
     KG3D_FLEX_UPDAT_STATE m_FlexibleBodyUpdateState = KG3D_FLEX_UPDATE_FROM_ANI;
 };

@@ -302,11 +302,11 @@ void L3DModel::_UpdateBuffer()
         pSkeletonIndies = g_SkeletonBoneManager.GetData(m_pSkeleton->m_sName, pMesh->m_sName);
         BOOL_ERROR_EXIT(pSkeletonIndies);
 
-        for (int i = 0; i < pMesh->m_dwBoneCount; i++)
+        for (int nBoneIndex = 0; nBoneIndex < pMesh->m_dwBoneCount; nBoneIndex++)
         {
-            unsigned int nIndex = (*pSkeletonIndies)[i];
-            if (nIndex != -1)
-                pModel->m_BoneCurMatrix[i] = (*pBoneMatrix)[nIndex];
+            unsigned int nSkeletonIndex = (*pSkeletonIndies)[nBoneIndex];
+            if (nSkeletonIndex != -1)
+                pModel->m_BoneCurMatrix[nBoneIndex] = (*pBoneMatrix)[nSkeletonIndex];
         }
     }
 

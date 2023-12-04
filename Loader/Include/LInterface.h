@@ -18,18 +18,21 @@
         delete obj;     \
 }
 
-#define COM_RELEASE_ARRAY(obj) \
-{                       \
-    assert(nCount);     \
-    if (!(--nCount))    \
-        delete[] obj;   \
-}
 
 struct LUnknown : IUnknown
 {
     int nCount = 0;
 
-    virtual ULONG STDMETHODCALLTYPE AddRef() override { ++nCount; return 0; };
-    virtual ULONG STDMETHODCALLTYPE Release() override { COM_RELEASE(this); return 0; };
-    virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_  void** ppvObject) override { return S_OK; };
+    virtual ULONG STDMETHODCALLTYPE AddRef() override {
+        ++nCount; return 0;
+    };
+    virtual ULONG STDMETHODCALLTYPE Release() override {
+        COM_RELEASE(this); return 0;
+    };
+    virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_  void** ppvObject) override {
+        return S_OK;
+    };
+    virtual ~LUnknown(){
+        assert(!nCount);
+    }
 };

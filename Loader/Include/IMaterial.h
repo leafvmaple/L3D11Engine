@@ -48,8 +48,7 @@ struct MATERIAL_SOURCE_SUBSET
 
     MATERIAL_DEFINE Define;
 
-    ~MATERIAL_SOURCE_SUBSET()
-    {
+    ~MATERIAL_SOURCE_SUBSET() {
         SAFE_DELETE_ARRAY(pTexture);
     }
 };
@@ -59,8 +58,7 @@ struct MATERIAL_SOURCE_GROUP
     unsigned int nSubset = 0;
     MATERIAL_SOURCE_SUBSET* pSubset = nullptr;
 
-    ~MATERIAL_SOURCE_GROUP()
-    {
+    ~MATERIAL_SOURCE_GROUP() {
         SAFE_DELETE_ARRAY(pSubset);
     }
 };
@@ -70,8 +68,7 @@ struct MATERIAL_SOURCE_LOD
     unsigned int nGroup = 0;
     MATERIAL_SOURCE_GROUP* pGroup = nullptr;
 
-    ~MATERIAL_SOURCE_LOD()
-    {
+    ~MATERIAL_SOURCE_LOD() {
         SAFE_DELETE_ARRAY(pGroup);
     }
 };
@@ -81,11 +78,9 @@ struct MATERIAL_SOURCE : LUnknown
     unsigned int nLOD = 0;
     MATERIAL_SOURCE_LOD* pLOD = nullptr;
 
-    virtual ULONG STDMETHODCALLTYPE Release() override
-    {
-        COM_RELEASE_ARRAY(pLOD);
-        return 0;
-    };
+    virtual ~MATERIAL_SOURCE() {
+        SAFE_DELETE_ARRAY(pLOD);
+    }
 };
 
 L3DENGINE_API void LoadMaterial(MATERIAL_DESC* pDesc, MATERIAL_SOURCE*& pSource);

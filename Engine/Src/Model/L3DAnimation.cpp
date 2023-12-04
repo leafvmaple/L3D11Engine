@@ -32,6 +32,8 @@ HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
 
     m_szName = szAnimation;
 
+    SAFE_RELEASE(pSource);
+
     return S_OK;
 }
 
