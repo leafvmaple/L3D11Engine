@@ -148,18 +148,41 @@ void RapidJsonGetInt(int& nValue, const _DataType& JsonDoc, LPCSTR szMemberName)
 }
 
 template<typename _DataType>
-void RapidJsonGetFloat(float& nValue, const _DataType& JsonDoc, LPCSTR szMemberName)
+void RapidJsonGet(UINT& nValue, const _DataType& JsonDoc, LPCSTR szMemberName)
+{
+    if (JsonDoc.HasMember(szMemberName))
+    {
+        const auto& dataObject = JsonDoc[szMemberName];
+        if (dataObject.IsUint())
+            nValue = dataObject.GetUint();
+    }
+}
+template<typename _DataType>
+void RapidJsonGet(UINT& nValue, const _DataType& JsonDoc, LPCSTR szMemberName, UINT nDefalut)
+{
+    nValue = nDefalut;
+    RapidJsonGet(nValue, JsonDoc, szMemberName);
+}
+
+template<typename _DataType>
+void RapidJsonGet(float& fValue, const _DataType& JsonDoc, LPCSTR szMemberName)
 {
     if (JsonDoc.HasMember(szMemberName))
     {
         const auto& dataObject = JsonDoc[szMemberName];
         if (dataObject.IsFloat())
-            nValue = dataObject.GetFloat();
+            fValue = dataObject.GetFloat();
     }
+}
+template<typename _DataType>
+void RapidJsonGet(float& fValue, const _DataType& JsonDoc, LPCSTR szMemberName, float fDefalut)
+{
+    fValue = fDefalut;
+    RapidJsonGet(fValue, JsonDoc, szMemberName);
 }
 
 template<int _StrSize, typename _DataType>
-void RapidJsonGetString(char szValue[_StrSize], const _DataType& JsonDoc, LPCSTR szMemberName)
+void RapidJsonGet(char szValue[_StrSize], const _DataType& JsonDoc, LPCSTR szMemberName)
 {
     if (JsonDoc.HasMember(szMemberName))
     {

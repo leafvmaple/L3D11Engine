@@ -92,7 +92,7 @@ public:
     static HRESULT ReadJson(const wchar_t* szFileName, rapidjson::Document& JsonDocument);
 	static HRESULT ReadJson(const char* szFileName, rapidjson::Document& JsonDocument);
 
-	static HRESULT ReadIni(const char* szFileName, CSimpleIniA& Ini);
+	static HRESULT ReadIni(const wchar_t* szFileName, CSimpleIniA& Ini);
 
 	template<typename Model>
 	static BYTE* Convert(BYTE* pBuffer, Model*& pModel, size_t nCount = 1)

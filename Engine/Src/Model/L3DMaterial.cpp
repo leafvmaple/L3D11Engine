@@ -10,13 +10,14 @@
 
 #include "L3DInterface.h"
 #include "L3DMaterialConfig.h"
-#include "L3DMaterialDefine.h"
 
 #include "IMaterial.h"
 
 #include "IO/LFileReader.h"
 
 #include "Render/L3DMaterialSystem.h"
+
+#include "Utility/FilePath.h"
 
 #include "FX11/inc/d3dx11effect.h"
 
@@ -35,11 +36,76 @@ static std::unordered_map<MATERIAL_INDIV_CB, const char*> g_MaterialCBMap = {
     { MATERIAL_INDIV_CB::MODELSHARED, "ModelSharedParam" }
 };
 
+HRESULT L3DMaterialData::Create(const char* szFileName)
+{
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+    rapidjson::Document JsonDocument;
+
+    strcpy(m_szName, szFileName);
+
+    hr = LFileReader::ReadJson(szFileName, JsonDocument);
+    HRESULT_ERROR_EXIT(hr);
+
+    {
+        auto& InfoObject = JsonDocument["Info"];
+        strcpy(m_szShaderName, InfoObject["Shader"].GetString());
+
+        auto& ParamObjectArray = JsonDocument["Param"];
+        for (auto iter = ParamObjectArray.Begin(), iend = ParamObjectArray.End(); iter != iend; ++iter)
+        {
+            auto ParamObject = iter->GetObject();
+            std::string sType = ParamObject["Type"].GetString();
+
+            if (sType == "Texture")
+            {
+                m_vecTexture.push_back({
+                    ParamObject["Name"].GetString(),
+                    ParamObject["RegisterName"].GetString(),
+                    ParamObject["Value"].GetString(),
+                    });
+            }
+        }
+    }
+
+    hr = L3D::ReplaceExtName(m_szShaderName, ".fx5");
+    HRESULT_ERROR_EXIT(hr);
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
+}
+
+HRESULT L3DMaterialData::GetTextureVariables(ID3D11Device* piDevice, std::vector<TEXTURE_DATA>& Variables)
+{
+    HRESULT hr = E_FAIL;
+    HRESULT hResult = E_FAIL;
+
+    Variables.clear();
+    Variables.reserve(m_vecTexture.size());
+
+    for (auto iter = m_vecTexture.begin(); iter != m_vecTexture.end(); ++iter)
+    {
+        L3DTexture* pTexture = new L3DTexture;
+        BOOL_ERROR_EXIT(pTexture);
+
+        hr = pTexture->Create(piDevice, iter->tValue.c_str());
+        if (FAILED(hr))
+            SAFE_DELETE(pTexture);
+
+        Variables.push_back({ iter->hsRepresentName, iter->hsRegisterName, pTexture });
+    }
+
+    hResult = S_OK;
+Exit0:
+    return hResult;
+}
+
 HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET& Subset, RUNTIME_MACRO eMacro)
 {
-    m_pMaterialDefine = new L3DMaterialDefine;
-    m_pMaterialDefine->Create(Subset.Define.szName);
-    m_pMaterialDefine->GetTextureVariables(piDevice, m_vecTextures);
+    auto pMaterialData = new L3DMaterialData;
+    pMaterialData->Create(Subset.Define.szName);
+    pMaterialData->GetTextureVariables(piDevice, m_vecTextures);
 
     m_eBlendMode  = static_cast<BlendMode>(Subset.nBlendMode);
     m_dwAlphaRef  = Subset.nAlphaRef;
@@ -52,7 +118,7 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET
         _PlaceTextureValue(piDevice, Subset.pTexture[i].szName, Subset.pTexture[i].szValue);
 
     m_pEffect = new L3DEffect;
-    m_pEffect->Create(piDevice, m_pMaterialDefine->m_szShaderName, eMacro);
+    m_pEffect->Create(piDevice, pMaterialData->m_szShaderName, eMacro);
 
     return S_OK;
 }

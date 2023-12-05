@@ -13,6 +13,7 @@ struct RENDER_TO_TARGE_PARAM;
 
 class L3DEnvironment;
 class L3DRenderUnit;
+class L3DLandscape;
 class L3DCamera;
 class L3DModel;
 
@@ -41,9 +42,12 @@ public:
 private:
     void _CreateCamera();
     HRESULT _CreatePathTable(const char* szFileName, SCENE_PATH_TABLE* pPathTable);
+    void _CreateScene(const char* szFileName);
 
-    HRESULT _LoadLogicalSceneRect(const char* szSettingName, L3D_SCENE_RECT* pRect);
+    // _GetLogicalSceneRect
+    HRESULT _LoadLogicalSceneRect(const wchar_t* szSettingName, L3D_SCENE_RECT* pRect);
     HRESULT _LoadEnvironmentSetting(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable);
+    HRESULT _LoadLandscape(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable);
 
     void _UpdateVisibleList();
     void _UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption);
@@ -64,4 +68,5 @@ private:
     IL3DEngine* m_piEngine = nullptr;
     L3DCamera* m_pCamera = nullptr;
     L3DEnvironment* m_pEnvironment = nullptr;
+    L3DLandscape* m_pLandscape = nullptr;
 };

@@ -15,7 +15,7 @@ HRESULT L3DEnvironment::Load(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pat
 
 	ENVIRONMENT_FILE_DATA envData;
 
-	Ini.LoadFile(pathTable.szSetting);
+	Ini.LoadFile(pathTable.setting.c_str());
 
 	hr = _LoadDefault(&envData);
 	HRESULT_ERROR_EXIT(hr);
@@ -23,7 +23,7 @@ HRESULT L3DEnvironment::Load(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pat
 	hr = _LoadFromIni(Ini, &envData);
 	HRESULT_ERROR_EXIT(hr);
 
-	hr = _LoadCoverMap(piDevice, pathTable.szCoverMap);
+	hr = _LoadCoverMap(piDevice, pathTable.coverMap.string().c_str());
 	HRESULT_ERROR_EXIT(hr);
 
 Exit0:

@@ -30,6 +30,9 @@
     <ClCompile Include="Src\IAnimation.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\ILandscape.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\LFileReader.h">
@@ -45,6 +48,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\IAnimation.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ILandscape.h">
       <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>

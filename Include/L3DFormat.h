@@ -3,6 +3,8 @@
 #include <d3d11.h>
 #include <DirectXPackedVector.h>
 
+#include <filesystem>
+
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
@@ -215,10 +217,12 @@ enum class RENDER_PASS
 
 struct SCENE_PATH_TABLE
 {
-    char szDir[MAX_PATH]         = { 0 };
-    char szSetting[MAX_PATH]     = { 0 };
-    char szSceneInfo[MAX_PATH]   = { 0 };
-    char szEnvironment[MAX_PATH] = { 0 };
+    std::filesystem::path dir;
+    std::filesystem::path setting;
+    std::filesystem::path sceneInfo;
+    std::filesystem::path environment;
+    std::filesystem::path coverMap;
+    std::filesystem::path landscape;
 
-    char szCoverMap[MAX_PATH]    = { 0 };
+    std::filesystem::path mapName;
 };

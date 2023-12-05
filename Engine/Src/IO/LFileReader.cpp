@@ -85,7 +85,7 @@ Exit0:
 	return hResult;
 }
 
-HRESULT LFileReader::ReadIni(const char* szFileName, CSimpleIniA& Ini)
+HRESULT LFileReader::ReadIni(const wchar_t* szFileName, CSimpleIniA& Ini)
 {
 	HRESULT hResult = E_FAIL;
 

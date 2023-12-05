@@ -9,7 +9,6 @@
 
 #include "L3DMaterial.h"
 #include "L3DInterface.h"
-#include "L3DMaterialDefine.h"
 
 #include "Define/L3DSceneDefine.h"
 
@@ -23,8 +22,6 @@ class L3DRenderUnit;
 class L3DTexture;
 class L3DFlexible;
 class L3DAnimationController;
-
-struct MATERIAL_INSTANCE_DATA;
 // Temp
 struct SCENE_RENDER_OPTION;
 struct MESH_SHARED_CB;

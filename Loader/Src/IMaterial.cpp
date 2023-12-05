@@ -13,7 +13,7 @@ void _LoadDefine(const char* szFileName, MATERIAL_DEFINE& Define)
     LFileReader::ReadJson(szFileName, JsonDocument);
 
     auto& InfoObject = JsonDocument["Info"];
-    RapidJsonGetString<MAX_PATH>(Define.szShaderName, InfoObject, "Shader");
+    RapidJsonGet<MAX_PATH>(Define.szShaderName, InfoObject, "Shader");
 
     auto& ParamObjectArray = JsonDocument["Param"];
     Define.nParam = ParamObjectArray.Size();
@@ -24,10 +24,10 @@ void _LoadDefine(const char* szFileName, MATERIAL_DEFINE& Define)
         const auto& ParamObject = ParamObjectArray[i];
         auto& Param = Define.pParam[i];
 
-        RapidJsonGetString<MAX_PATH>(Param.szName, ParamObject, "Name");
-        RapidJsonGetString<MAX_PATH>(Param.szRegister, ParamObject, "RegisterName");
-        RapidJsonGetString<MAX_PATH>(Param.szValue, ParamObject, "Value");
-        RapidJsonGetFloat(Param.fValue, ParamObject, "Value");
+        RapidJsonGet<MAX_PATH>(Param.szName, ParamObject, "Name");
+        RapidJsonGet<MAX_PATH>(Param.szRegister, ParamObject, "RegisterName");
+        RapidJsonGet<MAX_PATH>(Param.szValue, ParamObject, "Value");
+        RapidJsonGet(Param.fValue, ParamObject, "Value");
     }
 }
 
@@ -51,8 +51,8 @@ void _LoadSubset(const rapidjson::Value& JsonObject, MATERIAL_SOURCE_SUBSET& Sub
         {
             auto& Texture = Subset.pTexture[Subset.nTexture];
 
-            RapidJsonGetString<MAX_PATH>(Texture.szName, ParamObject, "Name");
-            RapidJsonGetString<MAX_PATH>(Texture.szValue, ParamObject, "Value");
+            RapidJsonGet<MAX_PATH>(Texture.szName, ParamObject, "Name");
+            RapidJsonGet<MAX_PATH>(Texture.szValue, ParamObject, "Value");
 
             strcpy(Texture.szType, szType);
 

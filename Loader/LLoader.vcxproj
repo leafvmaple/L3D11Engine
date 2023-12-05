@@ -108,7 +108,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;LENGINE_EXPORTS;_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Include;$(SolutionDir)3rdParty;$(ProjectDir)Include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,12 +139,14 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\IAnimation.cpp" />
+    <ClCompile Include="Src\ILandscape.cpp" />
     <ClCompile Include="Src\LFileReader.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\IMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\IAnimation.h" />
+    <ClInclude Include="Include\ILandscape.h" />
     <ClInclude Include="Include\LInterface.h" />
     <ClInclude Include="Include\LLoader.h" />
     <ClInclude Include="Include\IMaterial.h" />

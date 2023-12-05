@@ -10,11 +10,9 @@
 
 #include "L3DTexture.h"
 #include "L3DMaterialConfig.h"
-#include "L3DMaterialDefine.h"
 
 #include "rapidjson/include/rapidjson/document.h"
 
-class L3DMaterialDefine;
 class L3DEffect;
 
 struct L3D_STATE_TABLE;
@@ -23,17 +21,6 @@ struct MATERIAL_SOURCE_SUBSET;
 struct ID3DX11EffectPass;
 struct ID3DX11EffectConstantBuffer;
 struct ID3DX11EffectShaderResourceVariable;
-
-struct MATERIAL_INSTANCE_DATA
-{
-    char szDefineName[MAX_PATH];
-    UINT32 uBlendMode   = 0;
-    UINT32 uAlphaRef    = 0;
-    UINT32 uAlphaRef2   = 0;
-    UINT32 uTwoSideFlag = 0;
-
-    std::unordered_map<std::string, std::string> TextureArray;
-};
 
 enum class MATERIAL_INDIV_CB
 {
@@ -56,6 +43,27 @@ enum BlendMode
     BLEND_SOFTMASKED = 5,
 };
 
+class L3DMaterialData
+{
+public:
+    HRESULT Create(const char* szFileName);
+    HRESULT GetTextureVariables(ID3D11Device* piDevice, std::vector<TEXTURE_DATA>& Variables);
+
+    char m_szShaderName[256] = { 0 };
+private:
+    char m_szName[256] = { 0 };
+
+    struct MaterialTextureTable
+    {
+        std::string hsRepresentName;
+        std::string hsRegisterName;
+        std::string tValue;
+    };
+
+    std::vector<MaterialTextureTable> m_vecTexture;
+};
+
+// KG3D_MATERIAL_INSTANCE_DATA
 class L3DMaterial
 {
 public:
@@ -74,8 +82,8 @@ public:
 private:
     struct PASS_TEXTURE
     {
-        ID3DX11EffectShaderResourceVariable* pEffectSRVariable;
-        L3DTexture* pTexture;
+        ID3DX11EffectShaderResourceVariable* pEffectSRVariable = nullptr;
+        L3DTexture* pTexture = nullptr;
     };  
 
     HRESULT _PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName);
@@ -84,10 +92,8 @@ private:
     HRESULT _UpdateTextures();
     void _UpdateCommonCB();
 
-    L3DEffect*         m_pEffect         = nullptr;
-    ID3D11Buffer*      m_piCommonCB      = nullptr;
-    L3DMaterialDefine* m_pMaterialDefine = nullptr;
-
+    L3DEffect*       m_pEffect         = nullptr;
+    ID3D11Buffer*    m_piCommonCB      = nullptr;
 
     BOOL m_AlphaTestSwitch = false;
     unsigned int m_dwAlphaRef = 0;
@@ -96,6 +102,8 @@ private:
 
     std::vector<TEXTURE_DATA> m_vecTextures;
 };
+
+typedef std::vector<std::vector<std::vector<L3DMaterial>>> MATERIALS_PACK;
 
 class L3DMaterialPack
 {

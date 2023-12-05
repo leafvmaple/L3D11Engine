@@ -3,6 +3,7 @@
 
 #include "L3DFormat.h"
 #include "L3DEnvironment.h"
+#include "L3DLandscape.h"
 
 #include "Model/L3DModel.h"
 #include "Camera/L3DCamera.h"
@@ -21,8 +22,10 @@ HRESULT L3DScene::Create(ID3D11Device* piDevice, const char* szFileName)
     _CreatePathTable(szFileName, &pathTable);
     _CreateCamera();
 
-    _LoadLogicalSceneRect(pathTable.szSetting, &rect);
+    _LoadLogicalSceneRect(pathTable.setting.c_str(), &rect);
     _LoadEnvironmentSetting(piDevice, pathTable);
+
+    _LoadLandscape(piDevice, pathTable);
 
     return S_OK;
 }
@@ -85,26 +88,32 @@ HRESULT L3DScene::_CreatePathTable(const char* szFileName, SCENE_PATH_TABLE* pPa
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     int nRetCode = false;
-    char szMapName[MAX_PATH];
 
-    strcpy(pPathTable->szSetting, szFileName);
+    pPathTable->dir = std::filesystem::path(szFileName).parent_path();
+    pPathTable->mapName = pPathTable->dir.stem();
 
-    hr = L3D::ReplaceExtName(pPathTable->szSetting, "_Setting.ini");
-    HRESULT_ERROR_EXIT(hr);
+    pPathTable->environment = pPathTable->dir / "environment.json";
+    pPathTable->coverMap = pPathTable->dir / (pPathTable->mapName.string() + ".tga");
+    pPathTable->setting = pPathTable->dir / (pPathTable->mapName.string() + "_Setting.ini");
+    pPathTable->landscape = pPathTable->dir / "landscape" / (pPathTable->mapName.string() + "_landscapeinfo.json");
 
-    hr = L3D::PathSplit(szFileName, pPathTable->szDir, MAX_PATH, szMapName, MAX_PATH);
-    HRESULT_ERROR_EXIT(hr);
-
-    sprintf_s(pPathTable->szSceneInfo, "%hsentities/%hs_sceneinfo.json", pPathTable->szDir, szMapName);
-    sprintf_s(pPathTable->szEnvironment, "%senvironment.json", pPathTable->szDir);
-    sprintf_s(pPathTable->szCoverMap, "%s%s.tga", pPathTable->szDir, szMapName);
+    pPathTable->dir = pPathTable->dir.lexically_normal();
+    pPathTable->environment = pPathTable->environment.lexically_normal();
+    pPathTable->coverMap = pPathTable->coverMap.lexically_normal();
+    pPathTable->setting = pPathTable->setting.lexically_normal();
+    pPathTable->landscape = pPathTable->landscape.lexically_normal();
 
     hResult = S_OK;
 Exit0:
     return hResult;
 }
 
-HRESULT L3DScene::_LoadLogicalSceneRect(const char* szSettingName, L3D_SCENE_RECT* pRect)
+void L3DScene::_CreateScene(const char* szFileName)
+{
+
+}
+
+HRESULT L3DScene::_LoadLogicalSceneRect(const wchar_t* szSettingName, L3D_SCENE_RECT* pRect)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -130,6 +139,15 @@ HRESULT L3DScene::_LoadEnvironmentSetting(ID3D11Device* piDevice, const SCENE_PA
 
     m_pEnvironment->Load(piDevice, pathTable);
 
+
+    return S_OK;
+}
+
+HRESULT L3DScene::_LoadLandscape(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable)
+{
+    m_pLandscape = new L3DLandscape;
+
+    m_pLandscape->Load(piDevice, pathTable);
 
     return S_OK;
 }

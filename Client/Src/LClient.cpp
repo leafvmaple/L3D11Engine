@@ -37,7 +37,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     LObjectMgr::Instance().Init(hInstance, WindowParam);
 
     m_pScene = new LScene;
-    m_pScene->Create("Res/maps/唐门登陆界面/唐门登陆界面.jsonmap");
+    m_pScene->Create("data/source/maps/稻香村/稻香村.jsonmap");
 
     m_pInput = new LInput;
     m_pInput->Init(WindowParam.wnd);
