@@ -1,7 +1,5 @@
-#include "IMaterial.h"
+#include "Material.h"
 #include "LFileReader.h"
-
-#include "rapidjson/include/rapidjson/document.h"
 
 #include <unordered_map>
 
@@ -31,7 +29,7 @@ void _LoadDefine(const char* szFileName, MATERIAL_DEFINE& Define)
     }
 }
 
-void _LoadSubset(const rapidjson::Value& JsonObject, MATERIAL_SOURCE_SUBSET& Subset)
+void _LoadMaterial(const rapidjson::Value& JsonObject, MATERIAL_SOURCE& Subset)
 {
     const auto& InfoObject = JsonObject["Info"];
     const char* szValue = InfoObject["RefPath"].GetString();
@@ -40,11 +38,11 @@ void _LoadSubset(const rapidjson::Value& JsonObject, MATERIAL_SOURCE_SUBSET& Sub
 
     // Param
     const auto& ParamArray = JsonObject["Param"];
-    Subset.pTexture = new MATERIAL_SOURCE_SUBSET::_Param[ParamArray.Size()];
+    Subset.pTexture = new MATERIAL_SOURCE::_Param[ParamArray.Size()];
 
     for (int i = 0; i < ParamArray.Size(); i++)
     {
-        const auto& ParamObject = ParamArray[i].GetObjectW();
+        const auto& ParamObject = ParamArray[i];
         const char* szType = ParamObject["Type"].GetString();
 
         if (!strcmp(szType, "Texture"))
@@ -68,35 +66,35 @@ void _LoadSubset(const rapidjson::Value& JsonObject, MATERIAL_SOURCE_SUBSET& Sub
     Subset.nBlendMode   = RenderStateObject["BlendMode"].GetInt();
 }
 
-void LoadMaterial(MATERIAL_DESC* pDesc, MATERIAL_SOURCE*& pSource)
+void LoadMaterialPack(MATERIAL_DESC* pDesc, MATERIAL_PACK_SOURCE*& pSource)
 {
     rapidjson::Document JsonDocument;
     LFileReader::ReadJson(pDesc->szFileName, JsonDocument);
 
-    pSource = new MATERIAL_SOURCE;
+    pSource = new MATERIAL_PACK_SOURCE;
     pSource->AddRef();
 
     const auto& LODArray = JsonDocument["LOD"];
 
     pSource->nLOD = LODArray.Size();
-    pSource->pLOD = new MATERIAL_SOURCE_LOD[pSource->nLOD];
+    pSource->pLOD = new MATERIAL_LOD_SOURCE[pSource->nLOD];
     for (int i = 0; i < LODArray.Size(); i++)
     {
         const auto& GroupArray = LODArray[i]["Group"];
         auto& LOD = pSource->pLOD[i];
 
         LOD.nGroup = GroupArray.Size();
-        LOD.pGroup = new MATERIAL_SOURCE_GROUP[LOD.nGroup];
+        LOD.pGroup = new MATERIAL_GROUP_SOURCE[LOD.nGroup];
         for (int j = 0; j < GroupArray.Size(); j++)
         {
             const auto& SubsetArray = GroupArray[j]["Subset"];
             auto& Group = LOD.pGroup[j];
 
             Group.nSubset = SubsetArray.Size();
-            Group.pSubset = new MATERIAL_SOURCE_SUBSET[Group.nSubset];
+            Group.pSubset = new MATERIAL_SOURCE[Group.nSubset];
             for (int k = 0; k < SubsetArray.Size(); k++)
             {
-                _LoadSubset(SubsetArray[k], Group.pSubset[k]);
+                _LoadMaterial(SubsetArray[k], Group.pSubset[k]);
             }
         }
     }

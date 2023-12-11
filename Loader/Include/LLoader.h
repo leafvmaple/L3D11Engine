@@ -1,3 +1,3 @@
 #pragma once
 
-#include "MaterialLoader.h"
+#include "IMaterial.h"

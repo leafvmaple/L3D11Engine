@@ -16,6 +16,9 @@
     <Filter Include="Src">
       <UniqueIdentifier>{7dc483e7-44c3-4667-9c2b-1a6e9aed5f3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{3c5140bf-83c0-4c05-a2d9-96190058278c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\main.cpp">
@@ -24,21 +27,18 @@
     <ClCompile Include="Src\LFileReader.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\IMaterial.cpp">
+    <ClCompile Include="Src\Material.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\IAnimation.cpp">
+    <ClCompile Include="Src\Animation.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\ILandscape.cpp">
+    <ClCompile Include="Src\Landscape.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\LFileReader.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\IMaterial.h">
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Include\LInterface.h">
@@ -47,11 +47,17 @@
     <ClInclude Include="Include\LLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\IAnimation.h">
+    <ClInclude Include="Src\Material.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Include\IAnimation.h">
+      <Filter>Include</Filter>
+    </ClInclude>
     <ClInclude Include="Include\ILandscape.h">
-      <Filter>Src</Filter>
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IMaterial.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

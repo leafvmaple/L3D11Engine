@@ -6,6 +6,8 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
+#include "IMaterial.h"
+
 using namespace DirectX;
 
 struct LANDSCAPE_DESC
@@ -14,20 +16,26 @@ struct LANDSCAPE_DESC
     const wchar_t* szMapName = nullptr;
 };
 
-struct LANDSCAPE_MATERIAL_SOURCE
+struct LANDSCAPE_REGION_MATERIAL
 {
     int nMaterialID = 0;
 };
 
-struct LANDSCAPE_REGION_SOURCE
+struct LANDSCAPE_REGION
 {
     int nMaterialCount = 0;
 
-    LANDSCAPE_MATERIAL_SOURCE* pMaterial = nullptr;
+    LANDSCAPE_REGION_MATERIAL* pMaterial = nullptr;
 
-    ~LANDSCAPE_REGION_SOURCE() {
+    ~LANDSCAPE_REGION() {
         SAFE_DELETE_ARRAY(pMaterial);
     }
+};
+
+struct LANDSCAPE_MATERIAL
+{
+    int nLODCount = 0;
+    MATERIAL_SOURCE* pLOD = nullptr; // every LOD has a material
 };
 
 struct LANDSCAPE_SOURCE : LUnknown
@@ -38,10 +46,14 @@ struct LANDSCAPE_SOURCE : LUnknown
 
     XMUINT2     RegionTableSize;
 
-    LANDSCAPE_REGION_SOURCE* pRegionTable = nullptr;
+    int nMaterialCount = 0;
+    LANDSCAPE_MATERIAL* pMaterials = nullptr;
+
+    LANDSCAPE_REGION* pRegionTable = nullptr;
 
     virtual ~LANDSCAPE_SOURCE() {
         SAFE_DELETE_ARRAY(pRegionTable);
+        SAFE_DELETE_ARRAY(pMaterials);
     }
 };
 

@@ -1,12 +1,13 @@
-#include "ILandscape.h"
-#include "LFileReader.h"
-
 #include <filesystem>
 #include <format>
 
 #include "rapidjson/include/rapidjson/document.h"
 
-void _LoadLandscapeRegion(LANDSCAPE_REGION_SOURCE& region, const wchar_t* filename)
+#include "LFileReader.h"
+#include "ILandscape.h"
+#include "Material.h"
+
+void _LoadLandscapeRegion(LANDSCAPE_REGION& region, const wchar_t* filename)
 {
     rapidjson::Document JsonDocument;
     LFileReader::ReadJson(filename, JsonDocument);
@@ -14,7 +15,7 @@ void _LoadLandscapeRegion(LANDSCAPE_REGION_SOURCE& region, const wchar_t* filena
     {
         auto MaterialArray = JsonDocument["MaterialID"].GetArray();
         region.nMaterialCount = MaterialArray.Size();
-        region.pMaterial = new LANDSCAPE_MATERIAL_SOURCE[region.nMaterialCount];
+        region.pMaterial = new LANDSCAPE_REGION_MATERIAL[region.nMaterialCount];
 
         for (int i = 0; i < region.nMaterialCount; i++)
         {
@@ -23,12 +24,31 @@ void _LoadLandscapeRegion(LANDSCAPE_REGION_SOURCE& region, const wchar_t* filena
     }
 }
 
-void _LoadLandscapeMaterial(const wchar_t* szFileName)
+void _LoadLandscapeMaterial(LANDSCAPE_SOURCE*& pSource, const wchar_t* szFileName)
 {
     rapidjson::Document JsonDocument;
     LFileReader::ReadJson(szFileName, JsonDocument);
 
+    const auto& Materials = JsonDocument["Materials"];
+    if (Materials.IsArray())
+    {
+        pSource->nMaterialCount = Materials.Size();
+        pSource->pMaterials = new LANDSCAPE_MATERIAL[pSource->nMaterialCount];
 
+        for (int i = 0; i < pSource->nMaterialCount; i++)
+        {
+            const auto& LODs = Materials[i]["LOD"];
+            auto& material = pSource->pMaterials[i];
+
+            material.nLODCount = LODs.Size();
+            pSource->pMaterials[i].pLOD = new MATERIAL_SOURCE[material.nLODCount];
+
+            for (int j = 0; j < material.nLODCount; j++)
+            {
+                _LoadMaterial(LODs[j], material.pLOD[j]);
+            }
+        }
+    }
 }
 
 void _LoadLandscapeInfo(LANDSCAPE_SOURCE*& pSource, const wchar_t* szFileName)
@@ -51,14 +71,17 @@ void _LoadLandscapeInfo(LANDSCAPE_SOURCE*& pSource, const wchar_t* szFileName)
 void LoadLandscape(LANDSCAPE_DESC* pDesc, LANDSCAPE_SOURCE*& pSource)
 {
     wchar_t szFileName[MAX_PATH];
-    wsprintf(szFileName, L"%s/landscape/%s_landscapeinfo.json", pDesc->szDir, pDesc->szMapName);
 
     pSource = new LANDSCAPE_SOURCE;
     pSource->AddRef();
 
+    wsprintf(szFileName, L"%s/landscape/%s_landscapeinfo.json", pDesc->szDir, pDesc->szMapName);
     _LoadLandscapeInfo(pSource, szFileName);
 
-    pSource->pRegionTable = new LANDSCAPE_REGION_SOURCE[pSource->RegionTableSize.x * pSource->RegionTableSize.y];
+    wsprintf(szFileName, L"%s/landscape/%s_materials.json", pDesc->szDir, pDesc->szMapName);
+    _LoadLandscapeMaterial(pSource, szFileName);
+
+    pSource->pRegionTable = new LANDSCAPE_REGION[pSource->RegionTableSize.x * pSource->RegionTableSize.y];
 
     for (int i = 0; i < pSource->RegionTableSize.x; i++)
     {

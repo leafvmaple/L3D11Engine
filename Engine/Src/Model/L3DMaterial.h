@@ -16,7 +16,7 @@
 class L3DEffect;
 
 struct L3D_STATE_TABLE;
-struct MATERIAL_SOURCE_SUBSET;
+struct MATERIAL_SOURCE;
 
 struct ID3DX11EffectPass;
 struct ID3DX11EffectConstantBuffer;
@@ -67,7 +67,7 @@ private:
 class L3DMaterial
 {
 public:
-    HRESULT Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET& Subsett, RUNTIME_MACRO eMacro);
+    HRESULT Create(ID3D11Device* piDevice, const MATERIAL_SOURCE& source, RUNTIME_MACRO eMacro);
     HRESULT ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable);
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass);
 
@@ -103,10 +103,10 @@ private:
     std::vector<TEXTURE_DATA> m_vecTextures;
 };
 
-typedef std::vector<std::vector<std::vector<L3DMaterial>>> MATERIALS_PACK;
+typedef std::vector<std::vector<std::vector<L3DMaterial>>> MODEL_MATERIALS;
+typedef std::vector<std::vector<L3DMaterial>> LANSCAPE_MATERIALS;
 
-class L3DMaterialPack
-{
-public:
-    static void LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
+namespace L3DMaterialPack {
+    void LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
+    void LoadFromJson(ID3D11Device* piDevice, LANSCAPE_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
 };

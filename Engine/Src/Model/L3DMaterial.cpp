@@ -101,28 +101,27 @@ Exit0:
     return hResult;
 }
 
-HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE_SUBSET& Subset, RUNTIME_MACRO eMacro)
+HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE& source, RUNTIME_MACRO eMacro)
 {
     auto pMaterialData = new L3DMaterialData;
-    pMaterialData->Create(Subset.Define.szName);
+    pMaterialData->Create(source.Define.szName);
     pMaterialData->GetTextureVariables(piDevice, m_vecTextures);
 
-    m_eBlendMode  = static_cast<BlendMode>(Subset.nBlendMode);
-    m_dwAlphaRef  = Subset.nAlphaRef;
-    m_dwAlphaRef2 = Subset.nAlphaRef2;
-    m_dwTwoSide   = Subset.nTwoSideFlag;
+    m_eBlendMode  = static_cast<BlendMode>(source.nBlendMode);
+    m_dwAlphaRef  = source.nAlphaRef;
+    m_dwAlphaRef2 = source.nAlphaRef2;
+    m_dwTwoSide   = source.nTwoSideFlag;
 
     m_AlphaTestSwitch = (m_eBlendMode == BLEND_MASKED || m_eBlendMode == BLEND_SOFTMASKED);
 
-    for (int i = 0; i < Subset.nTexture; i++)
-        _PlaceTextureValue(piDevice, Subset.pTexture[i].szName, Subset.pTexture[i].szValue);
+    for (int i = 0; i < source.nTexture; i++)
+        _PlaceTextureValue(piDevice, source.pTexture[i].szName, source.pTexture[i].szValue);
 
     m_pEffect = new L3DEffect;
     m_pEffect->Create(piDevice, pMaterialData->m_szShaderName, eMacro);
 
     return S_OK;
 }
-
 
 HRESULT L3DMaterial::ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable)
 {
@@ -247,13 +246,13 @@ void L3DMaterial::_UpdateCommonCB()
         m_pEffect->GetConstantBufferByRegister(cb.first)->SetConstantBuffer(cb.second);
 }
 
-void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
+void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
 {
     MATERIAL_DESC desc;
-    MATERIAL_SOURCE* pSource = nullptr;
+    MATERIAL_PACK_SOURCE* pSource = nullptr;
 
     desc.szFileName = szFileName;
-    LoadMaterial(&desc, pSource);
+    LoadMaterialPack(&desc, pSource);
 
     InstancePack.resize(pSource->nLOD);
 #pragma omp parallel for
@@ -278,3 +277,33 @@ void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MATERIALS_PACK& Insta
     pSource->Release();
 }
 
+void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, LANSCAPE_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
+{
+    MATERIAL_DESC desc;
+    MATERIAL_PACK_SOURCE* pSource = nullptr;
+
+    desc.szFileName = szFileName;
+    LoadMaterialPack(&desc, pSource);
+
+    InstancePack.resize(pSource->nLOD);
+//#pragma omp parallel for
+//    for (int i = 0; i < pSource->nLOD; i++)
+//    {
+//        const auto& LOD = pSource->pLOD[i];
+//        InstancePack[i].resize(LOD.nGroup);
+//        for (int j = 0; j < LOD.nGroup; j++)
+//        {
+//            const auto& Group = LOD.pGroup[j];
+//            InstancePack[i][j].resize(Group.nSubset);
+//            for (int k = 0; k < Group.nSubset; k++)
+//            {
+//                const auto& Subset = Group.pSubset[k];
+//                auto& Instance = InstancePack[i][j][k];
+//
+//                Instance.Create(piDevice, Subset, eMacro);
+//            }
+//        }
+//    }
+
+    pSource->Release();
+}

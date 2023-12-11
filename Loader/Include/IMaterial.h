@@ -31,7 +31,7 @@ struct MATERIAL_DEFINE
     }
 };
 
-struct MATERIAL_SOURCE_SUBSET
+struct MATERIAL_SOURCE
 {
     unsigned int nBlendMode   = 0;
     unsigned int nAlphaRef    = 0;
@@ -48,39 +48,39 @@ struct MATERIAL_SOURCE_SUBSET
 
     MATERIAL_DEFINE Define;
 
-    ~MATERIAL_SOURCE_SUBSET() {
+    ~MATERIAL_SOURCE() {
         SAFE_DELETE_ARRAY(pTexture);
     }
 };
 
-struct MATERIAL_SOURCE_GROUP
+struct MATERIAL_GROUP_SOURCE
 {
     unsigned int nSubset = 0;
-    MATERIAL_SOURCE_SUBSET* pSubset = nullptr;
+    MATERIAL_SOURCE* pSubset = nullptr;
 
-    ~MATERIAL_SOURCE_GROUP() {
+    ~MATERIAL_GROUP_SOURCE() {
         SAFE_DELETE_ARRAY(pSubset);
     }
 };
 
-struct MATERIAL_SOURCE_LOD
+struct MATERIAL_LOD_SOURCE
 {
     unsigned int nGroup = 0;
-    MATERIAL_SOURCE_GROUP* pGroup = nullptr;
+    MATERIAL_GROUP_SOURCE* pGroup = nullptr;
 
-    ~MATERIAL_SOURCE_LOD() {
+    ~MATERIAL_LOD_SOURCE() {
         SAFE_DELETE_ARRAY(pGroup);
     }
 };
 
-struct MATERIAL_SOURCE : LUnknown
+struct MATERIAL_PACK_SOURCE : LUnknown
 {
     unsigned int nLOD = 0;
-    MATERIAL_SOURCE_LOD* pLOD = nullptr;
+    MATERIAL_LOD_SOURCE* pLOD = nullptr;
 
-    virtual ~MATERIAL_SOURCE() {
+    virtual ~MATERIAL_PACK_SOURCE() {
         SAFE_DELETE_ARRAY(pLOD);
     }
 };
 
-L3DENGINE_API void LoadMaterial(MATERIAL_DESC* pDesc, MATERIAL_SOURCE*& pSource);
+L3DENGINE_API void LoadMaterialPack(MATERIAL_DESC* pDesc, MATERIAL_PACK_SOURCE*& pSource);

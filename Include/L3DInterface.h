@@ -166,7 +166,7 @@ public:
     virtual void AttachModel(ILModel* pModel) = 0;
     virtual void BindToSocket(ILModel* pModel, const char* szSocketName) = 0;
 
-	virtual HRESULT ResetTransform() = 0;
+    virtual HRESULT ResetTransform() = 0;
     virtual HRESULT SetTranslation(const XMFLOAT3& Translation) = 0;
     virtual HRESULT SetRotation(const XMFLOAT4& Rotation) = 0;
     virtual HRESULT SetScale(const XMFLOAT3& Scale) = 0;
