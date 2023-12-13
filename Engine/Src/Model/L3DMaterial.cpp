@@ -241,69 +241,31 @@ HRESULT L3DMaterial::_UpdateTextures()
 
 void L3DMaterial::_UpdateCommonCB()
 {
-    auto& CommonCB = g_pMaterialSystem->GetCommonCBList();
-    for (auto cb : CommonCB)
+    auto& CommonCBs = g_pMaterialSystem->GetCommonCBList();
+    for (auto cb : CommonCBs)
         m_pEffect->GetConstantBufferByRegister(cb.first)->SetConstantBuffer(cb.second);
 }
 
 void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
 {
-    MATERIAL_DESC desc;
-    MATERIAL_PACK_SOURCE* pSource = nullptr;
+    MODEL_MATERIAL_DESC desc;
+    MODEL_MATERIAL_SOURCE* pSource = nullptr;
 
     desc.szFileName = szFileName;
-    LoadMaterialPack(&desc, pSource);
+    LoadModelMaterial(&desc, pSource);
 
-    InstancePack.resize(pSource->nLOD);
+    assert(pSource->nLOD > 0 && pSource->pLOD[0].nGroup > 0);
+
+    const auto& Group = pSource->pLOD[0].pGroup[0];
+    InstancePack.resize(Group.nSubset);
 #pragma omp parallel for
-    for (int i = 0; i < pSource->nLOD; i++)
+    for (int i = 0; i < Group.nSubset; i++)
     {
-        const auto& LOD = pSource->pLOD[i];
-        InstancePack[i].resize(LOD.nGroup);
-        for (int j = 0; j < LOD.nGroup; j++)
-        {
-            const auto& Group = LOD.pGroup[j];
-            InstancePack[i][j].resize(Group.nSubset);
-            for (int k = 0; k < Group.nSubset; k++)
-            {
-                const auto& Subset = Group.pSubset[k];
-                auto& Instance = InstancePack[i][j][k];
+        const auto& Subset = Group.pSubset[i];
+        auto& Instance = InstancePack[i];
 
-                Instance.Create(piDevice, Subset, eMacro);
-            }
-        }
+        Instance.Create(piDevice, Subset, eMacro);
     }
-
-    pSource->Release();
-}
-
-void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, LANSCAPE_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
-{
-    MATERIAL_DESC desc;
-    MATERIAL_PACK_SOURCE* pSource = nullptr;
-
-    desc.szFileName = szFileName;
-    LoadMaterialPack(&desc, pSource);
-
-    InstancePack.resize(pSource->nLOD);
-//#pragma omp parallel for
-//    for (int i = 0; i < pSource->nLOD; i++)
-//    {
-//        const auto& LOD = pSource->pLOD[i];
-//        InstancePack[i].resize(LOD.nGroup);
-//        for (int j = 0; j < LOD.nGroup; j++)
-//        {
-//            const auto& Group = LOD.pGroup[j];
-//            InstancePack[i][j].resize(Group.nSubset);
-//            for (int k = 0; k < Group.nSubset; k++)
-//            {
-//                const auto& Subset = Group.pSubset[k];
-//                auto& Instance = InstancePack[i][j][k];
-//
-//                Instance.Create(piDevice, Subset, eMacro);
-//            }
-//        }
-//    }
 
     pSource->Release();
 }

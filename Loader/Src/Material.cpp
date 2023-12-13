@@ -66,12 +66,12 @@ void _LoadMaterial(const rapidjson::Value& JsonObject, MATERIAL_SOURCE& Subset)
     Subset.nBlendMode   = RenderStateObject["BlendMode"].GetInt();
 }
 
-void LoadMaterialPack(MATERIAL_DESC* pDesc, MATERIAL_PACK_SOURCE*& pSource)
+void LoadModelMaterial(MODEL_MATERIAL_DESC* pDesc, MODEL_MATERIAL_SOURCE*& pSource)
 {
     rapidjson::Document JsonDocument;
     LFileReader::ReadJson(pDesc->szFileName, JsonDocument);
 
-    pSource = new MATERIAL_PACK_SOURCE;
+    pSource = new MODEL_MATERIAL_SOURCE;
     pSource->AddRef();
 
     const auto& LODArray = JsonDocument["LOD"];

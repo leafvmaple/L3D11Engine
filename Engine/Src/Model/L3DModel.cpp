@@ -202,7 +202,7 @@ void L3DModel::UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
     MeshCB.MatrixWorld = m_World;
 
     _UpdateModelSharedConsts(matBone, MeshCB);
-    for (int i = 0; i < m_MaterialPack[m_nLOD][m_nGroup].size(); i++)
+    for (int i = 0; i < m_MaterialPack.size(); i++)
         _UpdateSubsetConst(i);
 }
 
@@ -269,7 +269,7 @@ void L3DModel::_UpdateSubsetConst(unsigned int iSubset)
 {
     SKIN_SUBSET_CONST subsetConst;
 
-    m_MaterialPack[m_nLOD][m_nGroup][iSubset].GetRenderStateValue(subsetConst);
+    m_MaterialPack[iSubset].GetRenderStateValue(subsetConst);
     m_RenderData.SubsetCB[iSubset]->SetRawValue(&subsetConst, 0, sizeof(SKIN_SUBSET_CONST));
 }
 
@@ -403,7 +403,7 @@ void L3DModel::_InitRenderUnits()
     for (int i = 0; i < nSubsetCount; i++)
     {
         auto& unit = m_RenderData.RenderUnits[i];
-        auto& material = m_MaterialPack[m_nLOD][m_nGroup][i];
+        auto& material = m_MaterialPack[i];
 
         m_p3DMesh->ApplyMeshSubset(unit.m_IAStage, i);
 
@@ -416,11 +416,8 @@ void L3DModel::_InitRenderUnits()
         {
             material.SetIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, m_RenderData.piModelSharedCB);
         }
-
         material.CreateIndividualCB(MATERIAL_INDIV_CB::SUBSET, &m_RenderData.SubsetCB[i]);
 
-        unit.m_piModelSharedCB = m_RenderData.piModelSharedCB;
-        unit.m_piSubsetSharedCB = m_RenderData.SubsetCB[i];
         unit.m_pMaterial = &material;
     }
 }

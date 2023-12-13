@@ -16,19 +16,17 @@ struct LANDSCAPE_DESC
     const wchar_t* szMapName = nullptr;
 };
 
-struct LANDSCAPE_REGION_MATERIAL
-{
-    int nMaterialID = 0;
-};
-
 struct LANDSCAPE_REGION
 {
-    int nMaterialCount = 0;
+    int nMaterial = 0;
+    int* pMaterialIDs = nullptr;
 
-    LANDSCAPE_REGION_MATERIAL* pMaterial = nullptr;
+    int nHeightData = 0;
+    float* pHeightData = nullptr;
 
     ~LANDSCAPE_REGION() {
-        SAFE_DELETE_ARRAY(pMaterial);
+        SAFE_DELETE_ARRAY(pMaterialIDs);
+        SAFE_DELETE_ARRAY(pHeightData);
     }
 };
 
@@ -41,8 +39,9 @@ struct LANDSCAPE_MATERIAL
 struct LANDSCAPE_SOURCE : LUnknown
 {
     UINT        RegionSize;
-    XMFLOAT2    WorldOrigin;
-    XMFLOAT2    UnitScale;
+    UINT        LeafNodeSize;
+    XMFLOAT2   WorldOrigin;
+    XMFLOAT2   UnitScale;
 
     XMUINT2     RegionTableSize;
 

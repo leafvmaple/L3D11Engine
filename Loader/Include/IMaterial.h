@@ -3,7 +3,7 @@
 #include "LInterface.h"
 #include "LAssert.h"
 
-struct MATERIAL_DESC
+struct MODEL_MATERIAL_DESC
 {
     const wchar_t* szFileName = nullptr;
 };
@@ -73,14 +73,14 @@ struct MATERIAL_LOD_SOURCE
     }
 };
 
-struct MATERIAL_PACK_SOURCE : LUnknown
+struct MODEL_MATERIAL_SOURCE : LUnknown
 {
     unsigned int nLOD = 0;
     MATERIAL_LOD_SOURCE* pLOD = nullptr;
 
-    virtual ~MATERIAL_PACK_SOURCE() {
+    virtual ~MODEL_MATERIAL_SOURCE() {
         SAFE_DELETE_ARRAY(pLOD);
     }
 };
 
-L3DENGINE_API void LoadMaterialPack(MATERIAL_DESC* pDesc, MATERIAL_PACK_SOURCE*& pSource);
+L3DENGINE_API void LoadModelMaterial(MODEL_MATERIAL_DESC* pDesc, MODEL_MATERIAL_SOURCE*& pSource);

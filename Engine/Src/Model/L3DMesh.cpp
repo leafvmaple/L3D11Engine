@@ -262,7 +262,7 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
     if (pFileData->pNormals)
     {
         pFillInfo->VertexDesc.bHasNormal = true;
-        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_NORMAL] = uElemId;
+        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::NORMAL] = uElemId;
         FillElem(pElem, uElemId, sizeof(XMFLOAT3), (byte*)pFileData->pNormals, pFillInfo->uVertexSize);
     }
 
@@ -270,7 +270,7 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
     if (pFileData->pDiffuse)
     {
         pFillInfo->VertexDesc.bHasDiffuse = true;
-        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_DIFFUSE] = uElemId;
+        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::DIFFUSE] = uElemId;
         FillElem(pElem, uElemId, sizeof(XMCOLOR), (byte*)pFileData->pDiffuse, pFillInfo->uVertexSize);
     }
 
@@ -278,21 +278,21 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
     if (pFileData->pUV1)
     {
         pFillInfo->VertexDesc.uUVCount = 1;
-        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV1] = uElemId;
+        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::UV1] = uElemId;
         FillElem(pElem, uElemId, sizeof(XMFLOAT3), sizeof(XMFLOAT2), (byte*)pFileData->pUV1, pFillInfo->uVertexSize);
     }
 
     if (pFileData->pUV2)
     {
         pFillInfo->VertexDesc.uUVCount = 2;
-        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV2] = uElemId;
+        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::UV2] = uElemId;
         FillElem(pElem, uElemId, sizeof(XMFLOAT3), sizeof(XMFLOAT2), (byte*)pFileData->pUV2, pFillInfo->uVertexSize);
     }
 
     if (pFileData->pUV3)
     {
         pFillInfo->VertexDesc.uUVCount = 3;
-        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_UV3] = uElemId;
+        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::UV3] = uElemId;
         FillElem(pElem, uElemId, sizeof(XMFLOAT3), sizeof(XMFLOAT2), (byte*)pFileData->pUV3, pFillInfo->uVertexSize);
     }
 
@@ -303,7 +303,7 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
         BOOL_ERROR_EXIT(pFileData->pUV1);
 
         pFillInfo->VertexDesc.bHasSkinInfo = true;
-        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_SKIN] = uElemId;
+        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::SKIN] = uElemId;
         FillElem(pElem, uElemId, sizeof(pFileData->pSkin[0]), (byte*)pFileData->pSkin, pFillInfo->uVertexSize);
     }
 
@@ -312,7 +312,7 @@ HRESULT L3DMesh::VertexFillInfo(const MESH_FILE_DATA* pFileData, VERTEX_FILL_INF
         BOOL_ERROR_EXIT(pFileData->pNormals);
 
         pFillInfo->VertexDesc.bHasTangent = true;
-        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::VERTEX_ADDITIVE_ELEM_TANGENT] = uElemId;
+        pFillInfo->uAdditiveElemId[VERTEX_FILL_INFO::TANGENT] = uElemId;
         FillElem(pElem, uElemId, sizeof(XMFLOAT4), (byte*)pFileData->pTangent, pFillInfo->uVertexSize);
     }
 

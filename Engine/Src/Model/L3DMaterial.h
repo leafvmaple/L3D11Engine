@@ -103,10 +103,8 @@ private:
     std::vector<TEXTURE_DATA> m_vecTextures;
 };
 
-typedef std::vector<std::vector<std::vector<L3DMaterial>>> MODEL_MATERIALS;
-typedef std::vector<std::vector<L3DMaterial>> LANSCAPE_MATERIALS;
+typedef std::vector<L3DMaterial> MODEL_MATERIALS;
 
 namespace L3DMaterialPack {
     void LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
-    void LoadFromJson(ID3D11Device* piDevice, LANSCAPE_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
 };

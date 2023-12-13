@@ -143,9 +143,6 @@ private:
 
     XMFLOAT4X4 m_World; // 当前模型的世界变换矩阵
 
-    int m_nLOD = 0;
-    int m_nGroup = 0;
-
     std::unordered_map<std::wstring, std::function<void(ID3D11Device* piDevice, const char* szFileName)>> m_InitFuncs = {
         std::make_pair(L".mdl", std::bind(&L3DModel::_InitModel, this, std::placeholders::_1, std::placeholders::_2)),
         std::make_pair(L".txt", std::bind(&L3DModel::_InitSkeletion, this, std::placeholders::_1, std::placeholders::_2)),

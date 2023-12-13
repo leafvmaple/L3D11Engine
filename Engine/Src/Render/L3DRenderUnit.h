@@ -36,9 +36,6 @@ public:
     HRESULT ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass);
 
     RENDER_STAGE_INPUT_ASSEMBLER m_IAStage;
-
-    ID3DX11EffectConstantBuffer* m_piModelSharedCB = nullptr;
-    ID3DX11EffectConstantBuffer* m_piSubsetSharedCB = nullptr;
     MODEL_FIX_VARIBLES m_ModelVariables;
 
     L3DMaterial* m_pMaterial = nullptr;

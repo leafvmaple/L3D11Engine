@@ -4,6 +4,7 @@
 #include "Model/L3DMaterialConfig.h"
 
 static unsigned s_CommonCBSlot = 13;
+static unsigned s_CommonCSSlot = 15;
 
 void L3DMaterialSystem::Init(ID3D11Device* piDevice)
 {
@@ -21,6 +22,7 @@ void L3DMaterialSystem::SetCommonShaderData(ID3D11DeviceContext* piDeviceContext
 
     piDeviceContext->Unmap(m_piCommonCB, 0);
 
+    // Why
 #if 0
     piDeviceContext->VSSetConstantBuffers(s_CommonCBSlot, 1, &m_piCommonCB);
     piDeviceContext->HSSetConstantBuffers(s_CommonCBSlot, 1, &m_piCommonCB);
@@ -32,6 +34,12 @@ void L3DMaterialSystem::SetCommonShaderData(ID3D11DeviceContext* piDeviceContext
     m_Buffers[s_CommonCBSlot] = m_piCommonCB;
 #endif
 
+}
+
+void L3DMaterialSystem::SetCommonShaderSamples(ID3D11DeviceContext* piDeviceContext, ID3D11SamplerState* const* pSamplers)
+{
+    piDeviceContext->VSSetSamplers(s_CommonCSSlot, MTLSYS_COMMON_SPL_COUNT, pSamplers);
+    piDeviceContext->PSSetSamplers(s_CommonCSSlot, MTLSYS_COMMON_SPL_COUNT, pSamplers);
 }
 
 void L3DMaterialSystem::_InitCommonConstBuffer()

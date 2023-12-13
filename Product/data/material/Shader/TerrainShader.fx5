@@ -1,19 +1,3 @@
-/*=============================================================================
-    TerrainShader.fx5.
-=============================================================================*/
-#ifndef TERRAIN 
-#define TERRAIN
-#endif
-
-#ifndef TERRAIN_BAKER_USAGE
-#define VOXELIZATION
-#endif
-
-//#define DYNAMIC_EFFECT
-
-#include "CommonParam.h"
-#include "TerrainCommonFunction.h5"
-
 Texture2D g_TerrainHeightMap    : register(t1);
 Texture2D g_TerrainNormalMap    : register(t2);
 Texture2D g_TerrainHoleMap      : register(t3);
@@ -25,26 +9,12 @@ struct MTLSYS_TERRAIN_SHARED_CB
     float2   WorldRegionOffset;
     float    HeightMapUVScale;
     float    HeightMapUVBias;
-    uint     VertexBlockLength;  // VertexBlockLength equal to vertex count pre row minus 1;
-    bool     bUseHoleMap;
-    bool     bUseCoverRoughness;
-    bool     bCookMultiDraw;
-
-    bool     bUseNoiseDeformersInTS;
-    float    NoiseBase;
-    float    NoiseAmplitudeBase;
-    float    NoiseAmplitudeScaleStep;
-    float    NoiseFrequencyBase;
-    float    NoiseFrequencyScaleStep;
 };
 
 cbuffer ModelSharedParam : register(b2)
 {
     MTLSYS_TERRAIN_SHARED_CB g_ModelParams;
 };
-
-#include "MaterialTemplate.fx5"
-#include "UserShader.fx5"
 
 struct VertexInput
 {
@@ -57,43 +27,83 @@ struct InstanceInput
     int4   NodeOffset       : CINSTANCE0;
 };
 
+struct VertexOutput
+{
+    float4 OutPosition      : SV_Position;
+    float4 WorldPosition    : TEXCOORD0;
+    float4 ScreenPosition   : TEXCOORD1;
+
+    float2 TexCoords        : TEXCOORD2;
+
+    float4 WeightHeightMapTexcoord : WEIGHTHEIGHTCOORD;
+
+#ifdef TESSELLATION
+    float3 WorldNormal : WORLD_NORMAL;
+    float3 WorldTangent : WORLD_TANGENT;
+#endif
+};
+
+#include "NodeInterface.h"
+
+float GetHeightFromMap(Texture2D TerrainHeightMap, float2 GeometryCoord)
+{
+    return TerrainHeightMap.SampleLevel(g_sPointClamp, GeometryCoord, 0.0f).r;
+}
+
 MaterialVertexParameters GetMaterialVertexParameters(VertexInput CommonData, InstanceInput InstanceData, out float4 WeightHeightMapTexcoord)
 {
-    int2 LocalOffset            = CommonData.LocalPosition * InstanceData.NodeOffset.w;
-    int2 WorldOffset            = LocalOffset + InstanceData.NodeOffset.xy - g_ModelParams.RegionOffset;
+    int2 WorldOffset            = CommonData.LocalPosition + InstanceData.NodeOffset.xy - g_ModelParams.RegionOffset;
 
     float2 GeometryCoord        = WorldOffset * g_ModelParams.HeightMapUVScale;
     WeightHeightMapTexcoord.xy  = GeometryCoord + g_ModelParams.HeightMapUVBias;
     WeightHeightMapTexcoord.zw  = GeometryCoord;
 
-#ifdef ENABLE_16BITS_HDATA
-    float  WorldHeight          = GetHeightFromMap(g_TerrainHeightMap, WeightHeightMapTexcoord.xy, g_ModelParams.HeightScale, g_ModelParams.HeightBase);
-#else
     float  WorldHeight          = GetHeightFromMap(g_TerrainHeightMap, WeightHeightMapTexcoord.xy);
-#endif
 
     Params.VertexPosition.xz    = (float2)WorldOffset * g_ModelParams.UnitScaleXZ + g_ModelParams.WorldRegionOffset;
     Params.VertexPosition.y     = WorldHeight;
-
-    float3 Tangent;
-    float3 Binormal;
-
-    Params.VertexNormal         = GetNormalFromMap(g_TerrainNormalMap, WeightHeightMapTexcoord.zw);
-    GetWorldTangentAndBinormal(Params.VertexNormal, Tangent, Binormal);
-
     Params.VertexColor          = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    Params.ModelColor           = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    Params.ParticleVertexColor  = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    Params.VertexTangent        = float4(Tangent, 1.0f);
-    Params.LastWorldPosition	= float4(Params.VertexPosition.xyz, 1.0f);
-
 
 	Params.MatrixWorld[0] = float4(1, 0, 0, 0);
 	Params.MatrixWorld[1] = float4(0, 1, 0, 0);
 	Params.MatrixWorld[2] = float4(0, 0, 1, 0);
 	Params.MatrixWorld[3] = float4(0, 0, 0, 1);
-	Params.MatrixWorldInverse = Params.MatrixWorld;
-	Params.MatrixWorldInverseTranspose = Params.MatrixWorld;
+
+    return Params;
+}
+
+MaterialPixelParameters GetMaterialParameters(VertexOutput Input)
+{
+    MaterialPixelParameters Params = (MaterialPixelParameters)0;
+    Params.WorldPosition        = Input.WorldPosition.xyz;
+    Params.ScreenPosition       = Input.ScreenPosition;
+	Params.OutPosition			= Input.OutPosition;
+
+    Params.VertexColor          = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    Params.ModelColor           = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    Params.ParticleVertexColor  = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    Params.VertexPosition       = Params.WorldPosition;
+
+#ifdef TESSELLATION
+    if (!any(Input.WorldNormal))
+    {
+#endif
+        Params.WorldNormal = GetNormalFromMapWithMips(g_TerrainNormalMap, Input.WeightHeightMapTexcoord.zw);
+        Params.VertexNormal = Params.WorldNormal;
+        GetWorldTangentAndBinormal(Params.VertexNormal, Params.Tangent, Params.Binormal);
+#ifdef TESSELLATION
+    }
+    else
+    {
+        Params.WorldNormal = normalize(Input.WorldNormal);
+        Params.VertexNormal = Params.WorldNormal;
+        Params.Tangent = normalize(Input.WorldTangent);
+        Params.Binormal = normalize(cross(Params.VertexNormal, Params.Tangent));
+    }
+#endif
+
+	Params.WeightHeightMapTexcoord = Input.WeightHeightMapTexcoord;
+    Params.TexCoords = Input.TexCoords;
 
     return Params;
 }
@@ -119,81 +129,72 @@ VertexOutput VertexShaderMain(VertexInput CommonData, InstanceInput InstanceData
     return Output;
 }
 
-
-#include "DeferredShadingCommon.h5"
-#include "LightShade.h5"
-#include "TerrainVertexFactory.fx5"
-#include "TerrainPixelFactory.fx5"
-
-VertexShader    MainVertexShader    = KG3D_CompileVS(VertexShaderMain());
-
-PixelShader     GBufferPixelShader  = KG3D_CompilePS(PS_GBufferWriting());
-
-#ifndef TERRAIN_BAKER_VT_USAGE
-PixelShader     MainPixelShader     = KG3D_CompilePS(PixelShaderMain());
-#ifndef TERRAIN_BAKER_USAGE
-PixelShader     DepthPixelShader    = KG3D_CompilePS(PixelShaderDepth());
-#endif
-#endif
-
-#if defined(TESSELLATION) && !defined(DISABLE_TESSELLATION)
-VertexShader    TessVertexShader    = KG3D_CompileVS(Tessellation_VertexShaderMain());
-
-HullShader      MainHullShader      = KG3D_CompileHS(HullShaderMain());
-DomainShader    MainDomainShader    = KG3D_CompileDS(DomainShaderMain());
-DomainShader    DepthDomainShader   = KG3D_CompileDS(DomainShaderMain_DepthOnly());
-#endif
-
-#ifdef VOXELIZATION
-struct VoxelizationGSOutput
+float4 PixelShaderMain(VertexOutput Input) : SV_Target0
 {
-	float4 OutPosition      : SV_Position;
-    float4 WorldPosition    : TEXCOORD0;
-    float4 Normal_Fog       : TEXCOORD1;
-    float4 ScreenPosition   : TEXCOORD2;
-    float4 VertexPosition   : TEXCOORD3;
-    float3 VertexNormal     : TEXCOORD4;
-	
-#if NUM_USER_TEXCOORDS
-    float2 TexCoords[NUM_USER_TEXCOORDS] : TEXCOORD5;
-#endif
-	float3 WorldNormal      : NORMAL0;
-	uint   AxisProjIndex    : PRJECTINDEX0;		//project record
-};
+    float4 OutColor = (float4)0;
+    MaterialPixelParameters Params = GetMaterialParameters(Input);
 
-void GetMaterialVoxelizationDataToGS(out VoxelizationGSOutput GSData,  in VertexOutput VSData)
-{
-	GSData = (VoxelizationGSOutput)0;
-	GSData.OutPosition		 = float4(0.0f, 0.0f, 0.0f, 1.0f);
-	GSData.WorldPosition     = VSData.WorldPosition;
-	GSData.Normal_Fog.xyz    = float3(0.0f, 1.0f, 0.0f);
-	GSData.ScreenPosition    = VSData.ScreenPosition;
-	GSData.VertexPosition    = VSData.WorldPosition;
-	GSData.VertexNormal      = float3(0.0f, 1.0f, 0.0f);
-
-#if NUM_USER_TEXCOORDS
-	UNROLL for (int i = 0; i < NUM_USER_TEXCOORDS; i++)
-		GSData.TexCoords[i] = VSData.TexCoords[i];
-#endif
-
-	GSData.WorldNormal = float3(0.0f, 1.0f, 0.0f);
-}
-
-#include "Voxelization.h5"
-
-#endif
-
-
-technique11 GBufferWriting
-{
-    pass p0
+    if (g_ModelParams.bUseHoleMap)
     {
-        SetVertexShader(MainVertexShader); 
-        SetPixelShader(GBufferPixelShader);
+        float HoleFactor = GetHoleFactor(g_TerrainHoleMap, Params.WeightHeightMapTexcoord.xy);
+        if (HoleFactor < GetHoleThreshold())
+        {
+            discard;
+        }
     }
+
+#ifdef DYNAMIC_EFFECT
+    float fBlendMask = WeightMask.SampleLevel(g_SamplerLinear3Clamp, float3(Params.WeightHeightMapTexcoord.xy, 0.0f), 0.0f).r;
+#endif
+
+    ParamsMainPixelNode PixelMainNode = (ParamsMainPixelNode)0;
+    CalculateMainPixelNode(Params, PixelMainNode);
+
+#ifdef SIMPLIFY_LIGHTING
+    PixelMainNode.Normal = Params.VertexNormal;
+#endif
+
+#ifdef DYNAMIC_EFFECT
+    PixelMainNode.SpecularColor = 1.0f;
+    PixelMainNode.Opacity *= fBlendMask;
+#endif
+    
+    float3 RetColor = 0;
+
+#ifdef TERRAIN_BAKER_USAGE
+    [branch] if (g_Com.Switch.bEnableConvertMap || g_ModelParams.bUseCoverRoughness)
+        CalculateConvermap(PixelMainNode.Albedo, PixelMainNode.Roughness, Params.WorldPosition, g_ModelParams.bUseCoverRoughness, g_Com.Switch.bEnableConvertMap);
+
+    RetColor = PixelMainNode.Albedo;// ForwardLightMinimal_DiffuseOnly(PixelMainNode, Params);
+
+    OutColor.rgb = RetColor;
+    OutColor.a = PixelMainNode.Roughness;
+
+#else
+    float4 vBase = 0.333333f;
+    [branch] if (g_Com.Switch.bEnableConvertMap)
+    {
+        float2 vConverUV = GetConvertMapUV(Params.WorldPosition.x, Params.WorldPosition.z);
+        vBase = g_tConvertMap.Sample(g_SamplerLinear2, vConverUV);
+    }
+
+    RetColor = ForwardLightFull_Classic(PixelMainNode, Params, Input.OutPosition, vBase);
+
+    if (g_Com.Switch.bEnableFog)
+    {
+        RetColor = ApplyFog(RetColor, GetFogFactor(Input.ScreenPosition.z));
+    }
+
+    OutColor.rgb = RetColor;
+    OutColor.a = PixelMainNode.Opacity;
+#endif
+
+    return OutColor;
 }
 
-#ifndef TERRAIN_BAKER_VT_USAGE
+VertexShader    MainVertexShader    = CompileShader(vs_5_0, VertexShaderMain());
+PixelShader     MainPixelShader     = CompileShader(ps_5_0, PixelShaderMain());
+
 technique11 Color
 {
     pass p0
@@ -202,75 +203,4 @@ technique11 Color
         SetPixelShader(MainPixelShader);
     }
 }
-#endif
 
-#ifndef TERRAIN_BAKER_USAGE
-technique11 EARLYZ
-{
-    pass p0
-    {
-        SetVertexShader(MainVertexShader); 
-        SetPixelShader(NULL);
-    }
-}
-
-technique11 EARLYZ1
-{
-    pass p0
-    {
-        SetVertexShader(MainVertexShader);
-        SetPixelShader(DepthPixelShader);
-    }
-}
-#endif
-
-#if defined(TESSELLATION) && !defined(DISABLE_TESSELLATION)
-technique11 Tessellation_Vertex
-{
-    pass p0
-    {
-        SetVertexShader(TessVertexShader);
-    }
-}
-
-technique11 Tessellation_Domain
-{
-    pass p0
-    {
-        SetHullShader(MainHullShader);
-        SetDomainShader(MainDomainShader);
-    }
-}
-
-technique11 Tessellation_DomainDepthOnly
-{
-    pass p0
-    {
-        SetHullShader(MainHullShader);
-        SetDomainShader(DepthDomainShader);
-    }
-}
-#endif
-
-#ifdef VOXELIZATION
-technique11 Voxelization_WithGbuffer
-{
-    pass p0
-    {
-        SetVertexShader(MainVertexShader);
-        SetGeometryShader(MainVoxelizationWithGbufferGeometryShader);
-        SetPixelShader(MainVoxelizationWithGbufferPixelShader);
-    }
-}
-
-technique11 Voxelization_FastBRDFDiffuse
-{
-	pass p0
-	{
-		SetVertexShader(MainVertexShader);
-		SetGeometryShader(MainVoxelizationWithGbufferGeometryShader);
-		SetPixelShader(MainVoxelizationFastBRDFDiffusePixelShader);
-	}
-}
-
-#endif

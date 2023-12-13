@@ -50,10 +50,11 @@ private:
     HRESULT _LoadLandscape(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable);
 
     void _UpdateVisibleList();
-    void _UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption);
     void _UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption);
+    void _UpdateCommonTextures(const SCENE_RENDER_OPTION& RenderOption);
 
     void _CommitConstData(const SCENE_RENDER_OPTION& RenderOption);
+    void _UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption);
 
     void _RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption);
 

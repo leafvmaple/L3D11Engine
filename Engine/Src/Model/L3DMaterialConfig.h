@@ -34,3 +34,23 @@ __declspec(align(16)) struct SHARED_SHADER_COMMON
     SWITCH Switch;
     CAMERA Camera;
 };
+
+struct MTLSYS_TERRAIN_CB
+{
+    DirectX::XMFLOAT2 UnitScaleXZ;
+    DirectX::XMINT2   RegionOffset;
+    DirectX::XMFLOAT2 WorldRegionOffset;
+    float    HeightMapUVScale;
+    float    HeightMapUVBias;
+};
+
+struct MTLSYS_TERRAIN_TEXTURES
+{
+    ID3D11ShaderResourceView* g_TerrainHeightMap = nullptr;
+    ID3D11ShaderResourceView* g_TerrainNormalMap = nullptr;
+};
+
+struct SHARED_SHADER_SAMPLERS
+{
+    ID3D11SamplerState* pSamplerPointClamp = nullptr;        // register(s15);
+};

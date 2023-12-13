@@ -50,16 +50,16 @@ struct VERTEX_FILL_INFO
     unsigned uVertexSize;
     enum _VERTEX_ADDITIVE_ELEM_TYPE
     {
-        VERTEX_ADDITIVE_ELEM_NORMAL,
-        VERTEX_ADDITIVE_ELEM_DIFFUSE,
-        VERTEX_ADDITIVE_ELEM_UV1,
-        VERTEX_ADDITIVE_ELEM_UV2,
-        VERTEX_ADDITIVE_ELEM_UV3,
-        VERTEX_ADDITIVE_ELEM_SKIN,
-        VERTEX_ADDITIVE_ELEM_TANGENT,
-        VERTEX_ADDITIVE_ELEM_COUNT
+        NORMAL,
+        DIFFUSE,
+        UV1,
+        UV2,
+        UV3,
+        SKIN,
+        TANGENT,
+        COUNT
     };
-    unsigned uAdditiveElemId[VERTEX_ADDITIVE_ELEM_COUNT];
+    unsigned uAdditiveElemId[COUNT];
     unsigned uElementCount;
     struct _ELEM
     {

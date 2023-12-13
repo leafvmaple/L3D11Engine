@@ -1,6 +1,8 @@
 #ifndef __CommonParam_H 
 #define __CommonParam_H
 
+SamplerState g_sPointClamp : register(s15);
+
 struct SWITCH 
 {
     int bEnableSunLight;

@@ -40,6 +40,8 @@ void L3DScene::BeginRender(const SCENE_RENDER_OPTION& RenderOption)
 {
     _UpdateVisibleList();
     _UpdateCommonRenderData(RenderOption);
+    m_pLandscape->UpdateVisibility();
+    _UpdateCommonTextures(RenderOption);
 
     return;
 }
@@ -160,15 +162,19 @@ void L3DScene::_UpdateVisibleList()
     // Cull In This
 }
 
-void L3DScene::_UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption)
-{
-    _CommitConstData(RenderOption);
-}
-
 void L3DScene::_UpdateCommonRenderData(const SCENE_RENDER_OPTION& RenderOption)
 {
     for (auto& pModel : m_VisibleModel)
         pModel->UpdateCommonRenderData(RenderOption);
+}
+
+void L3DScene::_UpdateCommonTextures(const SCENE_RENDER_OPTION& RenderOption)
+{
+    ID3D11SamplerState* Samplers[MTLSYS_COMMON_SPL_COUNT] = {
+        RenderOption.pStateTable->Sampler[L3D_SAMPLER_STATE_POINT_CLAMP]
+    };
+
+    g_pMaterialSystem->SetCommonShaderSamples(RenderOption.piImmediateContext, Samplers);
 }
 
 void L3DScene::_CommitConstData(const SCENE_RENDER_OPTION& RenderOption)
@@ -177,6 +183,11 @@ void L3DScene::_CommitConstData(const SCENE_RENDER_OPTION& RenderOption)
     m_ShaderCommonParam.Camera.CameraProject = m_RenderContext.RenderToTargeParam.CameraInfo.mProject;
 
     g_pMaterialSystem->SetCommonShaderData(RenderOption.piImmediateContext, m_ShaderCommonParam);
+}
+
+void L3DScene::_UpdateCommonConstData(const SCENE_RENDER_OPTION& RenderOption)
+{
+    _CommitConstData(RenderOption);
 }
 
 void L3DScene::_RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption)
@@ -190,4 +201,6 @@ void L3DScene::_RenderMainCamera(const SCENE_RENDER_OPTION& RenderOption)
 
     for (auto& pRenderUnit : m_RenderQueues.GBufferQueue)
         pRenderUnit->ApplyProcess(RenderOption, RENDER_PASS::COLOR);
+
+    m_pLandscape->RenderTerrain(RenderOption, RENDER_PASS::COLOR);
 }

@@ -14,14 +14,24 @@ void _LoadLandscapeRegion(LANDSCAPE_REGION& region, const wchar_t* filename)
 
     {
         auto MaterialArray = JsonDocument["MaterialID"].GetArray();
-        region.nMaterialCount = MaterialArray.Size();
-        region.pMaterial = new LANDSCAPE_REGION_MATERIAL[region.nMaterialCount];
+        region.nMaterial = MaterialArray.Size();
+        region.pMaterialIDs = new int[region.nMaterial];
 
-        for (int i = 0; i < region.nMaterialCount; i++)
-        {
-            region.pMaterial[i].nMaterialID = MaterialArray[i].GetUint64();
-        }
+        for (int i = 0; i < region.nMaterial; i++)
+            region.pMaterialIDs[i] = MaterialArray[i].GetUint64();
     }
+}
+
+void _LoadLandscapeHeight(LANDSCAPE_REGION& region, const wchar_t* filename)
+{
+    BYTE* pHeightData = nullptr;
+    size_t nSize = 0;
+
+    LFileReader::Read(filename, &pHeightData, &nSize);
+    region.nHeightData = sqrt(nSize / sizeof(float));
+
+    region.pHeightData = new float[region.nHeightData * region.nHeightData];
+    memcpy(region.pHeightData, pHeightData, region.nHeightData * region.nHeightData * sizeof(float));
 }
 
 void _LoadLandscapeMaterial(LANDSCAPE_SOURCE*& pSource, const wchar_t* szFileName)
@@ -60,6 +70,7 @@ void _LoadLandscapeInfo(LANDSCAPE_SOURCE*& pSource, const wchar_t* szFileName)
     RapidJsonGet(pSource->RegionTableSize.y, JsonDocument, "RegionTableSize.y");
 
     RapidJsonGet(pSource->RegionSize, JsonDocument, "RegionSize", 512);
+    RapidJsonGet(pSource->LeafNodeSize, JsonDocument, "LeafNodeSize", 64);
 
     RapidJsonGet(pSource->WorldOrigin.x, JsonDocument, "WorldOrigin.x", 512);
     RapidJsonGet(pSource->WorldOrigin.y, JsonDocument, "WorldOrigin.y", 512);
@@ -87,8 +98,13 @@ void LoadLandscape(LANDSCAPE_DESC* pDesc, LANDSCAPE_SOURCE*& pSource)
     {
         for (int j = 0; j < pSource->RegionTableSize.y; j++)
         {
+            auto& region = pSource->pRegionTable[i * pSource->RegionTableSize.y + j];
+
             wsprintf(szFileName, L"%s/landscape/regioninfo/%s_%03d_%03d.json", pDesc->szDir, pDesc->szMapName, i, j);
-            _LoadLandscapeRegion(pSource->pRegionTable[i * pSource->RegionTableSize.y + j], szFileName);
+            _LoadLandscapeRegion(region, szFileName);
+
+            wsprintf(szFileName, L"%s/landscape/heightmap/%s_%03d_%03d.r32", pDesc->szDir, pDesc->szMapName, i, j);
+            _LoadLandscapeHeight(region, szFileName);
         }
     }
 }
