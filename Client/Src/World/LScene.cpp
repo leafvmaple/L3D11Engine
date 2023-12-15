@@ -15,6 +15,7 @@ void LScene::Create(const char* szFileName)
     m_pCamera->Init(m_piScene->Get3DCamera());
     m_pCamera->SetYaw(-0.25 * XM_PI);
     m_pCamera->SetPitch(-0.1 * XM_PI);
+    m_pCamera->SetDistance(200);
 
     pCharacter = LObjectMgr::Instance().CreateModel<LCharacter>("data/source/player/F1/部件/Mdl/F1.mdl");
     pCharacter->LoadPart("data/source/player/F1/部件/F1_0000_head.mesh");

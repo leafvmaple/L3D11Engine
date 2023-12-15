@@ -67,6 +67,34 @@ Exit0:
 
 }
 
+template<typename T>
+HRESULT L3DTexture::Create(ID3D11Device* piDevice, T* pData, UINT nWidth, UINT nHeight)
+{
+    D3D11_TEXTURE2D_DESC texDesc;
+    D3D11_SUBRESOURCE_DATA texData;
+
+    texDesc.ArraySize = 1;
+    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.Format = DXGI_FORMAT_R32_FLOAT;
+    texDesc.Width = nWidth;
+    texDesc.Height = nHeight;
+    texDesc.MipLevels = 1;
+    texDesc.MiscFlags = 0;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.SampleDesc.Quality = 0;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+
+    texData.pSysMem = pData;
+    texData.SysMemPitch = nWidth * sizeof(float);
+    texData.SysMemSlicePitch = 0;
+
+    piDevice->CreateTexture2D(&texDesc, &texData, &m_piTexture);
+    piDevice->CreateShaderResourceView(m_piTexture, nullptr, &m_piTextureView);
+
+    return S_OK;
+}
+
 HRESULT L3DTexture::Apply(ID3DX11EffectShaderResourceVariable* pEffectSRVariable)
 {
     return pEffectSRVariable->SetResource(m_piTextureView);

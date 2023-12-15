@@ -5,6 +5,7 @@
 #include <atlconv.h>
 #include <string>
 
+#include "L3DTexture.h"
 #include "L3DMaterialConfig.h"
 
 #include "FX11/inc/d3dx11effect.h"
@@ -95,7 +96,10 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, const char* szMaterial, RUNTIM
         USES_CONVERSION;
         hr = D3DCompileFromFile(A2CW((LPCSTR)gs_ShaderTemplate[eMacro].value), 0, &include, 0, "fx_5_0", dwShaderFlags, 0, &pCompiledShader, &pCompilationMsgs);
         if (FAILED(hr))
+        {
+            spdlog::error("Compile shader [{}] failed:\n{}", gs_ShaderTemplate[eMacro].value, pCompilationMsgs->GetBufferPointer());
             strcpy(error, (const char*)pCompilationMsgs->GetBufferPointer());
+        }
         HRESULT_ERROR_EXIT(hr);
     }
 
@@ -120,7 +124,7 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, const char* szMaterial, RUNTIM
         if (typeDesc.Type == D3D_SVT_TEXTURE2D)
         {
             pSRVariable = pVariable->AsShaderResource();
-            m_vecShader.push_back({ variableDesc.Name, pSRVariable });
+            m_Textures.try_emplace(variableDesc.Name, pSRVariable);
         }
     }
 
@@ -159,7 +163,14 @@ ID3DX11EffectConstantBuffer* L3DEffect::GetConstantBufferByName(const char* szCB
     return m_piEffect->GetConstantBufferByName(szCBName);
 }
 
-void L3DEffect::GetShader(std::vector<EFFECT_SHADER>& EffectShader)
+void L3DEffect::GetTextures(std::unordered_map <std::string, ID3DX11EffectShaderResourceVariable*>& EffectShader)
 {
-    EffectShader = m_vecShader;
+    EffectShader = m_Textures;
+}
+
+void L3DEffect::SetTexture(const char* szName, L3DTexture* pTexture)
+{
+    auto iter = m_Textures.find(szName);
+    if (iter != m_Textures.end())
+        pTexture->Apply(iter->second);
 }

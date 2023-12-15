@@ -70,7 +70,7 @@
 
 #define HRESULT_ERROR_EXIT(hr)    \
     if (!SUCCEEDED(hr)) {         \
-        goto Exit0;                    \
+        goto Exit0;               \
     }
 
 #define HRESULT_ERROR_LOG_EXIT(hr, FORMAT, ...)    \

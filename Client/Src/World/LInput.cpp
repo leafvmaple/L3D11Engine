@@ -17,7 +17,7 @@ void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pS
     {
     case WM_MOUSEWHEEL:
     {
-        pScene->m_pCamera->SetSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);
+        pScene->m_pCamera->AddSightDistance(GET_WHEEL_DELTA_WPARAM(wParam) * -0.1f);
         break;
     }
     case WM_LBUTTONDOWN:

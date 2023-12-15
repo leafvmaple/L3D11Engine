@@ -5,6 +5,7 @@
 #include "Model/L3DMaterialConfig.h"
 
 class L3DMaterial;
+class L3DTexture;
 
 struct SCENE_PATH_TABLE;
 struct SCENE_RENDER_OPTION;
@@ -15,6 +16,8 @@ struct LANDSCAPE_SOURCE;
 struct MTLSYS_TERRAIN_CB;
 
 struct RENDER_REGION_DESC;
+
+interface ID3DX11EffectVariable;
 
 class L3DLandscapeTerrainNode
 {
@@ -43,10 +46,13 @@ private:
     std::vector<L3DMaterial*> m_Material;
     std::vector<L3DLandscapeTerrainNode*> m_TerrainVisibleNodes;
 
-    ID3D11Texture2D* m_pHeightMapTexture = nullptr;
-    ID3D11ShaderResourceView* m_pHeightMapSRV = nullptr;
+    UINT m_nSize = 0;
 
     L3DMaterial* m_pMaterial = nullptr;
+    L3DTexture* m_pHeightMap = nullptr;
+
+    ID3DX11EffectVariable* m_pModelParams = nullptr;
+
     L3DLandscapeTerrainNode* m_pTerrainNode = nullptr;
 };
 

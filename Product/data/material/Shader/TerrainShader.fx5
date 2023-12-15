@@ -1,12 +1,10 @@
 Texture2D g_TerrainHeightMap    : register(t1);
 Texture2D g_TerrainNormalMap    : register(t2);
-Texture2D g_TerrainHoleMap      : register(t3);
 
 struct MTLSYS_TERRAIN_SHARED_CB 
 {
     float2   UnitScaleXZ;
     int2     RegionOffset;
-    float2   WorldRegionOffset;
     float    HeightMapUVScale;
     float    HeightMapUVBias;
 };
@@ -25,34 +23,39 @@ struct InstanceInput
 {
     // NodeOffset Components: offset x, offset z, size of node, length of node (dimension is unit for all components).
     int4   NodeOffset       : CINSTANCE0;
+    float4 NeighborLOD      : CINSTANCE1;
 };
 
 struct VertexOutput
 {
-    float4 OutPosition      : SV_Position;
+    float4 OutPosition      : SV_POSITION;
     float4 WorldPosition    : TEXCOORD0;
     float4 ScreenPosition   : TEXCOORD1;
 
     float2 TexCoords        : TEXCOORD2;
 
     float4 WeightHeightMapTexcoord : WEIGHTHEIGHTCOORD;
-
-#ifdef TESSELLATION
-    float3 WorldNormal : WORLD_NORMAL;
-    float3 WorldTangent : WORLD_TANGENT;
-#endif
 };
 
 #include "NodeInterface.h"
+#include "CommonParam.h"
 
 float GetHeightFromMap(Texture2D TerrainHeightMap, float2 GeometryCoord)
 {
     return TerrainHeightMap.SampleLevel(g_sPointClamp, GeometryCoord, 0.0f).r;
 }
 
+float2 GetScaleTexcoord(float2 WorldPosition)
+{
+    return WorldPosition * 0.0025f * float2(1.0f, -1.0f);
+}
+
 MaterialVertexParameters GetMaterialVertexParameters(VertexInput CommonData, InstanceInput InstanceData, out float4 WeightHeightMapTexcoord)
 {
-    int2 WorldOffset            = CommonData.LocalPosition + InstanceData.NodeOffset.xy - g_ModelParams.RegionOffset;
+    MaterialVertexParameters Params = (MaterialVertexParameters)0;
+
+    int2 LocalOffset            = CommonData.LocalPosition * InstanceData.NodeOffset.w;
+    int2 WorldOffset            = LocalOffset + InstanceData.NodeOffset.xy + g_ModelParams.RegionOffset;
 
     float2 GeometryCoord        = WorldOffset * g_ModelParams.HeightMapUVScale;
     WeightHeightMapTexcoord.xy  = GeometryCoord + g_ModelParams.HeightMapUVBias;
@@ -60,7 +63,7 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput CommonData, Ins
 
     float  WorldHeight          = GetHeightFromMap(g_TerrainHeightMap, WeightHeightMapTexcoord.xy);
 
-    Params.VertexPosition.xz    = (float2)WorldOffset * g_ModelParams.UnitScaleXZ + g_ModelParams.WorldRegionOffset;
+    Params.VertexPosition.xz    = (float2)WorldOffset * g_ModelParams.UnitScaleXZ;
     Params.VertexPosition.y     = WorldHeight;
     Params.VertexColor          = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -75,34 +78,7 @@ MaterialVertexParameters GetMaterialVertexParameters(VertexInput CommonData, Ins
 MaterialPixelParameters GetMaterialParameters(VertexOutput Input)
 {
     MaterialPixelParameters Params = (MaterialPixelParameters)0;
-    Params.WorldPosition        = Input.WorldPosition.xyz;
-    Params.ScreenPosition       = Input.ScreenPosition;
-	Params.OutPosition			= Input.OutPosition;
 
-    Params.VertexColor          = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    Params.ModelColor           = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    Params.ParticleVertexColor  = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    Params.VertexPosition       = Params.WorldPosition;
-
-#ifdef TESSELLATION
-    if (!any(Input.WorldNormal))
-    {
-#endif
-        Params.WorldNormal = GetNormalFromMapWithMips(g_TerrainNormalMap, Input.WeightHeightMapTexcoord.zw);
-        Params.VertexNormal = Params.WorldNormal;
-        GetWorldTangentAndBinormal(Params.VertexNormal, Params.Tangent, Params.Binormal);
-#ifdef TESSELLATION
-    }
-    else
-    {
-        Params.WorldNormal = normalize(Input.WorldNormal);
-        Params.VertexNormal = Params.WorldNormal;
-        Params.Tangent = normalize(Input.WorldTangent);
-        Params.Binormal = normalize(cross(Params.VertexNormal, Params.Tangent));
-    }
-#endif
-
-	Params.WeightHeightMapTexcoord = Input.WeightHeightMapTexcoord;
     Params.TexCoords = Input.TexCoords;
 
     return Params;
@@ -113,18 +89,12 @@ VertexOutput VertexShaderMain(VertexInput CommonData, InstanceInput InstanceData
     VertexOutput Output = (VertexOutput)0;
     
     MaterialVertexParameters Params = GetMaterialVertexParameters(CommonData, InstanceData, Output.WeightHeightMapTexcoord);
-    ParamsMainVertexNode VertexMainNode = (ParamsMainVertexNode)0;
-    CalculateMainVertexNode(Params, VertexMainNode);
 
-    Output.WorldPosition    = float4(Params.VertexPosition + VertexMainNode.WorldPositionOffset, 1.0f);
+    Output.WorldPosition    = Params.VertexPosition;
+    Output.WorldPosition.w  = 1.0f;
     Output.OutPosition      = GetDeviceCoordinate(Output.WorldPosition, g_Com.Camera.CameraView, g_Com.Camera.CameraProject);
     Output.ScreenPosition   = Output.OutPosition;
-    Output.TexCoords[0]     = GetScaleTexcoord(Output.WorldPosition.xz);
-
-	/*float4 LastScreenPos   = GetDeviceCoordinate(Params.LastWorldPosition, g_Com.LastCamera.CameraView, g_Com.LastCamera.CameraProject);
-	LastScreenPos /= LastScreenPos.w;
-	Output.ScreenMotion.xy = (Output.ScreenPosition.xy / Output.ScreenPosition.w - LastScreenPos.xy) * g_Com.ScreenSize * 0.5f + g_Com.TaaSampleOffset;
-	Output.ScreenMotion.z  = 1.f;*/
+    Output.TexCoords        = GetScaleTexcoord(Output.WorldPosition.xz);
 
     return Output;
 }
@@ -133,61 +103,6 @@ float4 PixelShaderMain(VertexOutput Input) : SV_Target0
 {
     float4 OutColor = (float4)0;
     MaterialPixelParameters Params = GetMaterialParameters(Input);
-
-    if (g_ModelParams.bUseHoleMap)
-    {
-        float HoleFactor = GetHoleFactor(g_TerrainHoleMap, Params.WeightHeightMapTexcoord.xy);
-        if (HoleFactor < GetHoleThreshold())
-        {
-            discard;
-        }
-    }
-
-#ifdef DYNAMIC_EFFECT
-    float fBlendMask = WeightMask.SampleLevel(g_SamplerLinear3Clamp, float3(Params.WeightHeightMapTexcoord.xy, 0.0f), 0.0f).r;
-#endif
-
-    ParamsMainPixelNode PixelMainNode = (ParamsMainPixelNode)0;
-    CalculateMainPixelNode(Params, PixelMainNode);
-
-#ifdef SIMPLIFY_LIGHTING
-    PixelMainNode.Normal = Params.VertexNormal;
-#endif
-
-#ifdef DYNAMIC_EFFECT
-    PixelMainNode.SpecularColor = 1.0f;
-    PixelMainNode.Opacity *= fBlendMask;
-#endif
-    
-    float3 RetColor = 0;
-
-#ifdef TERRAIN_BAKER_USAGE
-    [branch] if (g_Com.Switch.bEnableConvertMap || g_ModelParams.bUseCoverRoughness)
-        CalculateConvermap(PixelMainNode.Albedo, PixelMainNode.Roughness, Params.WorldPosition, g_ModelParams.bUseCoverRoughness, g_Com.Switch.bEnableConvertMap);
-
-    RetColor = PixelMainNode.Albedo;// ForwardLightMinimal_DiffuseOnly(PixelMainNode, Params);
-
-    OutColor.rgb = RetColor;
-    OutColor.a = PixelMainNode.Roughness;
-
-#else
-    float4 vBase = 0.333333f;
-    [branch] if (g_Com.Switch.bEnableConvertMap)
-    {
-        float2 vConverUV = GetConvertMapUV(Params.WorldPosition.x, Params.WorldPosition.z);
-        vBase = g_tConvertMap.Sample(g_SamplerLinear2, vConverUV);
-    }
-
-    RetColor = ForwardLightFull_Classic(PixelMainNode, Params, Input.OutPosition, vBase);
-
-    if (g_Com.Switch.bEnableFog)
-    {
-        RetColor = ApplyFog(RetColor, GetFogFactor(Input.ScreenPosition.z));
-    }
-
-    OutColor.rgb = RetColor;
-    OutColor.a = PixelMainNode.Opacity;
-#endif
 
     return OutColor;
 }

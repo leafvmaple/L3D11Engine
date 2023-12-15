@@ -68,7 +68,7 @@ VertexOutput VertexShaderMain(VertexInput vin)
     
     MaterialVertexParameters Params = GetMaterialVertexParameters(vin);
 
-    vout.PosH = GetDeviceCoordinate(Params.VertexPosition, Params.MatrixWorld, g_Com.Camera.CameraView, g_Com.Camera.CameraProject);;
+    vout.PosH = GetDeviceCoordinate(Params.VertexPosition, Params.MatrixWorld, g_Com.Camera.CameraView, g_Com.Camera.CameraProject);
     vout.Color = Params.VertexColor;
     vout.TexCoords = Params.TexCoords;
     

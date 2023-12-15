@@ -32,6 +32,8 @@ struct ID3DX11EffectTechnique;
 struct ID3DX11EffectConstantBuffer;
 struct ID3DX11EffectShaderResourceVariable;
 
+struct L3DTexture;
+
 struct EFFECT_SHADER
 {
     std::string name;
@@ -47,11 +49,12 @@ public:
     ID3DX11EffectConstantBuffer* GetConstantBufferByRegister(int nIndex);
     ID3DX11EffectConstantBuffer* GetConstantBufferByName(const char* szCBName);
 
-    void GetShader(std::vector<EFFECT_SHADER>& EffectShader);
+    void GetTextures(std::unordered_map<std::string, ID3DX11EffectShaderResourceVariable*>& EffectShader);
+    void SetTexture(const char* szName, L3DTexture* pTexture);
 
 private:
     ID3DX11Effect* m_piEffect = nullptr;
 
-    std::vector<EFFECT_SHADER> m_vecShader;
+    std::unordered_map <std::string, ID3DX11EffectShaderResourceVariable*> m_Textures;
     std::unordered_map<int, int> REG_TO_IDX;
 };

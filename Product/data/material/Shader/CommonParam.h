@@ -53,4 +53,9 @@ float4 GetDeviceCoordinate(float4 InputPosition, float4x4 WorldMatrix, float4x4 
     return mul(mul(mul(InputPosition, WorldMatrix), ViewMatrix), ProjMatrix); //12 ALU
 }
 
+float4 GetDeviceCoordinate(float4 InputWorldPosition, float4x4 ViewMatrix, float4x4 ProjMatrix)
+{
+    return mul(mul(InputWorldPosition, ViewMatrix), ProjMatrix);             //8 ALU
+}
+
 #endif

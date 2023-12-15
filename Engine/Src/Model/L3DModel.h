@@ -90,7 +90,6 @@ private:
     };
     struct RENDER_DATA
     {
-        ID3DX11EffectConstantBuffer* piModelSharedCB = nullptr;
         MODEL_FIX_VARIBLES ModelVariables;
 
         std::vector<ID3DX11EffectConstantBuffer*> SubsetCB;
@@ -110,7 +109,7 @@ private:
 
     void _CreateBoneMatrix();
     
-    void _UpdateModelVariablesIndices();
+    void _UpdateModelVariablesIndices(ID3DX11EffectConstantBuffer* piModelSharedCB);
 
     void _InitModel(ID3D11Device* piDevice, const char* szFileName);
     void _InitSkeletion(ID3D11Device* piDevice, const char* szFileName);

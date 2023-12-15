@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 #include <atlconv.h>
 #include <string>
+#include <condition_variable>
 
 #include "L3DMaterial.h"
 #include "L3DEffect.h"
@@ -149,6 +150,11 @@ Exit0:
 }
 
 
+void L3DMaterial::SetTexture(const char* szName, L3DTexture* pTexture)
+{
+    m_pEffect->SetTexture(szName, pTexture);
+}
+
 HRESULT L3DMaterial::CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB)
 {
     HRESULT hResult = E_FAIL;
@@ -222,17 +228,14 @@ HRESULT L3DMaterial::_UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** pp
 
 HRESULT L3DMaterial::_UpdateTextures()
 {
-    std::vector<EFFECT_SHADER> EffectShader;
+    std::unordered_map <std::string, ID3DX11EffectShaderResourceVariable*> EffectShader;
 
-    m_pEffect->GetShader(EffectShader);
+    m_pEffect->GetTextures(EffectShader);
 
-    for (auto itEffect : EffectShader)
+    for (auto it : m_vecTextures)
     {
-        for (auto it : m_vecTextures)
-        {
-            if (it.sRegisterName == itEffect.name)
-                it.pTexture->Apply(itEffect.pSRVariable);
-        }
+        if (EffectShader.contains(it.sRegisterName))
+            it.pTexture->Apply(EffectShader[it.sRegisterName]);
     }
 
     return S_OK;

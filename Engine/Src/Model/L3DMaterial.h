@@ -67,25 +67,21 @@ private:
 class L3DMaterial
 {
 public:
+    ~L3DMaterial() {}
+
     HRESULT Create(ID3D11Device* piDevice, const MATERIAL_SOURCE& source, RUNTIME_MACRO eMacro);
     HRESULT ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable);
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass);
+
+    void SetTexture(const char* szName, L3DTexture* pTexture);
 
     HRESULT CreateIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer** pEffectCB);
     HRESULT SetIndividualCB(MATERIAL_INDIV_CB eCBType, ID3DX11EffectConstantBuffer* pSharedCB);
 
     void GetRenderStateValue(SKIN_SUBSET_CONST & subsetConst);
 
-    ~L3DMaterial() {}
-
     BlendMode m_eBlendMode = BLEND_OPAQUE;
 private:
-    struct PASS_TEXTURE
-    {
-        ID3DX11EffectShaderResourceVariable* pEffectSRVariable = nullptr;
-        L3DTexture* pTexture = nullptr;
-    };  
-
     HRESULT _PlaceTextureValue(ID3D11Device* piDevice, std::string sName, std::string sTextureName);
 
     HRESULT _UpdateTechniques(RENDER_PASS ePass, ID3DX11EffectPass** ppEffectPass);

@@ -20,8 +20,12 @@ class L3DTexture
 {
 public:
 	HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
+	template<typename T>
+    HRESULT Create(ID3D11Device* piDevice, T* pData, UINT nWidth, UINT nHeight);
 	HRESULT Apply(ID3DX11EffectShaderResourceVariable* pEffectSRVariable);
 
 	ID3D11Texture2D* m_piTexture = nullptr;
 	ID3D11ShaderResourceView* m_piTextureView = nullptr;
 };
+
+template HRESULT L3DTexture::Create<float>(ID3D11Device* piDevice, float* pData, UINT nWidth, UINT nHeight);

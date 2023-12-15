@@ -327,10 +327,10 @@ void L3DModel::_CreateBoneMatrix()
 }
 
 
-void L3DModel::_UpdateModelVariablesIndices()
+void L3DModel::_UpdateModelVariablesIndices(ID3DX11EffectConstantBuffer* piModelSharedCB)
 {
-    m_RenderData.ModelVariables.pCustomMatrixBones = m_RenderData.piModelSharedCB->GetMemberByName("g_CustomMatrixBones");
-    m_RenderData.ModelVariables.pModelParams = m_RenderData.piModelSharedCB->GetMemberByName("g_ModelParams");
+    m_RenderData.ModelVariables.pCustomMatrixBones = piModelSharedCB->GetMemberByName("g_CustomMatrixBones");
+    m_RenderData.ModelVariables.pModelParams = piModelSharedCB->GetMemberByName("g_ModelParams");
 }
 
 // _InitMdl
@@ -395,6 +395,7 @@ Exit0:
 
 void L3DModel::_InitRenderUnits()
 {
+    ID3DX11EffectConstantBuffer* piModelSharedCB = nullptr;
     unsigned int nSubsetCount = m_p3DMesh->m_Subset.size();
 
     m_RenderData.RenderUnits.resize(nSubsetCount);
@@ -409,12 +410,12 @@ void L3DModel::_InitRenderUnits()
 
         if (!i)
         {
-            material.CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &m_RenderData.piModelSharedCB);
-            _UpdateModelVariablesIndices();
+            material.CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &piModelSharedCB);
+            _UpdateModelVariablesIndices(piModelSharedCB);
         }
         else
         {
-            material.SetIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, m_RenderData.piModelSharedCB);
+            material.SetIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, piModelSharedCB);
         }
         material.CreateIndividualCB(MATERIAL_INDIV_CB::SUBSET, &m_RenderData.SubsetCB[i]);
 

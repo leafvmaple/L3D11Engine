@@ -39,7 +39,6 @@ struct MTLSYS_TERRAIN_CB
 {
     DirectX::XMFLOAT2 UnitScaleXZ;
     DirectX::XMINT2   RegionOffset;
-    DirectX::XMFLOAT2 WorldRegionOffset;
     float    HeightMapUVScale;
     float    HeightMapUVBias;
 };

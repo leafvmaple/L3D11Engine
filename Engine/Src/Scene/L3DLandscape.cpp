@@ -8,9 +8,12 @@
 #include "Model/L3DMaterial.h"
 #include "Render/L3DRenderUnit.h"
 
+#include "FX11/inc/d3dx11effect.h"
+
 struct INSTANCE_DATA
 {
     XMINT4 NodeOffset;
+    XMFLOAT4 NeighborLOD;
 };
 
 struct RENDER_REGION_DESC
@@ -52,34 +55,22 @@ void L3DLandscapeTerrainNode::_CreateChildNodes(const LANDSCAPE_SOURCE& source)
 
 HRESULT L3DLandscapeRegion::Load(ID3D11Device* piDevice, const LANDSCAPE_REGION& region, const LANDSCAPE_SOURCE& source, const std::vector<L3DMaterial*>& materialPack)
 {
-    D3D11_TEXTURE2D_DESC texDesc;
-    D3D11_SUBRESOURCE_DATA texData;
+    ID3DX11EffectConstantBuffer* piSharedCB = nullptr;
 
-    texDesc.ArraySize = 1;
-    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R32_FLOAT;
-    texDesc.Width = region.nHeightData;
-    texDesc.Height = region.nHeightData;
-    texDesc.MipLevels = 1;
-    texDesc.MiscFlags = 0;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.SampleDesc.Quality = 0;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-
-    texData.pSysMem = region.pHeightData;
-    texData.SysMemPitch = region.nHeightData * sizeof(float);
-    texData.SysMemSlicePitch = 0;
-
-    piDevice->CreateTexture2D(&texDesc, &texData, &m_pHeightMapTexture);
-    piDevice->CreateShaderResourceView(m_pHeightMapTexture, nullptr, &m_pHeightMapSRV);
+    m_pHeightMap = new L3DTexture;
+    m_pHeightMap->Create(piDevice, region.pHeightData, region.nHeightData, region.nHeightData);
 
     m_Material.resize(region.nMaterial);
     for (int k = 0; k < region.nMaterial; k++)
         m_Material[k] = materialPack[region.pMaterialIDs[k]];
 
+    m_nSize = source.RegionSize;
+
     // TODO: Always use the first material
     m_pMaterial = m_Material[0];
+    m_pMaterial->CreateIndividualCB(MATERIAL_INDIV_CB::MODELSHARED, &piSharedCB);
+
+    m_pModelParams = piSharedCB->GetMemberByName("g_ModelParams");
 
     m_pTerrainNode = new L3DLandscapeTerrainNode;
     m_pTerrainNode->m_Origin = m_Origin;
@@ -97,20 +88,25 @@ void L3DLandscapeRegion::UpdateVisiblity()
 void L3DLandscapeRegion::RenderTerrain(const SCENE_RENDER_OPTION& RenderOption, const RENDER_REGION_DESC& desc)
 {
     MTLSYS_TERRAIN_CB TerrainCB = desc.TerrainCB;
-    MTLSYS_TERRAIN_TEXTURES TerrainTextures;
+
     D3D11_MAPPED_SUBRESOURCE MappedResource;
     UINT nStride = sizeof(INSTANCE_DATA);
     UINT nOffset = 0;
 
-    TerrainTextures.g_TerrainHeightMap = m_pHeightMapSRV;
+    // UINT nNumViews = sizeof(MTLSYS_TERRAIN_TEXTURES) / sizeof(ID3D11ShaderResourceView*);
+    // ID3D11ShaderResourceView** ppSRVs = (ID3D11ShaderResourceView**)&TerrainTextures;
 
-    UINT nNumViews = sizeof(MTLSYS_TERRAIN_TEXTURES) / sizeof(ID3D11ShaderResourceView*);
-    ID3D11ShaderResourceView** ppSRVs = (ID3D11ShaderResourceView**)&TerrainTextures;
-
-    RenderOption.piImmediateContext->VSSetShaderResources(g_nTerrainSlotsBegin, nNumViews, ppSRVs);
-    RenderOption.piImmediateContext->PSSetShaderResources(g_nTerrainSlotsBegin, nNumViews, ppSRVs);
+    // RenderOption.piImmediateContext->VSSetShaderResources(g_nTerrainSlotsBegin, _countof(piSRVs), piSRVs);
+    // RenderOption.piImmediateContext->PSSetShaderResources(g_nTerrainSlotsBegin, _countof(piSRVs), piSRVs);
 
     TerrainCB.RegionOffset = m_Origin;
+    TerrainCB.HeightMapUVScale = (1.0f - 1.0f / (float)m_nSize) / (float)m_nSize;
+    TerrainCB.HeightMapUVBias = 0.5f / (float)m_nSize;
+
+    m_pModelParams->SetRawValue(&TerrainCB, 0, sizeof(MTLSYS_TERRAIN_CB));
+
+    m_pMaterial->SetTexture("g_TerrainHeightMap", m_pHeightMap);
+    m_pMaterial->Apply(RenderOption.piImmediateContext, RENDER_PASS::COLOR);
 
     RenderOption.piImmediateContext->Map(desc.pInstanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
     INSTANCE_DATA* pInstanceData = (INSTANCE_DATA*)MappedResource.pData;
@@ -118,11 +114,11 @@ void L3DLandscapeRegion::RenderTerrain(const SCENE_RENDER_OPTION& RenderOption, 
     for (int i = 0; i < m_TerrainVisibleNodes.size(); i++)
     {
         const auto& node = m_TerrainVisibleNodes[i];
-        pInstanceData[i].NodeOffset = { (int)node->m_Origin.x, (int)node->m_Origin.y, 0, 0 };
+        pInstanceData[i].NodeOffset = { (int)node->m_Origin.x, (int)node->m_Origin.y, 512, 1 };
     }
-
     RenderOption.piImmediateContext->Unmap(desc.pInstanceBuffer, 0);
-    RenderOption.piImmediateContext->IASetVertexBuffers(1, 0, &desc.pInstanceBuffer, &nStride, &nOffset);
+
+    RenderOption.piImmediateContext->IASetVertexBuffers(1, 1, &desc.pInstanceBuffer, &nStride, &nOffset);
     RenderOption.piImmediateContext->DrawIndexedInstanced(desc.nIndies, m_TerrainVisibleNodes.size(), 0, 0, 0);
 }
 
@@ -205,7 +201,7 @@ void L3DLandscape::_BuildVertices(ID3D11Device* piDevice, UINT uNumVerticesPerEd
     D3D11_SUBRESOURCE_DATA      bufData;
 
     UINT uNumVertex = uNumVerticesPerEdge * uNumVerticesPerEdge;
-    XMFLOAT2 * pVertexBuffer = new XMFLOAT2[uNumVertex];
+    XMFLOAT2* pVertexBuffer = new XMFLOAT2[uNumVertex];
 
     for (unsigned y = 0; y < uNumVerticesPerEdge; ++y)
     {

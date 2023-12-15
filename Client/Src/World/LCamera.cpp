@@ -6,10 +6,15 @@ void LCamera::Init(ILCamera* piCamera)
     m_piCamera = piCamera;
 }
 
-void LCamera::SetSightDistance(float fSightDis)
+void LCamera::AddSightDistance(float fSightDis)
 {
     m_fSightDis += fSightDis;
     m_fSightDis = std::max(m_fSightDis, 3.f);
+}
+
+void LCamera::SetDistance(float fSightDis)
+{
+    m_fSightDis = fSightDis;
 }
 
 void LCamera::SetYaw(float fYaw)
