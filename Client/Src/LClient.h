@@ -2,7 +2,6 @@
 #include "LAssert.h"
 #include "LExports.h"
 #include "L3DInterface.h"
-#include "LObjectMgr.h"
 
 class L3DENGINE_CLASS IL3DEngine;
 

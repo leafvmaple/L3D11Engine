@@ -57,8 +57,13 @@ HRESULT L3DLandscapeRegion::Load(ID3D11Device* piDevice, const LANDSCAPE_REGION&
 {
     ID3DX11EffectConstantBuffer* piSharedCB = nullptr;
 
+    m_nHeightMapSize = region.nHeightData;
+
+    m_HeightData.resize(m_nHeightMapSize * m_nHeightMapSize);
+    memcpy(m_HeightData.data(), region.pHeightData, m_nHeightMapSize * m_nHeightMapSize * sizeof(float));
+
     m_pHeightMap = new L3DTexture;
-    m_pHeightMap->Create(piDevice, region.pHeightData, region.nHeightData, region.nHeightData);
+    m_pHeightMap->Create(piDevice, m_HeightData.data(), m_nHeightMapSize, m_nHeightMapSize);
 
     m_Material.resize(region.nMaterial);
     for (int k = 0; k < region.nMaterial; k++)
@@ -122,6 +127,21 @@ void L3DLandscapeRegion::RenderTerrain(const SCENE_RENDER_OPTION& RenderOption, 
     RenderOption.piImmediateContext->DrawIndexedInstanced(desc.nIndies, m_TerrainVisibleNodes.size(), 0, 0, 0);
 }
 
+void L3DLandscapeRegion::GetFloor(XMFLOAT2& vPos, float& fHeight)
+{
+    vPos.x -= m_Origin.x;
+    vPos.y -= m_Origin.y;
+
+    // Height Map Vertices is m_nHeightMapSize, Length is m_nHeightSize - 1
+    vPos.x = vPos.x / (float)m_nSize * (m_nHeightMapSize - 1);
+    vPos.y = vPos.y / (float)m_nSize * (m_nHeightMapSize - 1);
+
+    int nVericesIndex = (int)vPos.x + (int)vPos.y * m_nHeightMapSize;
+
+    // TODO: Use bilinear interpolation
+    fHeight = m_HeightData[nVericesIndex];
+}
+
 HRESULT L3DLandscape::Load(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable)
 {
     LANDSCAPE_DESC desc{ pathTable.dir.c_str(), pathTable.mapName.c_str() };
@@ -140,25 +160,27 @@ HRESULT L3DLandscape::Load(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathT
         m_MaterialPack[i]->Create(piDevice, material, RUNTIME_MACRO_TERRAIN);
     }
 
-    m_Regions.resize(pSource->RegionTableSize.x);
-    for (int i = 0; i < pSource->RegionTableSize.x; i++)
-    {
-        m_Regions[i].resize(pSource->RegionTableSize.y);
-        for (int j = 0; j < pSource->RegionTableSize.y; j++)
-        {
-            const auto& region = pSource->pRegionTable[i * pSource->RegionTableSize.y + j];
-            m_Regions[i][j] = new L3DLandscapeRegion;
-            m_Regions[i][j]->m_Origin = { i * (int)pSource->RegionSize, j * (int)pSource->RegionSize };
-            m_Regions[i][j]->Load(piDevice, region, *pSource, m_MaterialPack);
-        }
-    }
+    m_nRegionSize = pSource->RegionSize;
+    m_nRegionTableWidth = pSource->RegionTableSize.x;
 
-    m_uMinBlockLength = pSource->LeafNodeSize;
+    m_Regions.resize(pSource->RegionTableSize.x * pSource->RegionTableSize.y);
+    for (int y = 0; y < pSource->RegionTableSize.y; y++)
+        for (int x = 0; x < pSource->RegionTableSize.x; x++)
+        {
+            int nIndex = x + y * pSource->RegionTableSize.x;
+
+            const auto& region = pSource->pRegionTable[nIndex];
+            m_Regions[nIndex] = new L3DLandscapeRegion;
+            m_Regions[nIndex]->m_Origin = { x * (int)pSource->RegionSize, y * (int)pSource->RegionSize };
+            m_Regions[nIndex]->Load(piDevice, region, *pSource, m_MaterialPack);
+        }
+
+    m_nMinBlockLength = pSource->LeafNodeSize;
     m_TerrainCB.UnitScaleXZ = pSource->UnitScale;
 
-    _BuildVertices(piDevice, m_uMinBlockLength + 1);
-    _BuildIndices(piDevice, m_uMinBlockLength + 1);
-    _BuildInstance(piDevice, m_uMinBlockLength + 1);
+    _BuildVertices(piDevice, m_nMinBlockLength + 1);
+    _BuildIndices(piDevice, m_nMinBlockLength + 1);
+    _BuildInstance(piDevice, m_nMinBlockLength + 1);
 
     SAFE_RELEASE(pSource);
 
@@ -168,12 +190,10 @@ HRESULT L3DLandscape::Load(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathT
 void L3DLandscape::UpdateVisibility()
 {
     m_VisibleRegions.clear();
-    for (const auto& regionRow : m_Regions)
-        for (const auto& region : regionRow)
-        {
-            region->UpdateVisiblity();
-            m_VisibleRegions.push_back(region);
-        }
+    for (const auto& region : m_Regions) {
+        region->UpdateVisiblity();
+        m_VisibleRegions.push_back(region);
+    }
 }
 
 void L3DLandscape::RenderTerrain(const SCENE_RENDER_OPTION& RenderOption, RENDER_PASS RenderPass)
@@ -193,6 +213,17 @@ void L3DLandscape::RenderTerrain(const SCENE_RENDER_OPTION& RenderOption, RENDER
         RENDER_REGION_DESC desc{ m_TerrainCB, RenderPass, m_nIndies, m_InstanceBuffer };
         region->RenderTerrain(RenderOption, desc);
     }
+}
+
+void L3DLandscape::GetFloor(float fX, float fY, float& fHeight)
+{
+    XMFLOAT2 vPos { fX / m_TerrainCB.UnitScaleXZ.x, fY / m_TerrainCB.UnitScaleXZ.y };
+
+    UINT nRegionX = (UINT)(vPos.x / m_nRegionSize);
+    UINT nRegionY = (UINT)(vPos.y / m_nRegionSize);
+    UINT nRegionIndex = nRegionX + nRegionY * m_nRegionTableWidth;
+
+    m_Regions[nRegionIndex]->GetFloor(vPos, fHeight);
 }
 
 void L3DLandscape::_BuildVertices(ID3D11Device* piDevice, UINT uNumVerticesPerEdge)

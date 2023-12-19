@@ -17,7 +17,6 @@ Exit0:
     return hResult;
 }
 
-
 HRESULT LCharacter::LoadPart(const char* szPath)
 {
     ILModel* piModel = nullptr;
@@ -29,7 +28,6 @@ HRESULT LCharacter::LoadPart(const char* szPath)
 
     return S_OK;
 }
-
 
 HRESULT LCharacter::LoadSocket(const char* szPath, const char* szSocketName)
 {
@@ -68,3 +66,14 @@ void LCharacter::AppendRenderEntity(ILScene* piScene)
 { 
     piScene->AddRenderEntity(m_pObject);
 }
+
+void LCharacter::Run()
+{
+    m_StateMachine.process_event(LEvent::Run{});
+}
+
+void LCharacter::Stand()
+{
+    m_StateMachine.process_event(LEvent::Stop{});
+}
+

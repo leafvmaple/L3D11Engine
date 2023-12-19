@@ -32,6 +32,8 @@ public:
 
     void AddRenderEntity(ILModel* piModel) override;
 
+    void GetFloor(const XMFLOAT3& vPos, float& fHeight);
+
     void GetVisibleObjectAll(MODEL_VECTOR& vecModels);
     
     L3DCamera* GetCamera() { return m_pCamera; }

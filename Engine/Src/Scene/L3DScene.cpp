@@ -63,6 +63,12 @@ void L3DScene::AddRenderEntity(ILModel* piModel)
     m_DynamicalObjects.push_back(pModel);
 }
 
+void L3DScene::GetFloor(const XMFLOAT3& vPos, float& fHeight)
+{
+    if (m_pLandscape)
+        m_pLandscape->GetFloor(vPos.x, vPos.y, fHeight);
+}
+
 void L3DScene::GetVisibleObjectAll(MODEL_VECTOR& vecModels)
 {
     for (const auto& dynamic : m_DynamicalObjects)

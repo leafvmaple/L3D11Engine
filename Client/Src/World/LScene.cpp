@@ -2,8 +2,16 @@
 
 #include "L3DInterface.h"
 #include "LCamera.h"
-#include "LObjectMgr.h"
+#include "Object/LModel.h"
 #include "Object/LCharacter.h"
+
+#include "LAssert.h"
+
+LScene::~LScene()
+{
+    for (auto& object : m_Remotes)
+        SAFE_DELETE(object);
+}
 
 void LScene::Create(const char* szFileName)
 {
@@ -17,7 +25,7 @@ void LScene::Create(const char* szFileName)
     m_pCamera->SetPitch(-0.1 * XM_PI);
     m_pCamera->SetDistance(200);
 
-    pCharacter = LObjectMgr::Instance().CreateModel<LCharacter>("data/source/player/F1/部件/Mdl/F1.mdl");
+    pCharacter = AddCharacter("data/source/player/F1/部件/Mdl/F1.mdl", true);
     pCharacter->LoadPart("data/source/player/F1/部件/F1_0000_head.mesh");
     pCharacter->LoadPart("data/source/player/F1/部件/F1_2206_body.mesh");
     pCharacter->LoadPart("data/source/player/F1/部件/F1_2206_hand.mesh");
@@ -34,5 +42,19 @@ void LScene::Create(const char* szFileName)
 
 void LScene::Update(float fDeltaTime)
 {
+    m_pAvatar->Display(IL3DEngine::Instance(), fDeltaTime);
+    for (auto& remote : m_Remotes)
+        remote->Display(IL3DEngine::Instance(), fDeltaTime);
     m_pCamera->Update();
+}
+
+LCharacter* LScene::AddCharacter(const char* szFileName, bool bAvatar)
+{
+    LCharacter* pObject = new LCharacter;
+    if (bAvatar)
+        m_pAvatar = pObject;
+    else
+        m_Remotes.push_back(pObject);
+    pObject->Create(IL3DEngine::Instance(), szFileName);
+    return pObject;
 }

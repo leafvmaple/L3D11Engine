@@ -2,6 +2,39 @@
 #include "LModel.h"
 #include <vector>
 
+#include "boost/sml.hpp"
+
+namespace sml = boost::sml;
+
+namespace LEvent
+{
+    struct Run {};
+    struct Stop {};
+}
+
+namespace LAction {
+    struct Animation {
+        template<class TMsg>
+        constexpr void Play(const TMsg& msg) {}
+    };
+
+    constexpr auto PlayAnimation = []() {
+        // action.Play(event);
+    };
+}
+
+struct StateMachine {
+    auto operator()() const {
+        using namespace sml;
+        // 定义状态转换表
+        return make_transition_table(
+            *state<class Idle> + event<LEvent::Run> / LAction::PlayAnimation = state<class Running>,
+            state<class Running> +event<LEvent::Stop> / LAction::PlayAnimation = state<class Idle>,
+            state<class Idle> + event<LEvent::Stop> = X
+        );
+    }
+};
+
 class LCharacter : public LModel
 {
 public:
@@ -19,10 +52,18 @@ public:
 
     void AppendRenderEntity(ILScene* piScene);
 
+    // Action
+
+    void Run();
+    void Stand();
+
 private:
+
     ILModel* m_pObject = nullptr;
     IL3DEngine* m_p3DEngine = nullptr;
 
     std::vector<ILModel*> m_Parts;
+
+    sml::sm<StateMachine> m_StateMachine;
 };
 

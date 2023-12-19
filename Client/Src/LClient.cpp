@@ -34,7 +34,8 @@ HRESULT LClient::Init(HINSTANCE hInstance)
 
     InitL3DWindow(hInstance, WindowParam);
 
-    LObjectMgr::Instance().Init(hInstance, WindowParam);
+    hr = IL3DEngine::Instance()->Init(hInstance, WindowParam);
+    HRESULT_ERROR_EXIT(hr);
 
     m_pScene = new LScene;
     m_pScene->Create("data/source/maps/µ¾Ïã´å/µ¾Ïã´å.jsonmap");
@@ -55,6 +56,7 @@ HRESULT LClient::Update()
     HRESULT hResult = E_FAIL;
     float fCurTime = 0;
     float fDeltaTime = 0;
+    IL3DEngine* piEngine = IL3DEngine::Instance();
 
     fCurTime = (float)timeGetTime();
     fDeltaTime = (fCurTime - m_fLastTime) * 0.001f;
@@ -62,7 +64,8 @@ HRESULT LClient::Update()
     _UpdateMessage();
 
     m_pScene->Update(fDeltaTime);
-    LObjectMgr::Instance().Update(fDeltaTime);
+
+    piEngine->FrameMove(fDeltaTime);
 
     hr = ShowFPS(fDeltaTime);
     HRESULT_ERROR_EXIT(hr);

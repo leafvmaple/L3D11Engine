@@ -42,18 +42,22 @@ public:
     void UpdateVisiblity();
     void RenderTerrain(const SCENE_RENDER_OPTION& RenderOption, const RENDER_REGION_DESC& desc);
 
+    void GetFloor(XMFLOAT2& vPos, float& fHeight);
+
 private:
     std::vector<L3DMaterial*> m_Material;
     std::vector<L3DLandscapeTerrainNode*> m_TerrainVisibleNodes;
 
     UINT m_nSize = 0;
+    UINT m_nHeightMapSize = 0;
 
     L3DMaterial* m_pMaterial = nullptr;
     L3DTexture* m_pHeightMap = nullptr;
+    L3DLandscapeTerrainNode* m_pTerrainNode = nullptr;
 
     ID3DX11EffectVariable* m_pModelParams = nullptr;
 
-    L3DLandscapeTerrainNode* m_pTerrainNode = nullptr;
+    std::vector<float> m_HeightData;
 };
 
 class L3DLandscape
@@ -63,9 +67,11 @@ public:
     void UpdateVisibility();
     void RenderTerrain(const SCENE_RENDER_OPTION& RenderOption, RENDER_PASS RenderPass);
 
+    void GetFloor(float fX, float fY, float& fHeight);
+
 private:
     std::vector<L3DMaterial*> m_MaterialPack;
-    std::vector<std::vector<L3DLandscapeRegion*>> m_Regions;
+    std::vector<L3DLandscapeRegion*> m_Regions;
     std::vector<L3DLandscapeRegion*> m_VisibleRegions;
 
     MTLSYS_TERRAIN_CB m_TerrainCB = {};
@@ -73,7 +79,9 @@ private:
     ID3D11Buffer* m_IndiesBuffer = nullptr;
     ID3D11Buffer* m_InstanceBuffer = nullptr;
 
-    UINT m_uMinBlockLength = 0;
+    UINT m_nMinBlockLength = 0;
+    UINT m_nRegionTableWidth = 0;
+    UINT m_nRegionSize = 0;
 
 private:
     void _BuildVertices(ID3D11Device* piDevice, UINT uNumVerticesPerEdge);
