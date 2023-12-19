@@ -13,6 +13,7 @@ public:
 private:
     HWND m_pWnd = nullptr;
     BOOL m_bLButtonDown = false;
+    BOOL m_bKeyDown = false;
 
     int m_nCursorX = 0;
     int m_nCursorY = 0;

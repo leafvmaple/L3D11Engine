@@ -67,13 +67,12 @@ void LCharacter::AppendRenderEntity(ILScene* piScene)
     piScene->AddRenderEntity(m_pObject);
 }
 
-void LCharacter::Run()
+void LCharacter::Forward()
 {
-    m_StateMachine.process_event(LEvent::Run{});
+    m_StateMachine.process_event(LEvent::Forward{});
 }
 
-void LCharacter::Stand()
+void LCharacter::KeyUp()
 {
-    m_StateMachine.process_event(LEvent::Stop{});
+    m_StateMachine.process_event(LEvent::KeyUp{});
 }
-

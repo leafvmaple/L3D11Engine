@@ -1,6 +1,9 @@
 #include "LInput.h"
 #include "LScene.h"
 #include "LCamera.h"
+
+#include "Object/LCharacter.h"
+
 #include "LAssert.h"
 
 
@@ -42,6 +45,17 @@ void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pS
         m_bLButtonDown = false;
         break;
     }
+    case WM_KEYDOWN:
+    {
+        m_bKeyDown = true;
+        break;
+    }
+    case WM_KEYUP:
+    {
+        m_bKeyDown = false;
+        pScene->m_pAvatar->KeyUp();
+        break;
+    }
     case WM_MOUSEMOVE:
     {
         if (m_bLButtonDown)
@@ -71,6 +85,13 @@ void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pS
         case 'E':
         {
             _CameraTargetUp(pScene->m_pCamera, -m_fUpStep);
+            break;
+        }
+        case 'w':
+        case 'W':
+        {
+            if (m_bKeyDown)
+                pScene->m_pAvatar->Forward();
             break;
         }
         default:

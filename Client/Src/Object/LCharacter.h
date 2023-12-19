@@ -8,8 +8,8 @@ namespace sml = boost::sml;
 
 namespace LEvent
 {
-    struct Run {};
-    struct Stop {};
+    struct Forward {};
+    struct KeyUp {};
 }
 
 namespace LAction {
@@ -28,9 +28,9 @@ struct StateMachine {
         using namespace sml;
         // 定义状态转换表
         return make_transition_table(
-            *state<class Idle> + event<LEvent::Run> / LAction::PlayAnimation = state<class Running>,
-            state<class Running> +event<LEvent::Stop> / LAction::PlayAnimation = state<class Idle>,
-            state<class Idle> + event<LEvent::Stop> = X
+            *state<class Idle> + event<LEvent::Forward> / LAction::PlayAnimation = state<class Running>,
+            state<class Running> +event<LEvent::KeyUp> / LAction::PlayAnimation = state<class Idle>,
+            state<class Idle> + event<LEvent::KeyUp> = X
         );
     }
 };
@@ -54,8 +54,8 @@ public:
 
     // Action
 
-    void Run();
-    void Stand();
+    void Forward();
+    void KeyUp();
 
 private:
 
