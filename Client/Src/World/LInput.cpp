@@ -53,7 +53,7 @@ void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pS
     case WM_KEYUP:
     {
         m_bKeyDown = false;
-        pScene->m_pAvatar->KeyUp();
+        pScene->m_pAvatar->KeyUpEvent();
         break;
     }
     case WM_MOUSEMOVE:
@@ -91,7 +91,7 @@ void LInput::ProcessInput(UINT& uMsg, WPARAM& wParam, LPARAM& lParam, LScene* pS
         case 'W':
         {
             if (m_bKeyDown)
-                pScene->m_pAvatar->Forward();
+                pScene->m_pAvatar->ForwardEvent();
             break;
         }
         default:

@@ -10,6 +10,7 @@ using namespace DirectX;
 
 #define ANI_STRING_SIZE 30
 const unsigned	ANI_FILE_MASK = 0x414E494D;
+const unsigned	ANI_FILE_MASK_VERVION2 = 0x324E494D;
 
 enum ANIMATION_TYPE
 {
@@ -22,27 +23,9 @@ enum ANIMATION_TYPE
     ANIMATION_BONE_RTS = 13,
     ANIMATION_BLENDSHAPE = 14,
     ANIMATION_VCIK = 15,	//视频捕捉动画关键点转FullBodyIK
-    ANIMATION_COUNT,
+    ANIMATION_COUNT, 
     ANIMATION_FORCE_DWORD = 0xffffffff,
 };
-
-#pragma pack(push,1)
-struct _ANI_FILE_HEADER
-{
-    DWORD dwMask;
-    DWORD dwBlockLength;
-    DWORD dwNumAnimations;
-    DWORD dwType;
-    char  strDesc[ANI_STRING_SIZE];
-};
-
-struct _BONE_ANI
-{
-    DWORD dwNumBones;
-    DWORD dwNumFrames;
-    float fFrameLength;
-};
-#pragma pack(pop)
 
 struct ANIMATION_DESC
 {
@@ -51,11 +34,11 @@ struct ANIMATION_DESC
 
 struct RTS
 {
-    XMFLOAT3 Translation;
-    XMFLOAT3 Scale;
-    XMFLOAT4 Rotation;
-    float Sign;
-    XMFLOAT4 SRotation;
+    XMFLOAT3 Translation = { 0.f, 0.f, 0.f };
+    XMFLOAT3 Scale = { 1.f, 1.f, 1.f };
+    XMFLOAT4 Rotation = { 0.f, 0.f, 0.f, 1.f };
+    float Sign = 1.f;
+    XMFLOAT4 SRotation = { 0.f, 0.f, 0.f, 1.f };
 };
 
 struct ANIMATION_SOURCE : LUnknown
@@ -70,8 +53,11 @@ struct ANIMATION_SOURCE : LUnknown
     char (*pBoneNames)[ANI_STRING_SIZE] = nullptr;
     RTS** pBoneRTS = nullptr;
 
+    int* pAffline = nullptr;
+
     virtual ~ANIMATION_SOURCE() {
         SAFE_DELETE_ARRAY(pBoneNames);
+        SAFE_DELETE_ARRAY(pAffline);
         if (nBonesCount > 0)
         {
             for (int i = 0; i < nBonesCount; i++)

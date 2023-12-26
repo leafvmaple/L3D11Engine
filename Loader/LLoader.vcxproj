@@ -150,6 +150,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="Include\LInterface.h" />
     <ClInclude Include="Include\LLoader.h" />
     <ClInclude Include="Include\IMaterial.h" />
+    <ClInclude Include="Src\Animation.h" />
     <ClInclude Include="Src\Material.h" />
     <ClInclude Include="Src\LFileReader.h" />
   </ItemGroup>

@@ -6,33 +6,23 @@
 
 namespace sml = boost::sml;
 
-namespace LEvent
+enum class LEvent
 {
-    struct Forward {};
-    struct KeyUp {};
-}
+    Forward,
+    KeyUp,
+};
 
-namespace LAction {
-    struct Animation {
-        template<class TMsg>
-        constexpr void Play(const TMsg& msg) {}
-    };
-
-    constexpr auto PlayAnimation = []() {
-        // action.Play(event);
-    };
-}
-
-struct StateMachine {
-    auto operator()() const {
-        using namespace sml;
-        // 定义状态转换表
-        return make_transition_table(
-            *state<class Idle> + event<LEvent::Forward> / LAction::PlayAnimation = state<class Running>,
-            state<class Running> +event<LEvent::KeyUp> / LAction::PlayAnimation = state<class Idle>,
-            state<class Idle> + event<LEvent::KeyUp> = X
-        );
-    }
+enum class LState
+{
+    Idle,
+    Forward,
+    Backward,
+    Left,
+    Right,
+    Jump,
+    Attack,
+    Skill,
+    Dead,
 };
 
 class LCharacter : public LModel
@@ -53,9 +43,14 @@ public:
     void AppendRenderEntity(ILScene* piScene);
 
     // Action
+    void ForwardAction();
+    void IdleAction();
 
-    void Forward();
-    void KeyUp();
+    // Event
+    void ProcessEvent(LEvent event);
+
+    void ForwardEvent();
+    void KeyUpEvent();
 
 private:
 
@@ -64,6 +59,6 @@ private:
 
     std::vector<ILModel*> m_Parts;
 
-    sml::sm<StateMachine> m_StateMachine;
+    LState m_State = LState::Idle;
 };
 

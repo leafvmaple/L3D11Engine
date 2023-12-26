@@ -1,5 +1,4 @@
 #pragma once
-//#include "LFileStruct.h"
 #include <wtypes.h>
 #include <atlconv.h>
 #include <cstdio>
