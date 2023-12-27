@@ -86,48 +86,27 @@ void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_S
     pReader->Convert(pBoneToAnimationIndies, pSource->nBonesCount);
     pReader->Convert(pAnimationIndexFlag, nRealAnimationBones);
 
-    pSource->pAffline = new int[pSource->nBonesCount];
+    pSource->pFlag = new int[pSource->nBonesCount];
+    memset(pSource->pFlag, 0, sizeof(int) * pSource->nBonesCount);
+
+    InitBoneRTS.resize(pSource->nBonesCount);
     for (int i = 0; i < pSource->nBonesCount; i++)
-        pSource->pAffline[i] = (pInitBoneRTS[i].byFlag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || pInitBoneRTS[i].byFlag & ROTATION);
-
-    std::vector<std::vector<RTS>> AnimationIndexRTS(nRealAnimationBones);
-    for (int i = 0; i < nRealAnimationBones; i++)
-    { 
-        _CompressRotation* pRotation = nullptr;
-        XMFLOAT3* pTranslation = nullptr;
-        float* pAffineScale = nullptr;
-        XMFLOAT3* pScale = nullptr;
-
-        AnimationIndexRTS[i].resize(pSource->nFrameCount);
-
-        auto& flag = pAnimationIndexFlag[i];
-
+    {
+        auto& flag = pInitBoneRTS[i].byFlag;
         if (flag == ONLY_ROTATION || flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & ROTATION)
-            pReader->Convert(pRotation, pSource->nFrameCount);
+            InitBoneRTS[i].Rotation = pInitBoneRTS[i].Rotation;
 
         if (flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & TRANSLATION)
-            pReader->Convert(pTranslation, pSource->nFrameCount);
+            InitBoneRTS[i].Translation = pInitBoneRTS[i].Translation;
 
-        if (flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & AFFINESCALE)
-            pReader->Convert(pAffineScale, pSource->nFrameCount);
-        else if (flag & SCALE)
-            pReader->Convert(pScale, pSource->nFrameCount);
-
-        for (int j = 0; j < pSource->nFrameCount; j++)
-        {
-            auto& rts = AnimationIndexRTS[i][j];
-
-            if (pRotation)
-                XMStoreFloat4(&rts.Rotation, XMQuaternionConjugate(XMVectorSet(
-                    pRotation->wzyx[0] * CRPRECISION, pRotation->wzyx[1] * CRPRECISION, pRotation->wzyx[2] * CRPRECISION, pRotation->wzyx[3] * CRPRECISION)));
-
-            if (pTranslation)
-                rts.Translation = pTranslation[j];
-
-            if (pScale)
-                rts.Scale = pScale[j];
-            else if (pAffineScale)
-                rts.Scale = XMFLOAT3(pAffineScale[j], pAffineScale[j], pAffineScale[j]);
+        if (flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & AFFINESCALE) {
+            pSource->pFlag[i] |= BONE_FLAG_AFFLINE;
+            InitBoneRTS[i].Scale = pInitBoneRTS[i].Scale;
+        }
+        else if (flag & SCALE) {
+            InitBoneRTS[i].Scale = pInitBoneRTS[i].Scale;
+            if (flag & SROTATION)
+                InitBoneRTS[i].SRotation = pInitBoneRTS[i].SRotation;
         }
     }
 
@@ -137,71 +116,59 @@ void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_S
         auto nAnimationIndex = pBoneToAnimationIndies[i];
 
         pSource->pBoneRTS[i] = new RTS[pSource->nFrameCount];
+        for (int j = 0; j < pSource->nFrameCount; j++)
+            pSource->pBoneRTS[i][j] = InitBoneRTS[i];
 
-        if (nAnimationIndex > 0)
+        if (nAnimationIndex >= 0)
         {
+            _CompressRotation* pSRotation = nullptr;
+            _CompressRotation* pRotation = nullptr;
+            XMFLOAT3* pTranslation = nullptr;
+            float* pAffineScale = nullptr;
+            XMFLOAT3* pScale = nullptr;
+
             assert(nAnimationIndex < nRealAnimationBones);
-            memcpy(pSource->pBoneRTS[i], AnimationIndexRTS[nAnimationIndex].data(), pSource->nFrameCount * sizeof(RTS));
-        }
-        else
-        {
+            auto& flag = pAnimationIndexFlag[nAnimationIndex];
+
+            if (flag == ONLY_ROTATION || flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & ROTATION)
+                pReader->Convert(pRotation, pSource->nFrameCount);
+
+            if (flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & TRANSLATION)
+                pReader->Convert(pTranslation, pSource->nFrameCount);
+
+            if (flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & AFFINESCALE)
+                pReader->Convert(pAffineScale, pSource->nFrameCount);
+            else if (flag & SCALE) {
+                pReader->Convert(pScale, pSource->nFrameCount);
+                if (flag & SROTATION)
+                    pReader->Convert(pSRotation, pSource->nFrameCount);
+            }
+
             for (int j = 0; j < pSource->nFrameCount; j++)
             {
-                pSource->pBoneRTS[i][j].Rotation = pInitBoneRTS[i].Rotation;
-                pSource->pBoneRTS[i][j].Translation = pInitBoneRTS[i].Translation;
-                pSource->pBoneRTS[i][j].Scale = pInitBoneRTS[i].Scale;
-                pSource->pBoneRTS[i][j].SRotation = pInitBoneRTS[i].SRotation;
+                auto& rts = pSource->pBoneRTS[i][j];
+
+                if (pRotation)
+                    XMStoreFloat4(&rts.Rotation, XMVectorSet(
+                        pRotation->wzyx[0] * CRPRECISION, pRotation->wzyx[1] * CRPRECISION, pRotation->wzyx[2] * CRPRECISION, pRotation->wzyx[3] * CRPRECISION));
+
+                if (pSRotation)
+                    XMStoreFloat4(&rts.SRotation, XMVectorSet(
+                        pSRotation->wzyx[0] * CRPRECISION, pSRotation->wzyx[1] * CRPRECISION, pSRotation->wzyx[2] * CRPRECISION, pSRotation->wzyx[3] * CRPRECISION));
+
+                if (pTranslation)
+                    rts.Translation = pTranslation[j];
+                if (pScale)
+                    rts.Scale = pScale[j];
+                else if (pAffineScale)
+                    rts.Scale = XMFLOAT3(pAffineScale[j], pAffineScale[j], pAffineScale[j]);
             }
         }
+        else
+            pSource->pFlag[i] |= BONE_FLAG_NO_UPDATE;
     }
 
-    //pSource->pBoneRTS = new RTS * [pSource->nBonesCount];
-    //_RTSV2* pRTSV2 = new _RTSV2[pSource->nFrameCount];
-    //for (int i = 0; i < pSource->nBonesCount; i++)
-    //{
-    //    pReader->Copy(pRTSV2, pSource->nFrameCount);
-
-    //    pSource->pBoneRTS[i] = new RTS[pSource->nFrameCount];
-    //    for (int j = 0; j < pSource->nFrameCount; j++)
-    //    {
-    //        auto& rts = pSource->pBoneRTS[i][j];
-    //        auto rtsV2 = pRTSV2[j];
-
-    //        rts.Rotation = XMFLOAT4(0, 0, 0, 1.0f);
-    //        rts.SRotation = XMFLOAT4(0, 0, 0, 1.0f);
-    //        rts.Translation = XMFLOAT3(0, 0, 0);
-    //        rts.Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
-    //        rts.Sign = 1.0f;
-
-    //        switch (rtsV2.byFlag)
-    //        {
-    //        case ONLY_ROTATION_TRANSLATION_AFFINESCALE:
-    //            rts.Scale = XMFLOAT3(rtsV2.Scale.x, rtsV2.Scale.x, rtsV2.Scale.x);
-    //            [[fallthrough]];
-    //        case ONLY_ROTATION_TRANSLATION:
-    //            rts.Translation = rtsV2.Translation;
-    //            [[fallthrough]];
-    //        case ONLY_ROTATION:
-    //            XMStoreFloat4(&rts.Rotation, XMQuaternionConjugate(XMLoadFloat4(&rtsV2.Rotation)));
-    //            break;
-    //        default:
-    //            if (rtsV2.byFlag & ROTATION)
-    //                XMStoreFloat4(&rts.Rotation, XMQuaternionConjugate(XMLoadFloat4(&rtsV2.Rotation)));
-    //            if (rtsV2.byFlag & TRANSLATION)
-    //                rts.Translation = rtsV2.Translation;
-    //            if (rtsV2.byFlag & SCALE)
-    //                rts.Scale = rtsV2.Scale;
-    //            if (rtsV2.byFlag & AFFINESCALE)
-    //                rts.Scale = XMFLOAT3(rtsV2.Scale.x, rtsV2.Scale.x, rtsV2.Scale.x);
-    //            if (rtsV2.byFlag & SIGN)
-    //                rts.Sign = -1.0f;
-    //            if (rtsV2.byFlag & SROTATION && rtsV2.byFlag & SCALE) {
-    //                XMStoreFloat4(&rts.SRotation, XMQuaternionConjugate(XMLoadFloat4(&rtsV2.SRotation)));
-    //            }
-    //        }
-    //    }
-    //}
-    //SAFE_DELETE_ARRAY(pRTSV2);
+    return;
 }
 
 void LoadAnimation(ANIMATION_DESC* pDesc, ANIMATION_SOURCE*& pSource)

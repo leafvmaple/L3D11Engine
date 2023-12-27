@@ -51,7 +51,7 @@ private:
 
     std::string m_szName;
     std::vector<std::string> m_BoneNames;
-    std::vector<int> m_Affline;
+    std::vector<int> m_Flags;
     std::vector<std::vector<RTS>> m_BoneRTS;
 
     HRESULT _GetBoneMatrix(std::vector<XMMATRIX>& pResult, DWORD dwFrame, DWORD dwFrameTo, float fWeight);

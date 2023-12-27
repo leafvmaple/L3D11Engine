@@ -30,9 +30,9 @@ HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
             m_BoneRTS[i][j] = std::move(pSource->pBoneRTS[i][j]);
     }
 
-    m_Affline.resize(m_dwNumBone);
-    if (pSource->pAffline)
-        memcpy(m_Affline.data(), pSource->pAffline, sizeof(int) * m_dwNumBone);
+    m_Flags.resize(m_dwNumBone);
+    if (pSource->pFlag)
+        memcpy(m_Flags.data(), pSource->pFlag, sizeof(int) * m_dwNumBone);
 
 
     m_szName = szAnimation;
@@ -124,10 +124,22 @@ void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 HRESULT L3DAnimation::_GetBoneMatrix(std::vector<XMMATRIX>& result, DWORD dwFrame, DWORD dwFrameTo, float fWeight)
 {
     RTS rts;
+
     for (DWORD i = 0; i < m_dwNumBone; i++)
     {
+        if (m_Flags[i] & BONE_FLAG_NO_UPDATE)
+            continue;
+
         InterpolateRTSKeyFrame(&rts, m_BoneRTS[i][dwFrame], m_BoneRTS[i][dwFrameTo], fWeight);
-        L3D::RTS2Matrix(result[i], rts, m_Affline[i]);
+        L3D::RTS2Matrix(result[i], rts, m_Flags[i]);
+    }
+
+    for (DWORD i = 0; i < m_dwNumBone; i++)
+    {
+        if (!(m_Flags[i] & BONE_FLAG_NO_UPDATE))
+            continue;
+
+        L3D::RTS2Matrix(result[i], m_BoneRTS[i][0], m_Flags[i]);
     }
 
     return S_OK;

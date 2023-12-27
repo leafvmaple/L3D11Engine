@@ -27,6 +27,13 @@ enum ANIMATION_TYPE
     ANIMATION_FORCE_DWORD = 0xffffffff,
 };
 
+enum BONE_FLAG
+{
+    BONE_FLAG_NONE = 0,
+    BONE_FLAG_AFFLINE = 1 << 0,
+    BONE_FLAG_NO_UPDATE = 1 << 1,
+};
+
 struct ANIMATION_DESC
 {
     const char* szFileName = nullptr;
@@ -36,9 +43,9 @@ struct RTS
 {
     XMFLOAT3 Translation = { 0.f, 0.f, 0.f };
     XMFLOAT3 Scale = { 1.f, 1.f, 1.f };
-    XMFLOAT4 Rotation = { 0.f, 0.f, 0.f, 1.f };
+    XMFLOAT4 Rotation = { 1.f, 0.f, 0.f, 0.f };
     float Sign = 1.f;
-    XMFLOAT4 SRotation = { 0.f, 0.f, 0.f, 1.f };
+    XMFLOAT4 SRotation = { 1.f, 0.f, 0.f, 0.f };
 };
 
 struct ANIMATION_SOURCE : LUnknown
@@ -53,11 +60,11 @@ struct ANIMATION_SOURCE : LUnknown
     char (*pBoneNames)[ANI_STRING_SIZE] = nullptr;
     RTS** pBoneRTS = nullptr;
 
-    int* pAffline = nullptr;
+    int* pFlag = nullptr;
 
     virtual ~ANIMATION_SOURCE() {
         SAFE_DELETE_ARRAY(pBoneNames);
-        SAFE_DELETE_ARRAY(pAffline);
+        SAFE_DELETE_ARRAY(pFlag);
         if (nBonesCount > 0)
         {
             for (int i = 0; i < nBonesCount; i++)
