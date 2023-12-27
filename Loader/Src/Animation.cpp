@@ -164,8 +164,6 @@ void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_S
                     rts.Scale = XMFLOAT3(pAffineScale[j], pAffineScale[j], pAffineScale[j]);
             }
         }
-        else
-            pSource->pFlag[i] |= BONE_FLAG_NO_UPDATE;
     }
 
     return;

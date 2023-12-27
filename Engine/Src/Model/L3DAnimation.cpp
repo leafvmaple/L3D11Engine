@@ -127,19 +127,8 @@ HRESULT L3DAnimation::_GetBoneMatrix(std::vector<XMMATRIX>& result, DWORD dwFram
 
     for (DWORD i = 0; i < m_dwNumBone; i++)
     {
-        if (m_Flags[i] & BONE_FLAG_NO_UPDATE)
-            continue;
-
         InterpolateRTSKeyFrame(&rts, m_BoneRTS[i][dwFrame], m_BoneRTS[i][dwFrameTo], fWeight);
         L3D::RTS2Matrix(result[i], rts, m_Flags[i]);
-    }
-
-    for (DWORD i = 0; i < m_dwNumBone; i++)
-    {
-        if (!(m_Flags[i] & BONE_FLAG_NO_UPDATE))
-            continue;
-
-        L3D::RTS2Matrix(result[i], m_BoneRTS[i][0], m_Flags[i]);
     }
 
     return S_OK;
