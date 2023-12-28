@@ -33,7 +33,7 @@ struct _BONE_ANI_V2
 
 struct _RTSV2
 {
-    BYTE byFlag;
+    BYTE nFlag;
     XMFLOAT3 Translation;
     XMFLOAT3 Scale;
     XMFLOAT4 Rotation;

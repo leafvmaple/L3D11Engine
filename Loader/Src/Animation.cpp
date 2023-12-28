@@ -53,7 +53,12 @@ enum _RTSV2Flag
     SIGN = 1 << 7
 };
 
-const float CRPRECISION = 1.f / SHRT_MAX;
+void _Short4ToFloat4(XMFLOAT4& Rotation, SHORT wzyx[4])
+{
+    const float CRPRECISION = 1.f / SHRT_MAX;
+    XMStoreFloat4(&Rotation, XMVectorSet(wzyx[0] * CRPRECISION, wzyx[1] * CRPRECISION, wzyx[2] * CRPRECISION, wzyx[3] * CRPRECISION));
+}
+
 void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_SOURCE*& pSource)
 {
     LBinaryReader Reader;
@@ -92,20 +97,21 @@ void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_S
     InitBoneRTS.resize(pSource->nBonesCount);
     for (int i = 0; i < pSource->nBonesCount; i++)
     {
-        auto& flag = pInitBoneRTS[i].byFlag;
-        if (flag == ONLY_ROTATION || flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & ROTATION)
+        auto nFlag = pInitBoneRTS[i].nFlag;
+
+        if (nFlag == ONLY_ROTATION || nFlag == ONLY_ROTATION_TRANSLATION || nFlag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || nFlag & ROTATION)
             InitBoneRTS[i].Rotation = pInitBoneRTS[i].Rotation;
 
-        if (flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & TRANSLATION)
+        if (nFlag == ONLY_ROTATION_TRANSLATION || nFlag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || nFlag & TRANSLATION)
             InitBoneRTS[i].Translation = pInitBoneRTS[i].Translation;
 
-        if (flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & AFFINESCALE) {
+        if (nFlag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || nFlag & AFFINESCALE) {
             pSource->pFlag[i] |= BONE_FLAG_AFFLINE;
             InitBoneRTS[i].Scale = pInitBoneRTS[i].Scale;
         }
-        else if (flag & SCALE) {
+        else if (nFlag & SCALE) {
             InitBoneRTS[i].Scale = pInitBoneRTS[i].Scale;
-            if (flag & SROTATION)
+            if (nFlag & SROTATION)
                 InitBoneRTS[i].SRotation = pInitBoneRTS[i].SRotation;
         }
     }
@@ -149,13 +155,9 @@ void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_S
                 auto& rts = pSource->pBoneRTS[i][j];
 
                 if (pRotation)
-                    XMStoreFloat4(&rts.Rotation, XMVectorSet(
-                        pRotation->wzyx[0] * CRPRECISION, pRotation->wzyx[1] * CRPRECISION, pRotation->wzyx[2] * CRPRECISION, pRotation->wzyx[3] * CRPRECISION));
-
+                    _Short4ToFloat4(rts.Rotation, pRotation->wzyx);
                 if (pSRotation)
-                    XMStoreFloat4(&rts.SRotation, XMVectorSet(
-                        pSRotation->wzyx[0] * CRPRECISION, pSRotation->wzyx[1] * CRPRECISION, pSRotation->wzyx[2] * CRPRECISION, pSRotation->wzyx[3] * CRPRECISION));
-
+                    _Short4ToFloat4(rts.SRotation, pSRotation->wzyx);
                 if (pTranslation)
                     rts.Translation = pTranslation[j];
                 if (pScale)
@@ -172,7 +174,6 @@ void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_S
 void LoadAnimation(ANIMATION_DESC* pDesc, ANIMATION_SOURCE*& pSource)
 {
     LBinaryReader Reader;
-
     _ANI_FILE_HEADER* pHead = nullptr;
 
     pSource = new ANIMATION_SOURCE;
