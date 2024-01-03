@@ -23,8 +23,9 @@ public:
 protected:
 private:
     float m_fLastTime = 0.f;
+    DWORD m_nLastFrame = 0;
     float m_fTimeElapsed = 0.f;
-    int m_nFrame = 0;
+    int m_nGameLoop = 0;
 
     BOOL m_bActive = true;
 

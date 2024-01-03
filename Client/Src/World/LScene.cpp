@@ -33,10 +33,15 @@ void LScene::Create(const char* szFileName)
 
 void LScene::Update(float fDeltaTime)
 {
-    m_pAvatar->Display(IL3DEngine::Instance(), fDeltaTime);
+    m_pAvatar->Update(IL3DEngine::Instance(), fDeltaTime);
     for (auto& remote : m_Remotes)
-        remote->Display(IL3DEngine::Instance(), fDeltaTime);
+        remote->Update(IL3DEngine::Instance(), fDeltaTime);
     m_pCamera->Update();
+}
+
+void LScene::FrameMove(unsigned int nFrame)
+{
+    m_pAvatar->FrameMove(IL3DEngine::Instance(), nFrame);
 }
 
 LCharacter* LScene::AddCharacter(const char* szFileName, bool bAvatar)

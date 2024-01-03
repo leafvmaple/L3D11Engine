@@ -16,6 +16,7 @@ public:
 
     void Create(const char* szFileName);
     void Update(float fDeltaTime);
+    void FrameMove(unsigned int nFrame);
 
     LCharacter* AddCharacter(const char* szFileName, bool bAvatar);
 

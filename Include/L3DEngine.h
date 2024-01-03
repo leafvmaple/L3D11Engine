@@ -25,9 +25,12 @@ public:
     virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam);
     virtual HRESULT Uninit();
     
-    virtual HRESULT FrameMove(float fDeltaTime);
+    virtual HRESULT Update(float fDeltaTime);
 
     virtual ID3D11Device* GetDevice() const;
+
+    virtual DWORD GetFrame() const override;
+    virtual float GetTime() const override;
 
 public:
     HRESULT AttachScene(L3DScene* pScene);

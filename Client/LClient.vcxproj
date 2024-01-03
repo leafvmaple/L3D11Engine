@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Data\LFrameData.cpp" />
     <ClCompile Include="Src\LClient.cpp" />
     <ClCompile Include="Src\Object\LCharacter.cpp" />
     <ClCompile Include="Src\World\LCamera.cpp" />
@@ -26,6 +27,7 @@
     <ClCompile Include="Src\World\LScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Data\LFrameData.h" />
     <ClInclude Include="Src\LClient.h" />
     <ClInclude Include="Src\Object\LCharacter.h" />
     <ClInclude Include="Src\Object\LModel.h" />

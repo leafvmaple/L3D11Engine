@@ -15,6 +15,9 @@
     <Filter Include="Source Files\World">
       <UniqueIdentifier>{2fce7c60-c85a-4928-8f06-c8da03fa1e89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Data">
+      <UniqueIdentifier>{c5f74c05-61fa-4e2a-99e0-f0a03f217d71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\LClient.cpp">
@@ -31,6 +34,9 @@
     </ClCompile>
     <ClCompile Include="Src\World\LInput.cpp">
       <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Data\LFrameData.cpp">
+      <Filter>Source Files\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,6 +57,9 @@
     </ClInclude>
     <ClInclude Include="Src\World\LInput.h">
       <Filter>Source Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Data\LFrameData.h">
+      <Filter>Source Files\Data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -71,14 +71,14 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
     g_pMaterialSystem->Init(m_Device.piDevice);
 
     // Temp Ç¿ÖÆË¢ÐÂ
-    g_Timer.Update();
+    g_Timer.Init();
 
     hResult = S_OK;
 Exit0:
     return hResult;
 }
 
-HRESULT L3DEngine::FrameMove(float fDeltaTime)
+HRESULT L3DEngine::Update(float fDeltaTime)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -105,6 +105,16 @@ Exit0:
 ID3D11Device* L3DEngine::GetDevice() const
 {
     return m_Device.piDevice;
+}
+
+DWORD L3DEngine::GetFrame() const
+{
+    return g_Timer.GetFrame();
+}
+
+float L3DEngine::GetTime() const
+{
+    return g_Timer.GetTime();
 }
 
 HRESULT L3DEngine::AttachScene(L3DScene* pScene)

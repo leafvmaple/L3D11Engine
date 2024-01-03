@@ -4,6 +4,8 @@
 
 #include "boost/sml.hpp"
 
+#include "Data/LFrameData.h"
+
 namespace sml = boost::sml;
 
 enum class LEvent
@@ -12,25 +14,13 @@ enum class LEvent
     KeyUp,
 };
 
-enum class LState
-{
-    Idle,
-    Forward,
-    Backward,
-    Left,
-    Right,
-    Jump,
-    Attack,
-    Skill,
-    Dead,
-};
-
 class LCharacter : public LModel
 {
 public:
     LCharacter() {};
     virtual ~LCharacter() {};
-    virtual HRESULT Display(IL3DEngine* p3DEngine, float fDeltaTime) { return S_OK; };
+    virtual HRESULT FrameMove(IL3DEngine* p3DEngine, unsigned int nFrame);
+    virtual HRESULT Update(IL3DEngine* p3DEngine, float fDeltaTime);
 
     HRESULT Create(IL3DEngine* p3DEngine, const char* szPath);
     HRESULT LoadPart(const char* szPath);
@@ -53,12 +43,15 @@ public:
     void KeyUpEvent();
 
 private:
-
     ILModel* m_pObject = nullptr;
     IL3DEngine* m_p3DEngine = nullptr;
 
     std::vector<ILModel*> m_Parts;
 
-    LState m_State = LState::Idle;
+    LFrameData m_FrameData;
+    LFrameData m_PrevFrameData;
+
+private:
+    void _UpdatePosition(IL3DEngine* p3DEngine, float fDeltaTime);
 };
 

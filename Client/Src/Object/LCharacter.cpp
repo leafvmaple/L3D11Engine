@@ -2,6 +2,52 @@
 
 #include "LAssert.h"
 
+
+HRESULT LCharacter::FrameMove(IL3DEngine* p3DEngine, unsigned int nFrame)
+{
+    return S_OK;
+}
+
+HRESULT LCharacter::Update(IL3DEngine* p3DEngine, float fDeltaTime)
+{
+    LState curState = m_FrameData.m_State;
+    LState prevState = m_PrevFrameData.m_State;
+
+    switch (curState)
+    {
+    case LState::Idle:
+        if (prevState != LState::Idle)
+            IdleAction();
+        break;
+    case LState::Forward:
+        if (prevState != LState::Forward)
+            ForwardAction();
+        break;
+    case LState::Backward:
+        break;
+    case LState::Left:
+        break;
+    case LState::Right:
+        break;
+    case LState::Jump:
+        break;
+    case LState::Attack:
+        break;
+    case LState::Skill:
+        break;
+    case LState::Dead:
+        break;
+    default:
+        break;
+    }
+
+    _UpdatePosition(p3DEngine, fDeltaTime);
+
+    m_PrevFrameData = m_FrameData;
+
+    return S_OK;
+}
+
 HRESULT LCharacter::Create(IL3DEngine* p3DEngine, const char* szPath)
 {
     HRESULT hr = E_FAIL;
@@ -81,54 +127,34 @@ void LCharacter::AppendRenderEntity(ILScene* piScene)
 
 void LCharacter::ForwardAction()
 {
-    m_State = LState::Forward;
     PlayAnimation("data/source/player/F1/动作/F1b02yd奔跑.ani", AnimationPlayType::Circle, ANICTL_PRIMARY);
 }
 
 
 void LCharacter::IdleAction()
 {
-    m_State = LState::Idle;
     PlayAnimation("data/source/player/F1/动作/F1b01ty普通待机01.ani", AnimationPlayType::Circle, ANICTL_PRIMARY);
 }
 
 void LCharacter::ProcessEvent(LEvent event)
 {
-    switch (m_State)
-    {
-    case LState::Idle:
-        if (event == LEvent::Forward)
-            ForwardAction();
-        break;
-    case LState::Forward:
-        if (event == LEvent::KeyUp)
-            IdleAction();
-        break;
-    case LState::Backward:
-        break;
-    case LState::Left:
-        break;
-    case LState::Right:
-        break;
-    case LState::Jump:
-        break;
-    case LState::Attack:
-        break;
-    case LState::Skill:
-        break;
-    case LState::Dead:
-        break;
-    default:
-        break;
-    }
 }
 
 void LCharacter::ForwardEvent()
 {
-    ProcessEvent(LEvent::Forward);
+    if (m_FrameData.m_State == LState::Idle)
+        m_FrameData.SetState(LState::Forward);
+
+    m_FrameData.AddPosition(1, 1, 1);
 }
 
 void LCharacter::KeyUpEvent()
 {
-    ProcessEvent(LEvent::KeyUp);
+    if (m_FrameData.m_State == LState::Forward)
+        m_FrameData.SetState(LState::Idle);
+}
+
+void LCharacter::_UpdatePosition(IL3DEngine* p3DEngine, float fDeltaTime)
+{
+
 }

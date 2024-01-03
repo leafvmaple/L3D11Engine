@@ -18,11 +18,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
     L3D_WINDOW_PARAM WindowParam;
-    LScene* pCurScene = nullptr;
-    LCharacter* pCharacter = nullptr;
-
-    IL3DEngine* piEngine = nullptr;
-    ILScene* piScene = nullptr;
+    IL3DEngine* piEngine = IL3DEngine::Instance();;
 
     WindowParam.x = 100;
     WindowParam.y = 100;
@@ -34,7 +30,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
 
     InitL3DWindow(hInstance, WindowParam);
 
-    hr = IL3DEngine::Instance()->Init(hInstance, WindowParam);
+    hr = piEngine->Init(hInstance, WindowParam);
     HRESULT_ERROR_EXIT(hr);
 
     m_pScene = new LScene;
@@ -43,7 +39,7 @@ HRESULT LClient::Init(HINSTANCE hInstance)
     m_pInput = new LInput;
     m_pInput->Init(WindowParam.wnd);
 
-    m_fLastTime = (float)timeGetTime();
+    m_fLastTime = piEngine->GetTime();
 
     hResult = S_OK;
 Exit0:
@@ -54,23 +50,29 @@ HRESULT LClient::Update()
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
-    float fCurTime = 0;
+    DWORD nFrame = 0;
+    DWORD nDeltaFrame = 0;
+    float fTime = 0;
     float fDeltaTime = 0;
     IL3DEngine* piEngine = IL3DEngine::Instance();
 
-    fCurTime = (float)timeGetTime();
-    fDeltaTime = (fCurTime - m_fLastTime) * 0.001f;
+    nFrame = piEngine->GetFrame(); // ms
+    fTime = piEngine->GetTime();
+
+    if (nFrame > m_nLastFrame)
+        m_pScene->FrameMove(nFrame);
 
     _UpdateMessage();
 
+    fDeltaTime = (fTime - m_fLastTime) * 0.001f;
     m_pScene->Update(fDeltaTime);
-
-    piEngine->FrameMove(fDeltaTime);
+    piEngine->Update(fDeltaTime);
 
     hr = ShowFPS(fDeltaTime);
     HRESULT_ERROR_EXIT(hr);
 
-    m_fLastTime = fCurTime;
+    m_fLastTime = fTime;
+    m_nLastFrame = nFrame;
 
     hResult = S_OK;
 Exit0:
@@ -95,15 +97,15 @@ HRESULT LClient::ShowFPS(float fDeltaTime)
     HRESULT hResult = E_FAIL;
     WCHAR wszFPS[LENGIEN_FONT_STRING_MAX];
 
-    m_nFrame++;
+    m_nGameLoop++;
     m_fTimeElapsed += fDeltaTime;
 
     if (m_fTimeElapsed >= 1.0f)
     {
-        swprintf(wszFPS, LENGIEN_FONT_STRING_MAX, TEXT("FPS:%.2f"), m_nFrame / m_fTimeElapsed);
+        swprintf(wszFPS, LENGIEN_FONT_STRING_MAX, TEXT("FPS:%.2f"), m_nGameLoop / m_fTimeElapsed);
 
         m_fTimeElapsed = 0.f;
-        m_nFrame = 0;
+        m_nGameLoop = 0;
     }
     hResult = S_OK;
 Exit0:

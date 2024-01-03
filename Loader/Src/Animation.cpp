@@ -134,19 +134,19 @@ void _LoadAnimationV2(LBinaryReader* pReader, ANIMATION_DESC* pDesc, ANIMATION_S
             XMFLOAT3* pScale = nullptr;
 
             assert(nAnimationIndex < nRealAnimationBones);
-            auto& flag = pAnimationIndexFlag[nAnimationIndex];
+            auto& nFlag = pAnimationIndexFlag[nAnimationIndex];
 
-            if (flag == ONLY_ROTATION || flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & ROTATION)
+            if (nFlag == ONLY_ROTATION || nFlag == ONLY_ROTATION_TRANSLATION || nFlag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || nFlag & ROTATION)
                 pReader->Convert(pRotation, pSource->nFrameCount);
 
-            if (flag == ONLY_ROTATION_TRANSLATION || flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & TRANSLATION)
+            if (nFlag == ONLY_ROTATION_TRANSLATION || nFlag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || nFlag & TRANSLATION)
                 pReader->Convert(pTranslation, pSource->nFrameCount);
 
-            if (flag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || flag & AFFINESCALE)
+            if (nFlag == ONLY_ROTATION_TRANSLATION_AFFINESCALE || nFlag & AFFINESCALE)
                 pReader->Convert(pAffineScale, pSource->nFrameCount);
-            else if (flag & SCALE) {
+            else if (nFlag & SCALE) {
                 pReader->Convert(pScale, pSource->nFrameCount);
-                if (flag & SROTATION)
+                if (nFlag & SROTATION)
                     pReader->Convert(pSRotation, pSource->nFrameCount);
             }
 

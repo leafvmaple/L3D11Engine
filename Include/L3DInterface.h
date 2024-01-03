@@ -20,6 +20,8 @@ using namespace DirectX;
 #define COLOR_VERTEX_FVF LIGHT_VERTEX_FVF | D3DFVF_DIFFUSE
 #define TEX_VERTEX_FVF   COLOR_VERTEX_FVF | D3DFVF_TEX1
 
+#define GAME_FPS 16
+
 static const BOOL GRAPHICS_LEVEL = 1;
 
 enum LOBJECT_MESH_TYPE
@@ -144,9 +146,11 @@ public:
     virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam) = 0;
     virtual HRESULT Uninit() = 0;
 
-    virtual HRESULT FrameMove(float fDeltaTime) = 0;
+    virtual HRESULT Update(float fDeltaTime) = 0;
 
     virtual ID3D11Device* GetDevice() const = 0;
+    virtual DWORD GetFrame() const = 0;
+    virtual float GetTime() const = 0;
 
     static IL3DEngine* Instance();
     static void Destroy();
