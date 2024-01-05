@@ -14,5 +14,5 @@ public:
     virtual HRESULT Update(IL3DEngine* p3DEngine, float fDeltaTime) = 0;
 
 protected:
-    ILModel* m_pObject = nullptr;
+    ILModel* m_p3DModel = nullptr;
 };

@@ -17,6 +17,25 @@ class L3DLandscape;
 class L3DCamera;
 class L3DModel;
 
+struct L3DLogicalConstances
+{
+    FLOAT nLogicalCellLength; // 一个Cell的长度，单位为厘米
+    FLOAT nCellLength; // 一个Cell的逻辑长度
+
+    FLOAT nPointPerAltitude; // 一个高度单位的逻辑长度
+    FLOAT nAltitudeUnit; // 一个高度单位的长度，单位为厘米
+};
+
+struct L3D_LOGICAL
+{
+    float nSceneX_Start = 0;
+    float nSceneZ_Start = 0;
+    float nSceneX_Width = 0;
+    float nSceneZ_Width = 0;
+
+    L3DLogicalConstances Constances;
+};
+
 typedef std::vector <L3DModel*> MODEL_VECTOR;
 
 class L3DScene : public ILScene
@@ -30,14 +49,16 @@ public:
 
     void Update(const SCENE_RENDER_OPTION& RenderOption);
 
-    void AddRenderEntity(ILModel* piModel) override;
-
-    void GetFloor(const XMFLOAT3& vPos, float& fHeight);
-
     void GetVisibleObjectAll(MODEL_VECTOR& vecModels);
     
     L3DCamera* GetCamera() { return m_pCamera; }
     void UpdateCamera();
+
+
+    void AddRenderEntity(ILModel* piModel) override;
+
+    void GetFloor(const XMFLOAT3& vPos, float& fHeight) override;
+    void LogicalToScene(XMFLOAT3& vPos, int nX, int nY, int nZ) override;
 
     virtual ILCamera* Get3DCamera();
 
@@ -47,7 +68,7 @@ private:
     void _CreateScene(const char* szFileName);
 
     // _GetLogicalSceneRect
-    HRESULT _LoadLogicalSceneRect(const wchar_t* szSettingName, L3D_SCENE_RECT* pRect);
+    HRESULT _LoadLogicalSceneRect(const wchar_t* szSettingName);
     HRESULT _LoadEnvironmentSetting(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable);
     HRESULT _LoadLandscape(ID3D11Device* piDevice, const SCENE_PATH_TABLE& pathTable);
 
@@ -67,6 +88,8 @@ private:
     SCENE_RENDER_CONTEXT m_RenderContext;
 
     SHARED_SHADER_COMMON m_ShaderCommonParam;
+
+    L3D_LOGICAL m_Logical;
 
     IL3DEngine* m_piEngine = nullptr;
     L3DCamera* m_pCamera = nullptr;

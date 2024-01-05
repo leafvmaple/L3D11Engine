@@ -15,8 +15,8 @@ public:
     ~LScene();
 
     void Create(const char* szFileName);
-    void Update(float fDeltaTime);
     void FrameMove(unsigned int nFrame);
+    void Update(float fDeltaTime);
 
     LCharacter* AddCharacter(const char* szFileName, bool bAvatar);
 
@@ -24,5 +24,7 @@ public:
     LCamera* m_pCamera = nullptr;
 private:
     std::list<LModel*> m_Remotes;
-    ILScene* m_piScene = nullptr;
+
+    ILScene* m_p3DScene = nullptr;
+    IL3DEngine* m_p3DEngine = nullptr;
 };

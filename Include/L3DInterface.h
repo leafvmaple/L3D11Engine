@@ -99,14 +99,6 @@ struct L3D_WINDOW_PARAM
     HWND wnd;
 };
 
-struct L3D_SCENE_RECT
-{
-    float fXStart = 0;
-    float fZStart = 0;
-    float fXWidth = 0;
-    float fZWidth = 0;
-};
-
 enum LOBJECT_TYPE
 {
     LOBJECT_TYPE_INVALID,
@@ -193,4 +185,7 @@ public:
 
     virtual ILCamera* Get3DCamera() = 0;
     virtual void AddRenderEntity(ILModel* pModel) = 0;
+
+    virtual void GetFloor(const XMFLOAT3& vPos, float& fHeight) = 0;
+    virtual void LogicalToScene(XMFLOAT3& vPos, int nX, int nY, int nZ) = 0;
 };

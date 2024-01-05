@@ -14,15 +14,24 @@
 #include "IO/LFileReader.h"
 #include "Utility/FilePath.h"
 
+#define LOGICAL_CELL_CM_LENGTH 50
+#define ALTITUDE_UNIT  ((LOGICAL_CELL_CM_LENGTH) / 4.0f)
+
+#define CELL_LENGTH_BIT_NUM 5  // 格子中的象素点精度
+#define ALTITUDE_BIT_NUM 6
+
+#define CELL_LENGTH (1 << CELL_LENGTH_BIT_NUM)
+#define POINT_PER_ALTITUDE (1 << ALTITUDE_BIT_NUM)
+
+
 HRESULT L3DScene::Create(ID3D11Device* piDevice, const char* szFileName)
 {
-    L3D_SCENE_RECT rect;
     SCENE_PATH_TABLE pathTable;
 
     _CreatePathTable(szFileName, &pathTable);
     _CreateCamera();
 
-    _LoadLogicalSceneRect(pathTable.setting.c_str(), &rect);
+    _LoadLogicalSceneRect(pathTable.setting.c_str());
     _LoadEnvironmentSetting(piDevice, pathTable);
 
     _LoadLandscape(piDevice, pathTable);
@@ -67,6 +76,14 @@ void L3DScene::GetFloor(const XMFLOAT3& vPos, float& fHeight)
 {
     if (m_pLandscape)
         m_pLandscape->GetFloor(vPos.x, vPos.y, fHeight);
+}
+
+void L3DScene::LogicalToScene(XMFLOAT3& vPos, int nX, int nY, int nZ)
+{
+    vPos.x = nX * m_Logical.Constances.nLogicalCellLength / m_Logical.Constances.nCellLength + m_Logical.nSceneX_Start * 100;
+    vPos.z = nY * m_Logical.Constances.nLogicalCellLength / m_Logical.Constances.nCellLength + m_Logical.nSceneZ_Start * 100;
+
+    vPos.y = nZ / m_Logical.Constances.nPointPerAltitude * m_Logical.Constances.nAltitudeUnit;
 }
 
 void L3DScene::GetVisibleObjectAll(MODEL_VECTOR& vecModels)
@@ -121,7 +138,7 @@ void L3DScene::_CreateScene(const char* szFileName)
 
 }
 
-HRESULT L3DScene::_LoadLogicalSceneRect(const wchar_t* szSettingName, L3D_SCENE_RECT* pRect)
+HRESULT L3DScene::_LoadLogicalSceneRect(const wchar_t* szSettingName)
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;
@@ -131,10 +148,16 @@ HRESULT L3DScene::_LoadLogicalSceneRect(const wchar_t* szSettingName, L3D_SCENE_
     hr = LFileReader::ReadIni(szSettingName, Ini);
     HRESULT_ERROR_EXIT(hr);
 
-    pRect->fXStart = Ini.GetDoubleValue("LogicalScene", "X_Start");
-    pRect->fZStart = Ini.GetDoubleValue("LogicalScene", "Z_Start");
-    pRect->fXWidth = Ini.GetDoubleValue("LogicalScene", "X_Width");
-    pRect->fZWidth = Ini.GetDoubleValue("LogicalScene", "Z_Width");
+    m_Logical.nSceneX_Start = Ini.GetDoubleValue("LogicalScene", "X_Start");
+    m_Logical.nSceneZ_Start = Ini.GetDoubleValue("LogicalScene", "Z_Start");
+    m_Logical.nSceneX_Width = Ini.GetDoubleValue("LogicalScene", "X_Width");
+    m_Logical.nSceneZ_Width = Ini.GetDoubleValue("LogicalScene", "Z_Width");
+
+    m_Logical.Constances.nLogicalCellLength = LOGICAL_CELL_CM_LENGTH;
+    m_Logical.Constances.nCellLength = CELL_LENGTH;
+
+    m_Logical.Constances.nPointPerAltitude = POINT_PER_ALTITUDE;
+    m_Logical.Constances.nAltitudeUnit = ALTITUDE_UNIT;
 
     hResult = S_OK;
 Exit0:

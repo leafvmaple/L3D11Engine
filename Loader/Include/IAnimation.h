@@ -43,9 +43,9 @@ struct RTS
 {
     XMFLOAT3 Translation = { 0.f, 0.f, 0.f };
     XMFLOAT3 Scale = { 1.f, 1.f, 1.f };
-    XMFLOAT4 Rotation = { 1.f, 0.f, 0.f, 0.f };
+    XMFLOAT4 Rotation = { 0.f, 0.f, 0.f, 1.f };
     float Sign = 1.f;
-    XMFLOAT4 SRotation = { 1.f, 0.f, 0.f, 0.f };
+    XMFLOAT4 SRotation = { 0.f, 0.f, 0.f, 1.f };
 };
 
 struct ANIMATION_SOURCE : LUnknown
