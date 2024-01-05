@@ -21,6 +21,7 @@ using namespace DirectX;
 #define TEX_VERTEX_FVF   COLOR_VERTEX_FVF | D3DFVF_TEX1
 
 #define GAME_FPS 16
+const float FRAME_INTERVAL = 1000.f / GAME_FPS;
 
 static const BOOL GRAPHICS_LEVEL = 1;
 
@@ -141,8 +142,12 @@ public:
     virtual HRESULT Update(float fDeltaTime) = 0;
 
     virtual ID3D11Device* GetDevice() const = 0;
+
     virtual DWORD GetFrame() const = 0;
     virtual float GetTime() const = 0;
+
+    static float FrameToTime(DWORD nFrame) { return nFrame * FRAME_INTERVAL; }
+    static DWORD TimeToFrame(float fTime) { return (DWORD)(fTime / FRAME_INTERVAL); }
 
     static IL3DEngine* Instance();
     static void Destroy();

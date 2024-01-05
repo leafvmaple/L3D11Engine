@@ -25,7 +25,7 @@ struct KMOVE_CTRL
 class LCharacter : public LModel
 {
 public:
-    LCharacter() {};
+    LCharacter();
     virtual ~LCharacter() {};
     virtual HRESULT FrameMove(IL3DEngine* p3DEngine, unsigned int nFrame);
     virtual HRESULT Update(IL3DEngine* p3DEngine, float fDeltaTime);

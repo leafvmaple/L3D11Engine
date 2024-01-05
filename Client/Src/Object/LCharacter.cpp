@@ -6,6 +6,12 @@
 
 const int MOVE_DEST_RANGE = 16;
 
+
+LCharacter::LCharacter()
+{
+    m_FrameData.Init();
+}
+
 HRESULT LCharacter::FrameMove(IL3DEngine* p3DEngine, unsigned int nFrame)
 {
     if (m_MoveCtrl.bMove)
@@ -13,6 +19,9 @@ HRESULT LCharacter::FrameMove(IL3DEngine* p3DEngine, unsigned int nFrame)
         m_MovePosition.nX += MOVE_DEST_RANGE;
         m_MovePosition.nY += MOVE_DEST_RANGE;
     }
+
+    // TODO
+    m_FrameData.UpdateFramesData(nFrame + 1, &m_MovePosition);
 
     return S_OK;
 }
@@ -25,6 +34,8 @@ HRESULT LCharacter::Update(IL3DEngine* p3DEngine, float fDeltaTime)
         if (it != m_Actions.end())
             it->second();
     }
+
+    m_FrameData.Interpolate(p3DEngine, m_p3DScene, fDeltaTime);
 
     _UpdatePosition(p3DEngine, fDeltaTime);
 
@@ -146,6 +157,6 @@ void LCharacter::_UpdatePosition(IL3DEngine* p3DEngine, float fDeltaTime)
 {
     XMFLOAT3 vPos;
 
-    m_p3DScene->LogicalToScene(vPos, m_MovePosition.nX, m_MovePosition.nY, m_MovePosition.nZ);
+    m_FrameData.GetPosition(vPos);
     m_p3DModel->SetTranslation(vPos);
 }

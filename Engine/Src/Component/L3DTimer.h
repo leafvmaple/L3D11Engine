@@ -10,7 +10,7 @@ public:
 
     unsigned int GetNowTime() { return m_nTime; }
     float GetTime() { return (float)(m_nTime - m_nStartTime); }
-    DWORD GetFrame() { return (m_nTime - m_nStartTime) / (1000.f / GAME_FPS); }
+    DWORD GetFrame() { return IL3DEngine::TimeToFrame(GetTime()); }
 
 private:
     unsigned int m_nTime = 0;
