@@ -6,6 +6,7 @@
 
 #include "L3DFormat.h"
 #include "L3DInterface.h"
+#include "IMesh.h"
 
 #include "Utility/L3DString.h"
 
@@ -34,10 +35,7 @@ class L3DBone
 public:
 	~L3DBone();
 
-	HRESULT BindData(const MESH_FILE_BONE_INFO& BoneInfo);
-
-	static HRESULT Load(MESH_FILE_BONE_INFO& BoneInfo, LBinaryReader& Reader, BOOL bHasPxPose, BOOL bHasBoundBox);
-	static HRESULT FillSkinData(SKIN*& pSkin, MESH_FILE_BONE_INFO& BoneInfo, DWORD nVertexCount);
+	HRESULT BindData(const MESH_SOURCE* pSource);
 
     unsigned int m_uBoneCount = 0;
 
@@ -55,7 +53,7 @@ public:
     std::vector<SOCKETINFO> m_Socket;
 
 private:
-	void _CreateBoneInfo(const MESH_FILE_BONE_INFO& BoneInfo);
-	void _CreateSocketInfo(const MESH_FILE_BONE_INFO& BoneInfo);
+	void _CreateBoneInfo(const BONE_SOURCE* pSource, int nBoneCount);
+	void _CreateSocketInfo(const SOCKET_SOURCE* pSource, int nSocketCount);
 	unsigned int _FindBoneIndex(const char* szBoneName);
 };

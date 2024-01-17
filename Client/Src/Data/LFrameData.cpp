@@ -70,6 +70,11 @@ void LFrameData::GetPosition(XMFLOAT3& vPosition)
     vPosition = m_Interpolate.vPosition;
 }
 
+float LFrameData::GetFaceDirection()
+{
+    return m_Interpolate.fFaceDirection;
+}
+
 int LFrameData::GetFrameIndex(int nGameLoop)
 {
     for (int i = 0; i < m_FrameArray.size(); ++i)

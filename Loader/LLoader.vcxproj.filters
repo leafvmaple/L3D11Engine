@@ -36,6 +36,9 @@
     <ClCompile Include="Src\Landscape.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Mesh.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\LFileReader.h">
@@ -61,6 +64,12 @@
     </ClInclude>
     <ClInclude Include="Src\Animation.h">
       <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Mesh.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IMesh.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

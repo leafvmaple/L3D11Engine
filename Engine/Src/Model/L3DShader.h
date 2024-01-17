@@ -38,15 +38,6 @@ static const struct _LAYOUT_INFO
 } INPUT_LAYOUT_LIST[] =
 {
     {
-        L3D_INPUT_LAYOUT_BOX,
-        L3D_VERTEX_SHADER_BOX,
-        2,
-        {
-            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0 , D3D11_INPUT_PER_VERTEX_DATA, 0}, // XYZ
-            {"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}, // RGBA
-        }
-    },
-    {
         L3D_INPUT_LAYOUT_CI_MESH,
         L3D_VERTEX_SHADER_CI_MESH,
         5,

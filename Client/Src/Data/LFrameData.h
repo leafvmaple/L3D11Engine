@@ -35,6 +35,7 @@ struct CHARACTER_INTERPOLATE_DATA
 {
     LState State = LState::Idle;
 
+    float fFaceDirection = 0.0f;
     XMFLOAT3 vPosition = {};
 };
 
@@ -46,6 +47,7 @@ public:
     void Interpolate(IL3DEngine* p3DEngine, ILScene* p3DScene, float fTime);
 
     void GetPosition(XMFLOAT3& vPosition);
+    float GetFaceDirection();
 private:
     std::vector<CHARACTER_FRAME_DATA> m_FrameArray;
 

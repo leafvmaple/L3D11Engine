@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -143,16 +143,19 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClCompile Include="Src\LFileReader.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\Material.cpp" />
+    <ClCompile Include="Src\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\IAnimation.h" />
     <ClInclude Include="Include\ILandscape.h" />
+    <ClInclude Include="Include\IMesh.h" />
     <ClInclude Include="Include\LInterface.h" />
     <ClInclude Include="Include\LLoader.h" />
     <ClInclude Include="Include\IMaterial.h" />
     <ClInclude Include="Src\Animation.h" />
     <ClInclude Include="Src\Material.h" />
     <ClInclude Include="Src\LFileReader.h" />
+    <ClInclude Include="Src\Mesh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
