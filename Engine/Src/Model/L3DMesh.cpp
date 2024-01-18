@@ -23,6 +23,8 @@ HRESULT L3DMesh::Create(ID3D11Device* piDevice, const char* szFileName)
     hr = CreateMesh(piDevice, pSource);
     HRESULT_ERROR_EXIT(hr);
 
+    pSource->Release();
+
     m_sName = szFileName;
 
     hResult = S_OK;
@@ -59,7 +61,7 @@ HRESULT L3DMesh::CreateMesh(ID3D11Device* piDevice, const MESH_SOURCE* pSource)
     _CreateBone(pSource);
 
     m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-    m_nVertexSize = pSource->nVerticesCount;
+    m_nVertexSize = pSource->nVertexSize;
 
     assert(pSource->nVertexFVF & FVF_TANGENT);
     if (pSource->nVertexFVF & FVF_TEX1)
@@ -114,22 +116,26 @@ HRESULT L3DMesh::InitIndexBuffer(ID3D11Device* piDevice, const MESH_SOURCE* pSou
 
     D3D11_BUFFER_DESC desc;
     D3D11_SUBRESOURCE_DATA InitData;
+    std::vector<_INDEX_TYPE> Indices;
 
-    unsigned int nCount = 0;
+    unsigned int nOffset = 0;
     for (int i = 0; i < pSource->nSubsetCount; i++)
     {
-        m_Subset.emplace_back(_SUBSET{ static_cast<WORD>(pSource->pSubsetVertexBegin[i] - nCount), nCount });
-        nCount = pSource->pSubsetVertexBegin[i];
+        m_Subset.emplace_back(_SUBSET{ pSource->pSubsetVertexCount[i], nOffset });
+        nOffset += pSource->pSubsetVertexCount[i];
     }
 
-    desc.ByteWidth           = sizeof(_INDEX_TYPE) * pSource->nIndexCount;
+    for (int i = 0; i < pSource->nIndexCount; i++)
+        Indices.emplace_back(static_cast<_INDEX_TYPE>(pSource->pIndices[i]));
+
+    desc.ByteWidth           = sizeof(_INDEX_TYPE) * Indices.size();
     desc.Usage               = D3D11_USAGE_IMMUTABLE;
     desc.BindFlags           = D3D11_BIND_INDEX_BUFFER;
     desc.CPUAccessFlags      = 0;
     desc.MiscFlags           = 0;
     desc.StructureByteStride = 0;
 
-    InitData.pSysMem          = pSource->pIndices;
+    InitData.pSysMem          = Indices.data();
     InitData.SysMemPitch      = 0;
     InitData.SysMemSlicePitch = 0;
 

@@ -15,20 +15,20 @@ enum VersionNewBit
 
 void _FillSubset(MESH_SOURCE* pSource, _MESH_FILE_DATA* pData)
 {
-    std::sort(pSource->pIndices, pSource->pIndices + pSource->nIndexCount, [=](WORD left, WORD right) {
-        auto lSubset = pData->SubsetIndices[left / 3];
-        auto rSubset = pData->SubsetIndices[right / 3];
-        if (lSubset != rSubset)
-            return lSubset < rSubset;
-        return left < right;
-        });
+    std::map<int, std::vector<DWORD>> IndexMap;
 
-    std::sort(pData->SubsetIndices.begin(), pData->SubsetIndices.end());
-    pSource->pSubsetVertexBegin = new WORD[pSource->nSubsetCount];
-    for (int i = 0; i < pSource->nSubsetCount; i++)
+    for (int i = 0; i < pSource->nIndexCount; i++)
+        IndexMap[pData->SubsetIndices[i / 3]].emplace_back(pSource->pIndices[i]);
+
+    assert(pSource->nSubsetCount == IndexMap.size());
+
+    int nOffset = 0;
+    pSource->pSubsetVertexCount = new WORD[pSource->nSubsetCount];
+    for (auto [nSubsetID, Indices] : IndexMap)
     {
-        auto it = std::upper_bound(pData->SubsetIndices.begin(), pData->SubsetIndices.end(), i - 1);
-        pSource->pSubsetVertexBegin[i] = static_cast<WORD>(it - pData->SubsetIndices.begin()) * 3;
+        memcpy(pSource->pIndices + nOffset, Indices.data(), Indices.size() * sizeof(DWORD));
+        pSource->pSubsetVertexCount[nSubsetID] = Indices.size();
+        nOffset += Indices.size();
     }
 }
 
@@ -90,9 +90,9 @@ void _LoadMesh(const char* szFileName, MESH_SOURCE* pSource, _MESH_FILE_DATA* pD
     if (pHead->MeshHead.Blocks.PositionBlock)
     {
         Reader.Seek(pHead->MeshHead.Blocks.PositionBlock);
-        Reader.Convert(pFloat4, pSource->nVerticesCount);
+        Reader.Convert(pFloat3, pSource->nVerticesCount);
         for (int i = 0; i < pSource->nVerticesCount; i++)
-            memcpy(&pSource->pVertices[i].Position, &pFloat4[i], sizeof(XMFLOAT3));
+            memcpy(&pSource->pVertices[i].Position, &pFloat3[i], sizeof(XMFLOAT3));
 
         pSource->nVertexFVF |= FVF_XYZW;
         pSource->nVertexSize += sizeof(XMFLOAT3);
@@ -147,10 +147,10 @@ void _LoadMesh(const char* szFileName, MESH_SOURCE* pSource, _MESH_FILE_DATA* pD
     // Index
     if (pHead->MeshHead.Blocks.FacesIndexBlock)
     {
-        pSource->pIndices = new WORD[pSource->nIndexCount];
+        pSource->pIndices = new DWORD[pSource->nIndexCount];
 
         Reader.Seek(pHead->MeshHead.Blocks.FacesIndexBlock);
-        Reader.Convert(pSource->pIndices, pSource->nIndexCount);
+        Reader.Copy(pSource->pIndices, pSource->nIndexCount);
     }
 
     // Subset Index
@@ -198,7 +198,7 @@ void _LoadBone(MESH_SOURCE* pSource, _MESH_FILE_DATA* pData, LBinaryReader* pRea
         if (Bone.nChildCount > 0)
         {
             Bone.pChildNames = new NAME_STRING[Bone.nChildCount];
-            Reader.Convert(Bone.pChildNames, Bone.nChildCount);
+            Reader.Copy(Bone.pChildNames, Bone.nChildCount);
         }
 
         Reader.Copy(&Bone.mOffset);
@@ -230,7 +230,7 @@ void _LoadBone(MESH_SOURCE* pSource, _MESH_FILE_DATA* pData, LBinaryReader* pRea
                 {
                     if (BoneIndices[k] == 0xFF)
                     {
-                        BoneIndices[k] = (int32_t)i;
+                        BoneIndices[k] = (BYTE)i;
                         BoneWeights[k] = fWeight;
                         break;
                     }

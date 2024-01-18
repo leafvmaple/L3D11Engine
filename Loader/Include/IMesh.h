@@ -75,7 +75,7 @@ struct MESH_SOURCE : LUnknown
     VERTEX_SOURCE* pVertices = nullptr;
 
     int nIndexCount = 0;
-    WORD* pIndices = nullptr;
+    DWORD* pIndices = nullptr;
 
     int nBonesCount = 0;
     BONE_SOURCE* pBones = nullptr;
@@ -84,7 +84,7 @@ struct MESH_SOURCE : LUnknown
     SOCKET_SOURCE* pSockets = nullptr;
 
     int nSubsetCount = 0;
-    WORD* pSubsetVertexBegin = nullptr;
+    WORD* pSubsetVertexCount = nullptr;
 
     ~MESH_SOURCE()
     {
@@ -92,7 +92,7 @@ struct MESH_SOURCE : LUnknown
         SAFE_DELETE_ARRAY(pIndices);
         SAFE_DELETE_ARRAY(pBones);
         SAFE_DELETE_ARRAY(pSockets);
-        SAFE_DELETE_ARRAY(pSubsetVertexBegin);
+        SAFE_DELETE_ARRAY(pSubsetVertexCount);
     }
 };
 
