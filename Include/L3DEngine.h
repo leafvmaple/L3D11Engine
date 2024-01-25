@@ -38,9 +38,9 @@ public:
 private:
     struct _DEVICE
     {
-        D3D_FEATURE_LEVEL    eFeatureLevel;
-        ID3D11Device        *piDevice;
-        ID3D11DeviceContext *piImmediateContext;
+        D3D_FEATURE_LEVEL   eFeatureLevel = D3D_FEATURE_LEVEL_10_0;
+        ID3D11Device        *piDevice = nullptr;
+        ID3D11DeviceContext *piImmediateContext = nullptr;
     } m_Device;
 
     L3D_SHADER_TABLE* m_pShaderTable = nullptr;

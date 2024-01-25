@@ -47,6 +47,16 @@
         goto Exit0;                        \
     }
 
+#define CHECK_BOOL(Condition) \
+    if (!(Condition)) {       \
+        return false;         \
+    }
+
+#define CHECK_HRESULT(hr) \
+    if (!SUCCEEDED(hr)) { \
+        return false;     \
+    }
+
 #define HRESULT_ERROR_RETURN(hr) \
     if (!SUCCEEDED(hr)) {        \
         return 0;                \

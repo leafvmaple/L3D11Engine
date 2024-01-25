@@ -302,7 +302,7 @@ void L3DModel::_UpdateBuffer()
         pSkeletonIndies = g_SkeletonBoneManager.GetData(m_pSkeleton->m_sName, pMesh->m_sName);
         BOOL_ERROR_EXIT(pSkeletonIndies);
 
-        for (int nBoneIndex = 0; nBoneIndex < pMesh->m_dwBoneCount; nBoneIndex++)
+        for (UINT nBoneIndex = 0; nBoneIndex < pMesh->m_dwBoneCount; nBoneIndex++)
         {
             unsigned int nSkeletonIndex = (*pSkeletonIndies)[nBoneIndex];
             if (nSkeletonIndex != -1)
@@ -376,8 +376,7 @@ void L3DModel::_InitMesh(ID3D11Device* piDevice, const char* szFileName)
     m_p3DMesh = new L3DMesh;
     BOOL_ERROR_EXIT(m_p3DMesh);
 
-    hr = m_p3DMesh->Create(piDevice, szFileName);
-    HRESULT_ERROR_EXIT(hr);
+    m_p3DMesh->Create(piDevice, szFileName);
 
     materialPath = m_Path.replace_extension(".JsonInspack");
     if (std::filesystem::exists(materialPath))

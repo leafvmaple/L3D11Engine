@@ -10,14 +10,12 @@ L3DBone::~L3DBone()
 {
 }
 
-HRESULT L3DBone::BindData(const MESH_SOURCE* pSource)
+bool L3DBone::Create(const MESH_SOURCE* pSource)
 {
-    HRESULT hResult = E_FAIL;
-
     _CreateBoneInfo(pSource->pBones, pSource->nBonesCount);
     _CreateSocketInfo(pSource->pSockets, pSource->nSocketCount);
 
-    return S_OK;
+    return true;
 }
 
 void L3DBone::_CreateBoneInfo(const BONE_SOURCE* pSource, int nBoneCount)

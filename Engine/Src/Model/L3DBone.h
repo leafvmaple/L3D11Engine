@@ -10,10 +10,6 @@
 
 #include "Utility/L3DString.h"
 
-struct MESH_FILE_DATA;
-struct MESH_FILE_BONE_INFO;
-struct SKIN;
-
 class LBinaryReader;
 
 struct BONEINFO
@@ -35,7 +31,7 @@ class L3DBone
 public:
 	~L3DBone();
 
-	HRESULT BindData(const MESH_SOURCE* pSource);
+	bool Create(const MESH_SOURCE* pSource);
 
     unsigned int m_uBoneCount = 0;
 
