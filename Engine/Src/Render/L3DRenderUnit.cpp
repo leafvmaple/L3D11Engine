@@ -10,7 +10,7 @@
 
 #include "FX11/inc/d3dx11effect.h"
 
-HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_ASSEMBLER& Stage)
+void _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_ASSEMBLER& Stage)
 {
     ID3D11InputLayout* piInputLayout = nullptr;
 
@@ -22,8 +22,6 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
     Param.piImmediateContext->IASetIndexBuffer(Stage.IndexBuffer.piBuffer, Stage.IndexBuffer.eFormat, Stage.IndexBuffer.uOffset);
 
     Param.piImmediateContext->DrawIndexed(Stage.Draw.Indexed.uIndexCount, Stage.Draw.Indexed.uStartIndexLocation, Stage.Draw.Indexed.nBaseVertexLocation);
-
-    return S_OK;
 }
 
 void L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass)

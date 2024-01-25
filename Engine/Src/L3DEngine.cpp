@@ -147,7 +147,7 @@ HRESULT L3DEngine::_SetupD3D()
     _CreateDeivice();
 
     m_pShaderTable = CreateShaderTable(m_Device.piDevice);
-    m_pStateTable = CreateStateTable(m_Device.piDevice);
+    CreateStateTable(m_pStateTable, m_Device.piDevice);
 
     return S_OK;
 }

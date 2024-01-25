@@ -102,18 +102,18 @@ static const _DEPTH_STENCIL_STATE_INFO DEPTH_STENCIL_STATE_LIST[] =
     },
 };
 
-std::shared_ptr<L3D_STATE_TABLE> CreateStateTable(ID3D11Device* piDevice)
+bool CreateStateTable(std::shared_ptr<L3D_STATE_TABLE>& pState, ID3D11Device* piDevice)
 {
     auto pTable = std::make_shared<L3D_STATE_TABLE>();
 
     for (int i = 0; i < L3D_RASTERIZER_STATE_COUNT; i++)
-        CHECK_HRESULT_RET(piDevice->CreateRasterizerState(&RASTERIZER_STATE_LIST[i].Desc, &pTable->Rasterizer[i]), nullptr);
+        CHECK_HRESULT(piDevice->CreateRasterizerState(&RASTERIZER_STATE_LIST[i].Desc, &pTable->Rasterizer[i]));
 
     for (int i = 0; i < L3D_SAMPLER_STATE_COUNT; i++)
-        CHECK_HRESULT_RET(piDevice->CreateSamplerState(&SAMPLER_STATE_LIST[i].Desc, &pTable->Sampler[i]), nullptr);
+        CHECK_HRESULT(piDevice->CreateSamplerState(&SAMPLER_STATE_LIST[i].Desc, &pTable->Sampler[i]));
 
     for (int i = 0; i < L3D_DEPTH_WRITE_COUNT; i++)
-        CHECK_HRESULT_RET(piDevice->CreateDepthStencilState(&DEPTH_STENCIL_STATE_LIST[i].Desc, &pTable->DepthStencilState[i]), nullptr);
+        CHECK_HRESULT(piDevice->CreateDepthStencilState(&DEPTH_STENCIL_STATE_LIST[i].Desc, &pTable->DepthStencilState[i]));
 
-    return pTable;
+    pState = pTable;
 }
