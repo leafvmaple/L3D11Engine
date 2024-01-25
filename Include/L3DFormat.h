@@ -67,8 +67,8 @@ struct RENDER_STATE_DRAW
 
 struct RENDER_STAGE_INPUT_ASSEMBLER
 {
-    L3D_INPUT_LAYOUT         eInputLayout;
-    D3D11_PRIMITIVE_TOPOLOGY eTopology;
+    L3D_INPUT_LAYOUT         nInputLayout;
+    D3D11_PRIMITIVE_TOPOLOGY nTopology;
 
     struct VERTEX_BUFFER
     {

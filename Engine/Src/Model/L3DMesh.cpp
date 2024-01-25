@@ -32,8 +32,8 @@ void L3DMesh::ApplyMeshSubset(RENDER_STAGE_INPUT_ASSEMBLER& State, unsigned int 
 {
     auto& subset = m_Subset[nSubsetIndex];
 
-    State.eTopology    = m_nTopology;
-    State.eInputLayout = m_nInputLayout;
+    State.nTopology    = m_nTopology;
+    State.nInputLayout = m_nInputLayout;
 
     State.VertexBuffer.piBuffer = m_piVertexBuffer;
     State.VertexBuffer.uOffset  = 0;
@@ -85,7 +85,7 @@ bool L3DMesh::_CreateVertexBuffer(ID3D11Device* piDevice, const MESH_SOURCE* pSo
 }
 
 template<typename T>
-bool L3DMesh::_CreateIndexBuffer(ID3D11Device* piDevice, const MESH_SOURCE* pSource, DXGI_FORMAT eFormat)
+bool L3DMesh::_CreateIndexBuffer(ID3D11Device* piDevice, const MESH_SOURCE* pSource, DXGI_FORMAT nFormat)
 {
     D3D11_BUFFER_DESC desc = {0};
     D3D11_SUBRESOURCE_DATA InitData = {0};
@@ -101,7 +101,7 @@ bool L3DMesh::_CreateIndexBuffer(ID3D11Device* piDevice, const MESH_SOURCE* pSou
     for (int i = 0; i < pSource->nIndexCount; i++)
         Indices.emplace_back(static_cast<T>(pSource->pIndices[i]));
 
-    m_eFormat = eFormat;
+    m_eFormat = nFormat;
 
     desc.ByteWidth   = sizeof(T) * Indices.size();
     desc.Usage       = D3D11_USAGE_IMMUTABLE;

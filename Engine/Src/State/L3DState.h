@@ -38,4 +38,4 @@ struct L3D_STATE_TABLE
 * Create Rasterizer State
 * Create Depth Stencil State
 */
-L3D_STATE_TABLE* CreateStateTable(ID3D11Device* piDevice);
+std::shared_ptr<L3D_STATE_TABLE> CreateStateTable(ID3D11Device* piDevice);

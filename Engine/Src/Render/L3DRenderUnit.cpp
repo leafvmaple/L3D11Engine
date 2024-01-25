@@ -14,9 +14,9 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
 {
     ID3D11InputLayout* piInputLayout = nullptr;
 
-    piInputLayout = Param.pShaderTable->Layout[Stage.eInputLayout];
+    piInputLayout = Param.pShaderTable->Layout[Stage.nInputLayout];
     Param.piImmediateContext->IASetInputLayout(piInputLayout);
-    Param.piImmediateContext->IASetPrimitiveTopology(Stage.eTopology);
+    Param.piImmediateContext->IASetPrimitiveTopology(Stage.nTopology);
 
     Param.piImmediateContext->IASetVertexBuffers(0, 1, &Stage.VertexBuffer.piBuffer, &Stage.VertexBuffer.uStride, &Stage.VertexBuffer.uOffset);
     Param.piImmediateContext->IASetIndexBuffer(Stage.IndexBuffer.piBuffer, Stage.IndexBuffer.eFormat, Stage.IndexBuffer.uOffset);
@@ -26,24 +26,11 @@ HRESULT _DrawElement(const SCENE_RENDER_OPTION& Param, const RENDER_STAGE_INPUT_
     return S_OK;
 }
 
-HRESULT L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass)
+void L3DRenderUnit::ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-    XMMATRIX* pBoneMatrices = nullptr;
-
     Param.piImmediateContext->OMSetDepthStencilState(Param.pStateTable->DepthStencilState[L3D_ZWRITE_ENABLE], 0xff);
 
-    hr = m_pMaterial->ApplyRenderState(Param.piImmediateContext, Param.pStateTable);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = m_pMaterial->Apply(Param.piImmediateContext, ePass);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = _DrawElement(Param, m_IAStage);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    m_pMaterial->ApplyRenderState(Param.piImmediateContext, Param.pStateTable);
+    m_pMaterial->Apply(Param.piImmediateContext, ePass);
+    _DrawElement(Param, m_IAStage);
 }

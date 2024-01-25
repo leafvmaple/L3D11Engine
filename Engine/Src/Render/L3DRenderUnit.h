@@ -21,7 +21,7 @@ struct SCENE_RENDER_OPTION
     ID3D11DeviceContext* piImmediateContext = nullptr;
 
     L3D_SHADER_TABLE* pShaderTable = nullptr;
-    L3D_STATE_TABLE*  pStateTable  = nullptr;
+    std::shared_ptr<L3D_STATE_TABLE> pStateTable = nullptr;
 };
 
 class L3DRenderUnit
@@ -33,7 +33,7 @@ public:
         ID3DX11EffectVariable* pModelParams = nullptr;
     };
 
-    HRESULT ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass);
+    void ApplyProcess(const SCENE_RENDER_OPTION& Param, RENDER_PASS ePass);
 
     RENDER_STAGE_INPUT_ASSEMBLER m_IAStage;
     MODEL_FIX_VARIBLES m_ModelVariables;

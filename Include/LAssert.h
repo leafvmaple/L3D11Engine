@@ -41,10 +41,10 @@
         break;                        \
     }
 
-#define BOOL_SUCCESS_EXIT(Condition) \
+#define BOOL_SUCCESS_EXIT(Condition)  \
     if ((Condition)) {                \
         hResult = S_OK;               \
-        goto Exit0;                        \
+        goto Exit0;                   \
     }
 
 #define CHECK_BOOL(Condition) \
@@ -55,6 +55,11 @@
 #define CHECK_HRESULT(hr) \
     if (!SUCCEEDED(hr)) { \
         return false;     \
+    }
+
+#define CHECK_HRESULT_RET(hr, Ret) \
+    if (!SUCCEEDED(hr)) {          \
+        return Ret;                \
     }
 
 #define HRESULT_ERROR_RETURN(hr) \

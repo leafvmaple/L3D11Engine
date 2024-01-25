@@ -44,8 +44,8 @@ private:
     } m_Device;
 
     L3D_SHADER_TABLE* m_pShaderTable = nullptr;
-    L3D_STATE_TABLE* m_pStateTable = nullptr;
 
+    std::shared_ptr<L3D_STATE_TABLE> m_pStateTable = nullptr;
     std::shared_ptr<L3DWindow> m_pWindow = nullptr;
     L3DLog* m_pLog = nullptr;
 

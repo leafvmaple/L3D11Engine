@@ -124,7 +124,7 @@ HRESULT L3DMaterial::Create(ID3D11Device* piDevice, const MATERIAL_SOURCE& sourc
     return S_OK;
 }
 
-HRESULT L3DMaterial::ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable)
+HRESULT L3DMaterial::ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const std::shared_ptr<L3D_STATE_TABLE>& pStateTable)
 {
     RASTERIZER_STATE_ID eRasterizer = L3D_RASTERIZER_STATE_CULL_CLOCKWISE;
 

@@ -70,7 +70,7 @@ public:
     ~L3DMaterial() {}
 
     HRESULT Create(ID3D11Device* piDevice, const MATERIAL_SOURCE& source, RUNTIME_MACRO eMacro);
-    HRESULT ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const L3D_STATE_TABLE* pStateTable);
+    HRESULT ApplyRenderState(ID3D11DeviceContext* pDeviceContext, const std::shared_ptr<L3D_STATE_TABLE>& pStateTable);
     HRESULT Apply(ID3D11DeviceContext* pDeviceContext, RENDER_PASS ePass);
 
     void SetTexture(const char* szName, L3DTexture* pTexture);
