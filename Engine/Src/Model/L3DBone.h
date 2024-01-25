@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 
-#include "L3DFormat.h"
 #include "L3DInterface.h"
 #include "IMesh.h"
 
@@ -37,7 +36,7 @@ public:
 
     std::vector<unsigned int> m_BaseBoneIndies;
 
-    std::vector<L3D_BOUND_BOX> m_BoneBox;
+    std::vector<BOUND_BOX> m_BoneBox;
     std::vector<XMMATRIX> m_BoneOffset; // ³õÊ¼×´Ì¬¹Ç÷À¾ø¶Ô±ä»»¾ØÕóµÄÄæ
     std::vector<XMMATRIX> m_BoneInvPxPose;
     std::vector<BONEINFO> m_BoneInfo;
