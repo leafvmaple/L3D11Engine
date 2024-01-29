@@ -13,8 +13,8 @@ class LClient
 public:
     friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-    HRESULT Init(HINSTANCE hInstance);
-    HRESULT Update();
+    bool Init(HINSTANCE hInstance);
+    bool Update();
     void Uninit();
 
     BOOL IsActive();

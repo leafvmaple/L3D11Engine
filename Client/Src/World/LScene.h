@@ -14,7 +14,7 @@ class LScene
 public:
     ~LScene();
 
-    void Create(const char* szFileName);
+    bool Create(const char* szFileName);
     void FrameMove(unsigned int nFrame);
     void Update(float fDeltaTime);
 

@@ -22,7 +22,7 @@ public:
     L3DEngine();
     virtual ~L3DEngine();
 
-    virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam);
+    virtual bool Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam);
     virtual HRESULT Uninit();
     
     virtual HRESULT Update(float fDeltaTime);

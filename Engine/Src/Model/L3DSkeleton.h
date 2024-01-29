@@ -26,8 +26,8 @@ public:
     std::string m_sName;
 
 private:
-    void _LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo, std::vector<L3D::lstring>& childBone);
-    void _ConstructSkeleton(unsigned uIndex, const std::vector<L3D::lstring>& childBone);
+    void _LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo, std::vector<L3D::lower_string>& childBone);
+    void _ConstructSkeleton(unsigned uIndex, const std::vector<L3D::lower_string>& childBone);
 };
 
 class L3DSkeletonManager

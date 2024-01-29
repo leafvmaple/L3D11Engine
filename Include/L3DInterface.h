@@ -136,7 +136,7 @@ class L3DENGINE_CLASS IL3DEngine
 public:
     virtual ~IL3DEngine() {};
 
-    virtual HRESULT Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam) = 0;
+    virtual bool Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam) = 0;
     virtual HRESULT Uninit() = 0;
 
     virtual HRESULT Update(float fDeltaTime) = 0;

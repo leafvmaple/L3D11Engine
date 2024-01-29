@@ -49,10 +49,9 @@ L3DEngine::~L3DEngine()
 {
 }
 
-HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
+bool L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 {
     HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
 
     m_WindowParam = WindowParam;
 
@@ -73,9 +72,8 @@ HRESULT L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
     // Temp Ç¿ÖÆË¢ÐÂ
     g_Timer.Init();
 
-    hResult = S_OK;
 Exit0:
-    return hResult;
+    return true;
 }
 
 HRESULT L3DEngine::Update(float fDeltaTime)

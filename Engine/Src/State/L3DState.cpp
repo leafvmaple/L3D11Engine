@@ -116,4 +116,5 @@ bool CreateStateTable(std::shared_ptr<L3D_STATE_TABLE>& pState, ID3D11Device* pi
         CHECK_HRESULT(piDevice->CreateDepthStencilState(&DEPTH_STENCIL_STATE_LIST[i].Desc, &pTable->DepthStencilState[i]));
 
     pState = pTable;
+    return true;
 }

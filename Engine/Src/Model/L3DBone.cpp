@@ -88,7 +88,7 @@ void L3DBone::_CreateSocketInfo(const SOCKET_SOURCE* pSource, int nSocketCount)
 
 unsigned int L3DBone::_FindBoneIndex(const char* szBoneName)
 {
-    L3D::lstring boneName(szBoneName);
+    L3D::lower_string boneName(szBoneName);
     auto it = std::lower_bound(m_OrderBoneName.begin(), m_OrderBoneName.end(), boneName);
     if (*it == boneName)
         return m_OrderIndex[it - m_OrderBoneName.begin()];

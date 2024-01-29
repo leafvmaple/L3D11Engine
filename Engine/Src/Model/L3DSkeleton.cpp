@@ -11,7 +11,7 @@ L3DSkeletonManager g_SkeletonBoneManager;
 HRESULT L3DSkeleton::Create(ID3D11Device* piDevice, const char* szFileName)
 {
     char szLine[MAX_PATH];
-    std::vector<std::vector<L3D::lstring>> childBoneNames;
+    std::vector<std::vector<L3D::lower_string>> childBoneNames;
 
     FILE* f = fopen(szFileName, "r");
 
@@ -61,7 +61,7 @@ std::optional<int> L3DSkeleton::FindBone(std::string szBoneName)
     return std::nullopt;
 }
 
-void L3DSkeleton::_LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo, std::vector<L3D::lstring>& childBonee)
+void L3DSkeleton::_LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo, std::vector<L3D::lower_string>& childBonee)
 {
     char* szFind = nullptr;
     char* szLine = nullptr;
@@ -79,7 +79,7 @@ void L3DSkeleton::_LineToBoneInfo(const char szLineBuffer[], BONEINFO& BoneInfo,
     BoneInfo.sBoneName = childBonee[0];
 }
 
-void L3DSkeleton::_ConstructSkeleton(unsigned uIndex, const std::vector<L3D::lstring>& childBone)
+void L3DSkeleton::_ConstructSkeleton(unsigned uIndex, const std::vector<L3D::lower_string>& childBone)
 {
     BONEINFO& Info = m_BoneInfo[uIndex];
 

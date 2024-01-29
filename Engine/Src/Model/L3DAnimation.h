@@ -49,7 +49,7 @@ private:
     unsigned int        m_nLastTime = 0;
     unsigned int        m_uCurrentFrame = 0;
 
-    std::string m_szName;
+    L3D::path m_szPath;
     std::vector<std::string> m_BoneNames;
     std::vector<int> m_Flags;
     std::vector<std::vector<RTS>> m_BoneRTS;

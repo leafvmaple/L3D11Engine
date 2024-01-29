@@ -13,7 +13,7 @@ LScene::~LScene()
         SAFE_DELETE(object);
 }
 
-void LScene::Create(const char* szFileName)
+bool LScene::Create(const char* szFileName)
 {
     LCharacter* pCharacter = nullptr;
 
@@ -31,6 +31,8 @@ void LScene::Create(const char* szFileName)
 
     pCharacter->AppendRenderEntity(m_p3DScene);
     pCharacter->SetPosition(XMFLOAT3(0, 0, 0));
+
+    return true;
 }
 
 void LScene::FrameMove(unsigned int nFrame)

@@ -20,7 +20,7 @@ HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
 
     m_BoneNames.resize(m_dwNumBone);
     for (unsigned int i = 0; i < m_dwNumBone; i++)
-        m_BoneNames[i] = pSource->pBoneNames[i];
+        m_BoneNames[i] = std::move(pSource->pBoneNames[i]);
 
     m_BoneRTS.resize(m_dwNumBone);
     for (unsigned int i = 0; i < m_dwNumBone; i++)
@@ -35,7 +35,7 @@ HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
         memcpy(m_Flags.data(), pSource->pFlag, sizeof(int) * m_dwNumBone);
 
 
-    m_szName = szAnimation;
+    m_szPath = szAnimation;
 
     SAFE_RELEASE(pSource);
 

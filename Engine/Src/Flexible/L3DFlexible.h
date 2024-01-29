@@ -10,7 +10,7 @@ class L3DMesh;
 struct FLEXIBLE_BONE
 {
     int nIndex = 0; // 骨骼在BoneMatrix中的索引
-    L3D::lstring pcszName;
+    L3D::lower_string pcszName;
     XMFLOAT4X4 InitPose;
     XMFLOAT4X4 WorldPose;
 

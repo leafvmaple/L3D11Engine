@@ -20,20 +20,20 @@ HRESULT L3DTexture::Create(ID3D11Device* piDevice, const char* szFileName)
     ID3D11ShaderResourceView* piSRV = nullptr;
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
-    std::filesystem::path filename = szFileName;
+    m_Path = szFileName;
+    m_Path.try_replace_extension(".dds");
 
-    L3D::TryReplaceExtension(filename, ".dds");
-    std::filesystem::path extension = filename.extension();
+    std::filesystem::path extension = m_Path.extension();
 
     if (extension == ".dds")
     {
-        hr = LoadFromDDSFile(filename.wstring().c_str(), DDS_FLAGS_NONE, nullptr, LoadedImage);
-        HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", filename.string());
+        hr = LoadFromDDSFile(m_Path.wstring().c_str(), DDS_FLAGS_NONE, nullptr, LoadedImage);
+        HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", m_Path.string());
     }
     else if (extension == ".tga")
     {
-        hr = LoadFromTGAFile(filename.wstring().c_str(), nullptr, LoadedImage);
-        HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", filename.string());
+        hr = LoadFromTGAFile(m_Path.wstring().c_str(), nullptr, LoadedImage);
+        HRESULT_ERROR_LOG_EXIT(hr, "Load texture [{}] failed", m_Path.string());
     }
 
     hr = CreateTexture(piDevice, LoadedImage.GetImages(), LoadedImage.GetImageCount(), LoadedImage.GetMetadata(), &piResource);

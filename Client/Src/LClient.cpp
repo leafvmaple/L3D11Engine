@@ -13,10 +13,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return g_pClient->MsgProc(hWnd, msg, wParam, lParam);
 }
 
-HRESULT LClient::Init(HINSTANCE hInstance)
+bool LClient::Init(HINSTANCE hInstance)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
     L3D_WINDOW_PARAM WindowParam;
     IL3DEngine* piEngine = IL3DEngine::Instance();;
 
@@ -30,23 +28,21 @@ HRESULT LClient::Init(HINSTANCE hInstance)
 
     InitL3DWindow(hInstance, WindowParam);
 
-    hr = piEngine->Init(hInstance, WindowParam);
-    HRESULT_ERROR_EXIT(hr);
+    CHECK_BOOL(piEngine->Init(hInstance, WindowParam));
 
     m_pScene = new LScene;
-    m_pScene->Create("data/source/maps/µ¾Ïã´å/µ¾Ïã´å.jsonmap");
+    CHECK_BOOL(m_pScene->Create("data/source/maps/µ¾Ïã´å/µ¾Ïã´å.jsonmap"));
 
     m_pInput = new LInput;
+    CHECK_BOOL(m_pInput);
     m_pInput->Init(WindowParam.wnd);
 
     m_fLastTime = piEngine->GetTime();
 
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return true;
 }
 
-HRESULT LClient::Update()
+bool LClient::Update()
 {
     HRESULT hr = E_FAIL;
     HRESULT hResult = E_FAIL;

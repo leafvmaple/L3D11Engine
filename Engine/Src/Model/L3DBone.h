@@ -13,14 +13,14 @@ class LBinaryReader;
 
 struct BONEINFO
 {
-	L3D::lstring sBoneName;
+	L3D::lower_string sBoneName;
 	unsigned int uParentIndex = (unsigned)-1;
 	std::vector<unsigned int> ChildIndies; // ChildIndex
 };
 
 struct SOCKETINFO
 {
-	L3D::lstring sSocketName;
+	L3D::lower_string sSocketName;
     unsigned int uParentBoneIndex = (unsigned)-1;
 	XMFLOAT4X4 mOffset;
 };

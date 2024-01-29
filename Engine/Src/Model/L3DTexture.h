@@ -4,6 +4,8 @@
 #include <wrl.h>
 #include <string>
 
+#include "Utility/L3DString.h"
+
 struct ID3DX11EffectShaderResourceVariable;
 
 class L3DTexture;
@@ -19,6 +21,8 @@ struct TEXTURE_DATA
 class L3DTexture
 {
 public:
+	L3D::path m_Path;
+
 	HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
 	template<typename T>
     HRESULT Create(ID3D11Device* piDevice, T* pData, UINT nWidth, UINT nHeight);
