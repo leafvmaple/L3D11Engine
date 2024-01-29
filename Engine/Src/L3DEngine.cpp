@@ -40,9 +40,7 @@ static const D3D_FEATURE_LEVEL FEATURE_LEVEL_ARRAY_1[] =
 extern ID3D11Device* g_p3DDevice = nullptr;
 
 L3DEngine::L3DEngine()
-: m_CurSampFilter(m_SampFilter[GRAPHICS_LEVEL_MAX])
 {
-    memset(&m_WindowParam, 0, sizeof(m_WindowParam));
 }
 
 L3DEngine::~L3DEngine()
@@ -53,7 +51,7 @@ bool L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 {
     m_WindowParam = WindowParam;
 
-    m_pLog = new L3DLog;
+    m_pLog = std::make_unique<L3DLog>();
     CHECK_BOOL(m_pLog);
 
     CHECK_BOOL(_SetupD3D());
@@ -70,15 +68,14 @@ bool L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 
 void L3DEngine::Update(float fDeltaTime)
 {
-    SCENE_RENDER_OPTION RenderOption;
+    SCENE_RENDER_OPTION RenderOption {
+        m_Device.piDevice,
+        m_Device.piImmediateContext,
+        m_pShaderTable,
+        m_pStateTable,
+    };
 
     g_Timer.Update();
-
-    RenderOption.piDevice = m_Device.piDevice;
-    RenderOption.piImmediateContext = m_Device.piImmediateContext;
-
-    RenderOption.pShaderTable = m_pShaderTable;
-    RenderOption.pStateTable = m_pStateTable;
 
     m_pWindow->BeginPaint(m_Device.piDevice, RenderOption);
     m_pWindow->EndPaint(m_Device.piDevice, RenderOption);
@@ -109,7 +106,6 @@ bool L3DEngine::AttachScene(L3DScene* pScene)
 
 void L3DEngine::Uninit()
 {
-    SAFE_DELETE(m_pLog);
 }
 
 bool L3DEngine::_SetupD3D()
@@ -139,7 +135,7 @@ bool L3DEngine::_CreateDeivice()
     uCreateDeviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-    CHECK_HRESULT(D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, uCreateDeviceFlag,
+    CHECK_HRESULT(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, uCreateDeviceFlag,
         FEATURE_LEVEL_ARRAY_0, _countof(FEATURE_LEVEL_ARRAY_0),
         D3D11_SDK_VERSION,
         &m_Device.piDevice, &m_Device.eFeatureLevel, &m_Device.piImmediateContext

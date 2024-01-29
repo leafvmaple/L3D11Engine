@@ -45,10 +45,9 @@ private:
 
     std::shared_ptr<L3D_SHADER_TABLE> m_pShaderTable = nullptr;
     std::shared_ptr<L3D_STATE_TABLE> m_pStateTable = nullptr;
-    std::shared_ptr<L3DWindow> m_pWindow = nullptr;
-    L3DLog* m_pLog = nullptr;
 
-    L3D_WINDOW_PARAM m_WindowParam;
+    std::unique_ptr<L3DWindow> m_pWindow = nullptr;
+    std::unique_ptr<L3DLog> m_pLog = nullptr;
 
     D3D11_SAMPLER_DESC m_SampFilter[GRAPHICS_LEVEL_COUNT] = {
         {
@@ -76,9 +75,11 @@ private:
             D3D11_FLOAT32_MAX           //FLOAT MaxLOD;
         }
     };
-    D3D11_SAMPLER_DESC& m_CurSampFilter;
+    D3D11_SAMPLER_DESC& m_CurSampFilter = m_SampFilter[GRAPHICS_LEVEL_MAX];
 
-    ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT];
+    ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT] = {0};
+
+    L3D_WINDOW_PARAM m_WindowParam = { 0 };
 
 private:
 

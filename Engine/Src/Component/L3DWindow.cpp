@@ -161,12 +161,12 @@ void L3DWindow::_UpdateAll3DScene(const SCENE_RENDER_OPTION& RenderOption)
         scene->Update(RenderOption);
 }
 
-bool Create3DWindow(std::shared_ptr<L3DWindow>* pWindow, ID3D11Device* piDevice, HWND hWnd)
+bool Create3DWindow(std::unique_ptr<L3DWindow>* pWindow, ID3D11Device* piDevice, HWND hWnd)
 {
-    auto pointer = std::make_shared<L3DWindow>();
+    auto pointer = std::make_unique<L3DWindow>();
 
     CHECK_BOOL(pointer->Init(piDevice, hWnd));
     
-    *pWindow = pointer;
+    *pWindow = std::move(pointer);
     return true;
 }

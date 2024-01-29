@@ -29,14 +29,15 @@ bool LoadShader(const char* szFileName, const char* szType, BYTE** ppByteCode, s
     CHECK_HRESULT(LFileReader::Read(szFilePath, ppByteCode, puSize));
 
     *puSize -= sizeof(GUID);
+
+    return true;
 }
 
 bool CreateShaderTable(std::shared_ptr<L3D_SHADER_TABLE>* pShader, ID3D11Device* piDevice)
 {
     BYTE*   pByte   = nullptr;
     size_t  uSize   = 0;
-
-    std::shared_ptr<L3D_SHADER_TABLE> pShaderTable = nullptr;
+    std::shared_ptr<L3D_SHADER_TABLE> pShaderTable = std::make_shared<L3D_SHADER_TABLE>();
 
     struct _SHADER_INFO
     {
@@ -44,7 +45,6 @@ bool CreateShaderTable(std::shared_ptr<L3D_SHADER_TABLE>* pShader, ID3D11Device*
         size_t nSize;
     } VertexShaderInfos[L3D_VERTEX_SHADER_COUNT] = { 0 };
 
-    pShaderTable = std::make_shared<L3D_SHADER_TABLE>();
     CHECK_BOOL(pShaderTable);
 
     // Vertex Shader
@@ -75,6 +75,6 @@ bool CreateShaderTable(std::shared_ptr<L3D_SHADER_TABLE>* pShader, ID3D11Device*
             &pShaderTable->Layout[i]
         ));
     }
-    *pShader = pShaderTable;
+    *pShader = std::move(pShaderTable);
     return true;
 }
