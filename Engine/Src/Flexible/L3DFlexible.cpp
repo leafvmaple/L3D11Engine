@@ -5,12 +5,12 @@
 #include "Model/L3DBone.h"
 
 // ∂¡»°»·ÃÂπ«˜¿
-void L3DFlexible::InitFromMesh(L3DMesh* pMesh)
+void L3DFlexible::Init(const L3DMesh* const pMesh)
 {
     for (int nBoneIndex = 0; nBoneIndex < pMesh->m_dwBoneCount; nBoneIndex++) 
     {
         const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[nBoneIndex];
-        if (boneInfo.sBoneName.IsFlexibleBone())
+        if (boneInfo.sBoneName.flexible_bone())
         {
             int nParentIndex = boneInfo.uParentIndex;
             const auto& parentInfo = pMesh->m_pL3DBone->m_BoneInfo[nParentIndex];
@@ -65,7 +65,7 @@ void L3DFlexible::_UpdateFromAni()
     m_FlexibleBodyUpdateState = KG3D_FLEX_UPDATE_FROM_PHYSX;
 }
 
-void L3DFlexible::_AppendBoneOfChainFromMesh(L3DMesh* pMesh, FLEXIBLE_BONE* pDriverBone, int nIndex)
+void L3DFlexible::_AppendBoneOfChainFromMesh(const L3DMesh* const pMesh, FLEXIBLE_BONE* pDriverBone, int nIndex)
 {
     const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[nIndex];
     auto& bone = m_vecNormalBone.emplace_back(FLEXIBLE_BONE{ nIndex, boneInfo.sBoneName });

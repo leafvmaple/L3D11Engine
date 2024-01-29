@@ -49,7 +49,7 @@ private:
     unsigned int        m_nLastTime = 0;
     unsigned int        m_uCurrentFrame = 0;
 
-    L3D::path m_szPath;
+    L3D::path m_Path;
     std::vector<std::string> m_BoneNames;
     std::vector<int> m_Flags;
     std::vector<std::vector<RTS>> m_BoneRTS;
@@ -65,14 +65,14 @@ class L3DAnimationController
 public:
     void UpdateAnimation();
     void SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex);
-    void StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
+    void StartAnimation(const char* szAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
 
     void FrameMove();
 
     ANIMATION_UPDATE_INFO m_UpdateAniInfo;
 private:
     DWORD m_nPriority = 0;
-    L3DAnimation* m_pAnimation[ANICTL_COUNT] = { nullptr };
+    std::unique_ptr<L3DAnimation> m_pAnimation[ANICTL_COUNT] = { nullptr };
 
     std::vector<XMMATRIX> m_BoneMatrix;
 };

@@ -76,5 +76,6 @@ bool CreateShaderTable(std::shared_ptr<L3D_SHADER_TABLE>* pShader, ID3D11Device*
         ));
     }
     *pShader = std::move(pShaderTable);
+
     return true;
 }

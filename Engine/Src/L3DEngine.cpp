@@ -9,7 +9,6 @@
 #include "L3DEngine.h"
 #include "L3DFormat.h"
 
-#include "Model/L3DModel.h"
 #include "Model/L3DShader.h"
 #include "State/L3DState.h"
 

@@ -3,7 +3,13 @@
 #include "L3DInterface.h"
 #include "L3DEngine.h"
 
+#include "Model/L3DMesh.h"
+#include "Model/L3DSkeleton.h"
+#include "Model/L3DAnimation.h"
 #include "Model/L3DModel.h"
+
+#include "Flexible/L3DFlexible.h"
+
 #include "Scene/L3DScene.h"
 
 IL3DEngine* IL3DEngine::m_pInstance = nullptr;
@@ -35,8 +41,7 @@ HRESULT ILModel::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILModel*
     pModel = new L3DModel;
     BOOL_ERROR_EXIT(pModel);
 
-    hr = pModel->Create(pL3DEngine->GetDevice(), szFileName);
-    HRESULT_ERROR_EXIT(hr);
+    pModel->Create(pL3DEngine->GetDevice(), szFileName);
 
     *ppModel = pModel;
 

@@ -11,14 +11,20 @@ namespace L3D
     {
     public:
         lower_string() {}
-        lower_string(const char* szName) : std::string(szName)
-        {
-            std::transform(this->begin(), this->end(), this->begin(), tolower);
+        lower_string(const std::string& str) : std::string(str) {
+            _to_lower();
+        }
+        lower_string(const char* sz) : std::string(sz) {
+            _to_lower();
         }
 
-        bool IsFlexibleBone() const
-        {
-            return this->_Starts_with("fbr");
+        bool flexible_bone() const {
+            return this->starts_with("fbr");
+        }
+
+    private:
+        void _to_lower() {
+            std::transform(this->begin(), this->end(), this->begin(), tolower);
         }
     };
 
@@ -26,22 +32,32 @@ namespace L3D
     {
     public:
         lower_string base;
+        lower_string ext;
 
         path() {}
-        path(const char* szName) : std::filesystem::path(szName)
-        {
-            base = this->stem().string().c_str();
+        path(const std::filesystem::path& r) : std::filesystem::path(r) {
+            _flush();
+        };
+        path(const char* szName) : std::filesystem::path(szName) {
+            _flush();
         }
 
-        bool try_replace_extension(const char* ext)
-        {
+        bool try_replace_extension(const char* ext) {
             std::filesystem::path tmp = *this;
 
             tmp.replace_extension(ext);
             CHECK_BOOL(std::filesystem::exists(tmp));
             this->replace_extension(ext);
 
+            _flush();
+
             return true;
+        }
+
+    private:
+        void _flush() {
+            base = this->stem().string();
+            ext = this->extension().string();
         }
     };
 }

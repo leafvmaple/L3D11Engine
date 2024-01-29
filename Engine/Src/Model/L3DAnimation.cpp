@@ -34,7 +34,7 @@ bool L3DAnimation::LoadFromFile(const char* szAnimation)
     if (pSource->pFlag)
         memcpy(m_Flags.data(), pSource->pFlag, sizeof(int) * m_dwNumBone);
 
-    m_szPath = szAnimation;
+    m_Path = szAnimation;
 
     SAFE_RELEASE(pSource);
 
@@ -132,15 +132,7 @@ void L3DAnimation::_GetBoneMatrix(std::vector<XMMATRIX>& result, DWORD dwFrame, 
 // 根据当前帧状态计算骨骼相对旋转矩阵并更新到pBoneMatrix
 void L3DAnimation::_UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo)
 {
-    DWORD dwFrame = 0;
-    DWORD dwFrameTo = 0;
-    float fWeight = 0.f;
-
-    dwFrame = pAnimationInfo->dwFrame;
-    dwFrameTo = pAnimationInfo->dwFrameTo;
-    fWeight = pAnimationInfo->fWeight;
-
-    _GetBoneMatrix(*pAnimationInfo->BoneAni.pBoneMatrix, dwFrame, dwFrameTo, fWeight);
+    _GetBoneMatrix(*pAnimationInfo->BoneAni.pBoneMatrix, pAnimationInfo->dwFrame, pAnimationInfo->dwFrameTo, pAnimationInfo->fWeight);
 }
 
 // 计算uIndex号骨骼到根骨骼的绝对旋转矩阵
@@ -171,16 +163,17 @@ void L3DAnimationController::SetBoneAniInfo(unsigned uBoneCount, const std::vect
     m_UpdateAniInfo.BoneAni.nFirstBaseBoneIndex = nFirsetBaseBoneIndex;
 }
 
-void L3DAnimationController::StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+void L3DAnimationController::StartAnimation(const char* szAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
     if (m_nPriority < nPriority)
         m_nPriority = nPriority;
 
     assert(nPriority < _countof(m_pAnimation));
-    SAFE_DELETE(m_pAnimation[nPriority]);
 
-    m_pAnimation[nPriority] = pAnimation;
-    pAnimation->Start(nPlayType);
+    m_pAnimation[nPriority] = std::make_unique<L3DAnimation>();
+
+    m_pAnimation[nPriority]->LoadFromFile(szAnimation);
+    m_pAnimation[nPriority]->Start(nPlayType);
 }
 
 void L3DAnimationController::FrameMove()

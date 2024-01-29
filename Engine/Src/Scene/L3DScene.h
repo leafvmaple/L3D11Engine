@@ -36,7 +36,7 @@ struct L3D_LOGICAL
     L3DLogicalConstances Constances;
 };
 
-typedef std::vector <L3DModel*> MODEL_VECTOR;
+typedef std::vector<L3DModel*> MODEL_VECTOR;
 
 class L3DScene : public ILScene
 {
@@ -53,7 +53,6 @@ public:
     
     L3DCamera* GetCamera() { return m_pCamera; }
     void UpdateCamera();
-
 
     void AddRenderEntity(ILModel* piModel) override;
 

@@ -17,11 +17,10 @@ struct FLEXIBLE_BONE
     std::vector<int> vecBoneChain;
 };
 
-
 class L3DFlexible
 {
 public:
-    void InitFromMesh(L3DMesh* pMesh);
+    void Init(const L3DMesh* const pMesh);
 
     void Update(std::vector<XMMATRIX>& BoneMatrix, const XMFLOAT4X4& mWorld);
     void _UpdateFromAni();
@@ -33,7 +32,7 @@ private:
         KG3D_FLEX_UPDATE_FROM_ANI,
     };
 
-    void _AppendBoneOfChainFromMesh(L3DMesh* pMesh, FLEXIBLE_BONE* pDriverBone, int nIndex);
+    void _AppendBoneOfChainFromMesh(const L3DMesh* const pMesh, FLEXIBLE_BONE* pDriverBone, int nIndex);
 
     std::unordered_map<int, FLEXIBLE_BONE> m_vecDriverBone; // 柔体驱动骨骼信息数组
     std::vector<FLEXIBLE_BONE> m_vecNormalBone; // 柔体骨骼信息数组

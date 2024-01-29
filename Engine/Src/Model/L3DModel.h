@@ -8,6 +8,8 @@
 #include <filesystem>
 
 #include "L3DMaterial.h"
+#include "L3DSkeleton.h"
+
 #include "L3DInterface.h"
 
 #include "Define/L3DSceneDefine.h"
@@ -17,10 +19,10 @@
 class L3DMesh;
 class L3DModel;
 class L3DSkeleton;
+class L3DFlexible;
 class L3DMaterial;
 class L3DRenderUnit;
 class L3DTexture;
-class L3DFlexible;
 class L3DAnimationController;
 // Temp
 struct SCENE_RENDER_OPTION;
@@ -42,7 +44,7 @@ enum BIND_TYPE
 struct L3D_BIND_EXTRA_INFO
 {
     L3DModel* pModel = nullptr;
-    unsigned int uBindIndex = 0;
+    unsigned int nBindIndex = 0;
 };
 
 struct L3D_BIND_INFO
@@ -55,15 +57,17 @@ struct L3D_BIND_INFO
 class L3DModel : public ILModel
 {
 public:
-    HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
+    ~L3DModel();
+
+    bool Create(ID3D11Device* piDevice, const char* szFileName);
 
     void AttachActor(L3DModel* pModel);
     void BindToSocket(L3DModel* pModel, const char* szSocketName);
 
     void GetAllModel(std::vector<L3DModel*> &models);
 
-    void GetWorldMatrix(XMFLOAT4X4& matrix);
-    void GetSocketMatrix(int nSocketIndex, XMFLOAT4X4& matrix);
+    void GetWorldMatrix(XMFLOAT4X4* pMatrix);
+    void GetSocketMatrix(XMFLOAT4X4* pMatrix, int nSocketIndex);
 
     virtual void AttachModel(ILModel* pModel) override;
     virtual void BindToSocket(ILModel* pModel, const char* szSocketNam) override;
@@ -111,26 +115,27 @@ private:
     
     void _UpdateModelVariablesIndices(ID3DX11EffectConstantBuffer* piModelSharedCB);
 
-    void _InitModel(ID3D11Device* piDevice, const char* szFileName);
-    void _InitSkeletion(ID3D11Device* piDevice, const char* szFileName);
-    void _InitMesh(ID3D11Device* piDevice, const char* szFileName);
+    bool _InitModel(ID3D11Device* piDevice, const char* szFileName);
+    bool _InitSkeletion(ID3D11Device* piDevice, const char* szFileName);
+    bool _InitMesh(ID3D11Device* piDevice, const char* szFileName);
+
     void _InitRenderUnits();
 
     HRESULT _FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& BindExtraInfo);
 
     RENDER_DATA m_RenderData;
 
-    L3DMesh* m_p3DMesh = nullptr;
-    L3DSkeleton* m_pSkeleton = nullptr;
-    L3DFlexible* m_pFlexible = nullptr;
-    L3DAnimationController* m_p3DAniController[SPLIT_COUNT] = { nullptr };
+    std::unique_ptr<L3DMesh> m_p3DMesh = nullptr;
+    std::unique_ptr<L3DSkeleton> m_pSkeleton = nullptr;
+    std::unique_ptr<L3DFlexible> m_pFlexible = nullptr;
+    std::unique_ptr<L3DAnimationController> m_p3DAniController[SPLIT_COUNT] = { nullptr };
 
     std::vector<XMMATRIX> m_BoneCurMatrix; // 当前骨骼的绝对变换矩阵
     std::vector<L3DModel*> m_ChildList;
 
     L3D_BIND_INFO m_BindInfo;
 
-    std::filesystem::path m_Path;
+    L3D::path m_Path;
 
     // m_vecMaterial Like MaterialInstancePack
     // L3DMaterial Like MaterialInstance
@@ -142,9 +147,9 @@ private:
 
     XMFLOAT4X4 m_World; // 当前模型的世界变换矩阵
 
-    std::unordered_map<std::wstring, std::function<void(ID3D11Device* piDevice, const char* szFileName)>> m_InitFuncs = {
-        std::make_pair(L".mdl", std::bind(&L3DModel::_InitModel, this, std::placeholders::_1, std::placeholders::_2)),
-        std::make_pair(L".txt", std::bind(&L3DModel::_InitSkeletion, this, std::placeholders::_1, std::placeholders::_2)),
-        std::make_pair(L".mesh", std::bind(&L3DModel::_InitMesh, this, std::placeholders::_1, std::placeholders::_2)),
+    std::unordered_map<std::string, std::function<bool(ID3D11Device* piDevice, const char* szFileName)>> m_InitFuncs = {
+        std::make_pair(".mdl", std::bind(&L3DModel::_InitModel, this, std::placeholders::_1, std::placeholders::_2)),
+        std::make_pair(".txt", std::bind(&L3DModel::_InitSkeletion, this, std::placeholders::_1, std::placeholders::_2)),
+        std::make_pair(".mesh", std::bind(&L3DModel::_InitMesh, this, std::placeholders::_1, std::placeholders::_2)),
     };
 };

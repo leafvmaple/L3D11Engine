@@ -19,17 +19,16 @@
 // Temp
 #include "Camera/L3DCamera.h"
 
-HRESULT L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
+L3DModel::~L3DModel() = default;
+
+bool L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
 {
-    wchar_t szExt[MAX_PATH];
+    m_Path = std::filesystem::absolute(szFileName);
 
     ResetTransform();
+    CHECK_BOOL(m_InitFuncs[m_Path.ext](piDevice, szFileName));
 
-    L3D::PathFormat(szFileName, m_Path);
-    L3D::GetExtension(m_Path, szExt);
-    m_InitFuncs[szExt](piDevice, szFileName);
-
-    return S_OK;
+    return true;
 }
 
 
@@ -40,7 +39,7 @@ void L3DModel::AttachActor(L3DModel* pModel)
 
     m_ChildList.emplace_back(pModel);
     if (m_pSkeleton && pModel->m_p3DMesh)
-        m_pSkeleton->BindMesh(pModel->m_p3DMesh);
+        m_pSkeleton->BindMesh(pModel->m_p3DMesh.get());
 }
 
 
@@ -63,25 +62,23 @@ void L3DModel::GetAllModel(std::vector<L3DModel*>& models)
 }
 
 
-void L3DModel::GetWorldMatrix(XMFLOAT4X4& matrix)
+void L3DModel::GetWorldMatrix(XMFLOAT4X4* pMatrix)
 {
-    matrix = m_World;
+    *pMatrix = m_World;
 }
 
-void L3DModel::GetSocketMatrix(int nSocketIndex, XMFLOAT4X4& matrix)
+void L3DModel::GetSocketMatrix(XMFLOAT4X4* pMatrix, int nSocketIndex)
 {
     XMMATRIX mSocketCurMatrix;
     SOCKETINFO& Socket = m_p3DMesh->m_pL3DBone->m_Socket[nSocketIndex];
 
     mSocketCurMatrix = XMMatrixMultiply(XMLoadFloat4x4(&Socket.mOffset), m_BoneCurMatrix[Socket.uParentBoneIndex]);
-    XMStoreFloat4x4(&matrix, XMMatrixMultiply(mSocketCurMatrix, XMLoadFloat4x4(&m_World)));
+    XMStoreFloat4x4(pMatrix, XMMatrixMultiply(mSocketCurMatrix, XMLoadFloat4x4(&m_World)));
 }
 
 void L3DModel::AttachModel(ILModel* pModel)
 {
     L3DModel* p3DModel = dynamic_cast<L3DModel*>(pModel);
-    BOOL_ERROR_EXIT(p3DModel);
-
     AttachActor(p3DModel);
 
 Exit0:
@@ -91,7 +88,6 @@ Exit0:
 void L3DModel::BindToSocket(ILModel* pModel, const char* szSocketName)
 {
     L3DModel* p3DModel = dynamic_cast<L3DModel*>(pModel);
-    BOOL_ERROR_EXIT(p3DModel);
 
     BindToSocket(p3DModel, szSocketName);
     UpdateTransform();
@@ -150,10 +146,7 @@ HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitT
     assert(nSplitType == SPLIT_ALL);
 
     if (!m_p3DAniController[nSplitType])
-        m_p3DAniController[nSplitType] = new L3DAnimationController;
-
-    pAnimation = new L3DAnimation;
-    pAnimation->LoadFromFile(szAnimation);
+        m_p3DAniController[nSplitType] = std::make_unique<L3DAnimationController>();
 
     if (m_pSkeleton)
         // 将骨架的骨骼信息传递给动画控制器
@@ -163,7 +156,7 @@ HRESULT L3DModel::PlaySplitAnimation(const char* szAnimation, SPLIT_TYPE nSplitT
             m_pSkeleton->m_uFirsetBaseBoneIndex
         );
 
-    m_p3DAniController[nSplitType]->StartAnimation(pAnimation, nPlayType, nPriority);
+    m_p3DAniController[nSplitType]->StartAnimation(szAnimation, nPlayType, nPriority);
 
     return S_OK;
 }
@@ -224,14 +217,12 @@ void L3DModel::_UpdateTransform()
     {
     case BIND_TO_SOCKET:
     {
-        m_BindInfo.extraInfo.pModel->GetSocketMatrix(m_BindInfo.extraInfo.uBindIndex, m_World);
-
+        m_BindInfo.extraInfo.pModel->GetSocketMatrix(&m_World, m_BindInfo.extraInfo.nBindIndex);
         break;
     }
     case ATTACH_TO_ACTOR:
     {
-         m_BindInfo.extraInfo.pModel->GetWorldMatrix(m_World);
-
+        m_BindInfo.extraInfo.pModel->GetWorldMatrix(&m_World);
         break;
     }
     default:
@@ -295,7 +286,7 @@ void L3DModel::_UpdateBuffer()
 
     for (auto& pModel : m_ChildList)
     {
-        L3DMesh* pMesh = pModel->m_p3DMesh;
+        const auto const pMesh = pModel->m_p3DMesh.get();
         if (!pMesh)
             continue;
 
@@ -334,62 +325,54 @@ void L3DModel::_UpdateModelVariablesIndices(ID3DX11EffectConstantBuffer* piModel
 }
 
 // _InitMdl
-void L3DModel::_InitModel(ID3D11Device* piDevice, const char* szFileName)
+bool L3DModel::_InitModel(ID3D11Device* piDevice, const char* szFileName)
 {
     char szPath[MAX_PATH];
-    char szExt[MAX_PATH];
     FILE* f = fopen(szFileName, "r");
 
-    fscanf(f, "%s", szPath);
-    _InitSkeletion(piDevice, szPath[0] == '\\' ? szPath + 1 : szPath); // Load .txt
+    CHECK_BOOL(fscanf(f, "%s", szPath) != EOF);
+    CHECK_BOOL(_InitSkeletion(piDevice, szPath[0] == '\\' ? szPath + 1 : szPath)); // Load .txt
 
     while (fscanf(f, "%s", szPath) != EOF)
     {
         L3DModel* pMesh = new L3DModel;
         pMesh->Create(piDevice, szPath[0] == '\\' ? szPath + 1 : szPath);
+
         AttachActor(pMesh);
     }
+
+    return true;
 }
 
 
-void L3DModel::_InitSkeletion(ID3D11Device* piDevice, const char* szFileName)
+bool L3DModel::_InitSkeletion(ID3D11Device* piDevice, const char* szFileName)
 {
-    HRESULT hr = E_FAIL;
+    m_pSkeleton = std::make_unique<L3DSkeleton>();
+    CHECK_BOOL(m_pSkeleton->Create(piDevice, szFileName));
 
-    m_pSkeleton = new L3DSkeleton;
-    BOOL_ERROR_EXIT(m_pSkeleton);
-
-    hr = m_pSkeleton->Create(piDevice, szFileName);
-    HRESULT_ERROR_EXIT(hr);
-
-Exit0:
-    return;
+    return true;
 }
 
 // _InitSingleModel
-void L3DModel::_InitMesh(ID3D11Device* piDevice, const char* szFileName)
+bool L3DModel::_InitMesh(ID3D11Device* piDevice, const char* szFileName)
 {
-    HRESULT hr = E_FAIL;
+    auto materialPath = m_Path;
+    materialPath.replace_extension(".JsonInspack");
 
-    std::filesystem::path materialPath;
+    m_p3DMesh = std::make_unique<L3DMesh>();
+    CHECK_BOOL(m_p3DMesh->Create(piDevice, m_Path.string().c_str()));
 
-    m_p3DMesh = new L3DMesh;
-    BOOL_ERROR_EXIT(m_p3DMesh);
-
-    m_p3DMesh->Create(piDevice, szFileName);
-
-    materialPath = m_Path.replace_extension(".JsonInspack");
     if (std::filesystem::exists(materialPath))
         _LoadMaterialFromJson(piDevice, materialPath.c_str());
 
     _CreateBoneMatrix();
     _InitRenderUnits();
 
-    m_pFlexible = new L3DFlexible;
-    m_pFlexible->InitFromMesh(m_p3DMesh);
+    m_pFlexible = std::make_unique<L3DFlexible>();
+    m_pFlexible->Init(m_p3DMesh.get());
 
 Exit0:
-    return;
+    return true;
 }
 
 void L3DModel::_InitRenderUnits()
@@ -432,7 +415,7 @@ HRESULT L3DModel::_FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& Bin
             if (szSocketName == socket.sSocketName)
             {
                 BindExtraInfo.pModel = this;
-                BindExtraInfo.uBindIndex = i;
+                BindExtraInfo.nBindIndex = i;
                 return S_OK;
             }
         }

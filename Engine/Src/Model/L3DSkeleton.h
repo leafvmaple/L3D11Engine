@@ -12,8 +12,8 @@ class L3DMesh;
 class L3DSkeleton
 {
 public:
-    HRESULT Create(ID3D11Device* piDevice, const char* szFileName);
-    void BindMesh(const L3DMesh* p3DMesh);
+    bool Create(ID3D11Device* piDevice, const char* szFileName);
+    void BindMesh(const L3DMesh* const p3DMesh);
 
     std::optional<int> FindBone(std::string szBoneName);
 

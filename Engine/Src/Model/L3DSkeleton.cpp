@@ -8,7 +8,7 @@
 
 L3DSkeletonManager g_SkeletonBoneManager;
 
-HRESULT L3DSkeleton::Create(ID3D11Device* piDevice, const char* szFileName)
+bool L3DSkeleton::Create(ID3D11Device* piDevice, const char* szFileName)
 {
     char szLine[MAX_PATH];
     std::vector<std::vector<L3D::lower_string>> childBoneNames;
@@ -36,10 +36,10 @@ HRESULT L3DSkeleton::Create(ID3D11Device* piDevice, const char* szFileName)
 
     m_sName = szFileName;
 
-    return S_OK;
+    return true;
 }
 
-void L3DSkeleton::BindMesh(const L3DMesh* p3DMesh)
+void L3DSkeleton::BindMesh(const L3DMesh* const p3DMesh)
 {
     std::vector<int> skeletonBoneIndies;
 
