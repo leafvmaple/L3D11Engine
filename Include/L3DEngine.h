@@ -33,7 +33,7 @@ public:
     virtual float GetTime() const override;
 
 public:
-    HRESULT AttachScene(L3DScene* pScene);
+    bool AttachScene(L3DScene* pScene);
 
 private:
     struct _DEVICE

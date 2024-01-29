@@ -57,6 +57,12 @@
         return false;         \
     }
 
+#define CHECK_HRESULT_RELEASE(hr, com)     \
+    if (!SUCCEEDED((hr))) {   \
+        (com)->Release();     \
+        return false;         \
+    }
+
 #define CHECK_HRESULT_RET(hr, Ret) \
     if (!SUCCEEDED((hr))) {        \
         return Ret;                \

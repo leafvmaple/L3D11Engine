@@ -100,9 +100,11 @@ float L3DEngine::GetTime() const
     return g_Timer.GetTime();
 }
 
-HRESULT L3DEngine::AttachScene(L3DScene* pScene)
+bool L3DEngine::AttachScene(L3DScene* pScene)
 {
-    return m_pWindow->AddScene(pScene);
+    m_pWindow->AddScene(pScene);
+
+    return true;
 }
 
 void L3DEngine::Uninit()

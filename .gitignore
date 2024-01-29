@@ -35,7 +35,12 @@
 *.sdf
 *.suo
 
+*.tlog
+*.log
+
 .vs
 *.user
 
-Debug
+**/Debug/*
+**/Release/*
+**/logs/*

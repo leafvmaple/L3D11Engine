@@ -5,40 +5,29 @@
 #include "Scene/L3DScene.h"
 
 #include "L3DFormat.h"
+#include "LMemory.h"
 
-HRESULT L3DWindow::Init(ID3D11Device* piDevice, HWND hWnd)
+bool L3DWindow::Init(ID3D11Device* piDevice, HWND hWnd)
 {
-    HRESULT hr      = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
-    LONG nWidth     = 0;
-    LONG nHeight    = 0;
+    LONG nWidth = 0;
+    LONG nHeight = 0;
     RECT Rect;
 
     piDevice->GetImmediateContext(&m_piImmediateContext);
-    BOOL_ERROR_EXIT(m_piImmediateContext);
-
     ::GetClientRect(hWnd, &Rect);
 
     nWidth = Rect.right - Rect.left;
     nHeight = Rect.bottom - Rect.top;
 
-    hr = _CreateSwapChain(piDevice, nWidth, nHeight, hWnd);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = _CreateViewport(nWidth, nHeight);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    CHECK_BOOL(_CreateSwapChain(piDevice, nWidth, nHeight, hWnd));
+    CHECK_BOOL(_CreateViewport(nWidth, nHeight));
+    
+    return true;
 }
 
-HRESULT L3DWindow::AddScene(L3DScene* pScene)
+void L3DWindow::AddScene(L3DScene* pScene)
 {
     m_SceneList.emplace_back(pScene);
-
-    return S_OK;
 }
 
 void L3DWindow::BeginPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption)
@@ -77,14 +66,13 @@ void L3DWindow::Present()
     m_piSwapChain->Present(0, 0);
 }
 
-HRESULT L3DWindow::_CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd)
+bool L3DWindow::_CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd)
 {
-    HRESULT       hr            = E_FAIL;
-    HRESULT       hResult       = E_FAIL;
-    IDXGIDevice*  piDXGIDevice  = nullptr;
-    IDXGIAdapter* piDXGIAdapter = nullptr;
-    IDXGIFactory* piDXGIFactory = nullptr;
-    DXGI_SWAP_CHAIN_DESC SwapChainDesc;
+    auto piDXGIDevice = L3D::make_resource<IDXGIDevice>();
+    auto piDXGIAdapter = L3D::make_resource<IDXGIAdapter>();
+    auto piDXGIFactory = L3D::make_resource<IDXGIFactory>();
+
+    DXGI_SWAP_CHAIN_DESC SwapChainDesc = {0};
 
     // DXGI_MODE_DESC
     SwapChainDesc.BufferCount                        = 1;
@@ -97,50 +85,28 @@ HRESULT L3DWindow::_CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, uns
     SwapChainDesc.BufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
     // DXGI_SAMPLE_DESC
     SwapChainDesc.SampleDesc.Count                   = 1;     // 1X MASS (MultiSample Anti-Aliasing) 
-    SwapChainDesc.SampleDesc.Quality                 = 0;
 
     SwapChainDesc.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     SwapChainDesc.OutputWindow                       = hWnd;
     SwapChainDesc.Windowed                           = true; // from SDK: should not create a full-screen swap chain
     SwapChainDesc.SwapEffect                         = DXGI_SWAP_EFFECT_DISCARD;
-    SwapChainDesc.Flags                              = 0;
 
-    hr = piDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&piDXGIDevice);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = piDXGIDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&piDXGIAdapter);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = piDXGIAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&piDXGIFactory);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = piDXGIFactory->CreateSwapChain(piDevice, &SwapChainDesc, &m_piSwapChain);
-    HRESULT_ERROR_EXIT(hr);
-
-    SAFE_RELEASE(piDXGIDevice);
-    SAFE_RELEASE(piDXGIAdapter);
-    SAFE_RELEASE(piDXGIFactory);
+    CHECK_HRESULT(piDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&piDXGIDevice));
+    CHECK_HRESULT(piDXGIDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&piDXGIAdapter));
+    CHECK_HRESULT(piDXGIAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&piDXGIFactory));
+    CHECK_HRESULT(piDXGIFactory->CreateSwapChain(piDevice, &SwapChainDesc, &m_piSwapChain));
 
     // TODO
-    hr = _CreateStencilView(piDevice, uWidth, uHeight);
-    HRESULT_ERROR_EXIT(hr);
+    CHECK_BOOL(_CreateStencilView(piDevice, uWidth, uHeight));
+    CHECK_BOOL(_CreateSwapChainRTV(piDevice, m_piSwapChain));
 
-    hr = _CreateSwapChainRTV(piDevice, m_piSwapChain);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return true;
 }
 
-HRESULT L3DWindow::_CreateViewport(unsigned uWidth, unsigned uHeight)
+bool L3DWindow::_CreateViewport(unsigned uWidth, unsigned uHeight)
 {
-    HRESULT hResult = E_FAIL;
+    CHECK_BOOL(m_piImmediateContext);
 
-    BOOL_ERROR_EXIT(m_piImmediateContext);
-
-    m_Viewport.TopLeftX = 0;
-    m_Viewport.TopLeftY = 0;
     m_Viewport.Width    = (FLOAT)uWidth;
     m_Viewport.Height   = (FLOAT)uHeight;
     m_Viewport.MinDepth = 0.0f;
@@ -148,17 +114,13 @@ HRESULT L3DWindow::_CreateViewport(unsigned uWidth, unsigned uHeight)
 
     m_piImmediateContext->RSSetViewports(1, &m_Viewport);
 
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return true;
 }
 
-HRESULT L3DWindow::_CreateStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight)
+bool L3DWindow::_CreateStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight)
 {
-    HRESULT          hr                  = E_FAIL;
-    HRESULT          hResult             = E_FAIL;
     ID3D11Texture2D* pDepthStencilBuffer = nullptr;
-    D3D11_TEXTURE2D_DESC depthStencilDesc;
+    D3D11_TEXTURE2D_DESC depthStencilDesc = {0};
 
     depthStencilDesc.Width              = uWidth;
     depthStencilDesc.Height             = uHeight;
@@ -167,47 +129,30 @@ HRESULT L3DWindow::_CreateStencilView(ID3D11Device* piDevice, unsigned uWidth, u
     depthStencilDesc.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
     depthStencilDesc.SampleDesc.Count   = 1;
-    depthStencilDesc.SampleDesc.Quality = 0;
 
     depthStencilDesc.Usage              = D3D11_USAGE_DEFAULT;
     depthStencilDesc.BindFlags          = D3D11_BIND_DEPTH_STENCIL;
-    depthStencilDesc.CPUAccessFlags     = 0;
-    depthStencilDesc.MiscFlags          = 0;
 
-    hr = piDevice->CreateTexture2D(&depthStencilDesc, 0, &pDepthStencilBuffer);
-    HRESULT_ERROR_EXIT(hr);
+    CHECK_HRESULT(piDevice->CreateTexture2D(&depthStencilDesc, 0, &pDepthStencilBuffer));
+    CHECK_HRESULT(piDevice->CreateDepthStencilView(pDepthStencilBuffer, 0, &m_piDepthStencilView));
 
-    hr = piDevice->CreateDepthStencilView(pDepthStencilBuffer, 0, &m_piDepthStencilView);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
+    return true;
 }
 
-HRESULT L3DWindow::_CreateSwapChainRTV(ID3D11Device* piDevice, IDXGISwapChain* piSwapChain)
+bool L3DWindow::_CreateSwapChainRTV(ID3D11Device* piDevice, IDXGISwapChain* piSwapChain)
 {
-    HRESULT hr      = E_FAIL;
-    HRESULT hResult = E_FAIL;
-    ID3D11Texture2D* piSwapChainBuffer = nullptr;
+    auto piSwapChainBuffer = L3D::make_resource<ID3D11Texture2D>();
 
-    BOOL_ERROR_EXIT(piDevice);
-    BOOL_ERROR_EXIT(m_piImmediateContext);
+    CHECK_BOOL(piDevice);
+    CHECK_BOOL(m_piImmediateContext);
 
-    hr = piSwapChain->GetBuffer(0, __uuidof(piSwapChainBuffer), reinterpret_cast<void**>(&piSwapChainBuffer));
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = piDevice->CreateRenderTargetView(piSwapChainBuffer, nullptr, &m_piRenderTargetView);
-    HRESULT_ERROR_EXIT(hr);
+    // TODO m_piRenderTargetView memory leak
+    CHECK_HRESULT(piSwapChain->GetBuffer(0, __uuidof(piSwapChainBuffer), reinterpret_cast<void**>(&piSwapChainBuffer)));
+    CHECK_HRESULT(piDevice->CreateRenderTargetView(piSwapChainBuffer.get(), nullptr, &m_piRenderTargetView));
 
     m_piImmediateContext->OMSetRenderTargets(1, &m_piRenderTargetView, m_piDepthStencilView);
 
-    hResult = S_OK;
-Exit0:
-    SAFE_RELEASE(piSwapChainBuffer);
-    if (FAILED(hResult))
-        SAFE_RELEASE(m_piRenderTargetView);
-    return hResult;
+    return true;
 }
 
 void L3DWindow::_UpdateAll3DScene(const SCENE_RENDER_OPTION& RenderOption)
@@ -220,7 +165,7 @@ bool Create3DWindow(std::shared_ptr<L3DWindow>* pWindow, ID3D11Device* piDevice,
 {
     auto pointer = std::make_shared<L3DWindow>();
 
-    CHECK_HRESULT(pointer->Init(piDevice, hWnd));
+    CHECK_BOOL(pointer->Init(piDevice, hWnd));
     
     *pWindow = pointer;
     return true;

@@ -13,8 +13,8 @@ struct SCENE_RENDER_OPTION;
 class L3DWindow
 {
 public:
-    HRESULT Init(ID3D11Device* piDevice, HWND hWnd);
-    HRESULT AddScene(L3DScene* pScene);
+    bool Init(ID3D11Device* piDevice, HWND hWnd);
+    void AddScene(L3DScene* pScene);
 
     void BeginPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption);
     void EndPaint(ID3D11Device* piDevice, const SCENE_RENDER_OPTION& RenderOption);
@@ -23,11 +23,11 @@ public:
     ~L3DWindow() {}
 
 private:
-    HRESULT _CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd);
-    HRESULT _CreateViewport(unsigned uWidth, unsigned uHeight);
+    bool _CreateSwapChain(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight, HWND hWnd);
+    bool _CreateViewport(unsigned uWidth, unsigned uHeight);
 
-    HRESULT _CreateStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);
-    HRESULT _CreateSwapChainRTV(ID3D11Device* piDevice, IDXGISwapChain* piSwapChain);
+    bool _CreateStencilView(ID3D11Device* piDevice, unsigned uWidth, unsigned uHeight);
+    bool _CreateSwapChainRTV(ID3D11Device* piDevice, IDXGISwapChain* piSwapChain);
 
     void _UpdateAll3DScene(const SCENE_RENDER_OPTION& RenderOption);
 
@@ -39,7 +39,7 @@ private:
     ID3D11RenderTargetView* m_piRenderTargetView = nullptr;
     ID3D11DepthStencilView* m_piDepthStencilView = nullptr;
 
-    D3D11_VIEWPORT m_Viewport;
+    D3D11_VIEWPORT m_Viewport = {0};
 };
 
 bool Create3DWindow(std::shared_ptr<L3DWindow>* pWindow, ID3D11Device* piDevice, HWND hWnd);

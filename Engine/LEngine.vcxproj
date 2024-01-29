@@ -171,7 +171,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;LENGINE_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\Include;$(ProjectDir)..\3rdParty;$(ProjectDir)..\Loader\Include;$(ProjectDir)Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Include;$(ProjectDir)..\3rdParty;$(ProjectDir)..\Loader\Include;$(ProjectDir)Src;$(ProjectDir)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -233,6 +233,7 @@ copy "$(TargetDir)$(TargetName).lib" "$(SolutionDir)Lib\x64"</Command>
     <ClInclude Include="..\Include\L3DEngine.h" />
     <ClInclude Include="..\Include\L3DInterface.h" />
     <ClInclude Include="..\Include\LExports.h" />
+    <ClInclude Include="..\Include\LMemory.h" />
     <ClInclude Include="Src\Camera\L3DCamera.h" />
     <ClInclude Include="Src\Component\L3DLog.h" />
     <ClInclude Include="Src\Component\L3DTimer.h" />

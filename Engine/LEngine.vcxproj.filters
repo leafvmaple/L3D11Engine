@@ -213,6 +213,7 @@
     <ClInclude Include="Src\Component\L3DLog.h" />
     <ClInclude Include="Src\Utility\L3DMaths.h" />
     <ClInclude Include="Src\Scene\L3DLandscape.h" />
+    <ClInclude Include="..\Include\LMemory.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Product\data\material\Shader\SkinMeshShader.fx5">

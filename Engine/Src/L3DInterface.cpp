@@ -67,8 +67,7 @@ HRESULT ILScene::Create(IL3DEngine* pL3DEngine, const char* szFileName, ILScene*
     hr = pScene->Create(pL3DEngine->GetDevice(), szFileName);
     HRESULT_ERROR_EXIT(hr);
 
-    hr = pEngine->AttachScene(pScene);
-    HRESULT_ERROR_EXIT(hr);
+    pEngine->AttachScene(pScene);
 
     *ppScene = pScene;
 
