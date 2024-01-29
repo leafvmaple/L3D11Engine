@@ -51,36 +51,25 @@ L3DEngine::~L3DEngine()
 
 bool L3DEngine::Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam)
 {
-    HRESULT hr = E_FAIL;
-
     m_WindowParam = WindowParam;
 
     m_pLog = new L3DLog;
-    BOOL_ERROR_EXIT(m_pLog);
+    CHECK_BOOL(m_pLog);
 
-    hr = _SetupD3D();
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = _CreateTargetWindow(WindowParam.wnd);
-    HRESULT_ERROR_EXIT(hr);
-
-    hr = InitSamplerFilter();
-    HRESULT_ERROR_EXIT(hr);
+    CHECK_BOOL(_SetupD3D());
+    CHECK_BOOL(_CreateTargetWindow(WindowParam.wnd));
+    CHECK_BOOL(_CreateSamplerFilter());
 
     g_pMaterialSystem->Init(m_Device.piDevice);
 
     // Temp Ç¿ÖÆË¢ÐÂ
     g_Timer.Init();
 
-Exit0:
     return true;
 }
 
-HRESULT L3DEngine::Update(float fDeltaTime)
+void L3DEngine::Update(float fDeltaTime)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
     SCENE_RENDER_OPTION RenderOption;
 
     g_Timer.Update();
@@ -94,10 +83,6 @@ HRESULT L3DEngine::Update(float fDeltaTime)
     m_pWindow->BeginPaint(m_Device.piDevice, RenderOption);
     m_pWindow->EndPaint(m_Device.piDevice, RenderOption);
     m_pWindow->Present();
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
 }
 
 ID3D11Device* L3DEngine::GetDevice() const
@@ -120,72 +105,51 @@ HRESULT L3DEngine::AttachScene(L3DScene* pScene)
     return m_pWindow->AddScene(pScene);
 }
 
-HRESULT L3DEngine::Uninit()
+void L3DEngine::Uninit()
 {
     SAFE_DELETE(m_pLog);
-
-    return S_OK;
 }
 
-HRESULT L3DEngine::InitSamplerFilter()
+bool L3DEngine::_SetupD3D()
 {
-    HRESULT hr = E_FAIL;
+    CHECK_BOOL(_CreateDeivice());
+    CHECK_BOOL(CreateShaderTable(&m_pShaderTable, m_Device.piDevice));
+    CHECK_BOOL(CreateStateTable(&m_pStateTable, m_Device.piDevice));
 
-    for (int i = 0; i < GRAPHICS_LEVEL_COUNT; i++)
-    {
-        hr = m_Device.piDevice->CreateSamplerState(&m_SampFilter[i], &m_pSamplerState[i]);
-        HRESULT_ERROR_CONTINUE(hr);
-    }
-
-    return S_OK;
+    return true;
 }
 
-HRESULT L3DEngine::_SetupD3D()
+bool L3DEngine::_CreateTargetWindow(HWND hWnd)
 {
-    _CreateDeivice();
+    CHECK_BOOL(Create3DWindow(&m_pWindow, m_Device.piDevice, hWnd));
 
-    m_pShaderTable = CreateShaderTable(m_Device.piDevice);
-    CreateStateTable(m_pStateTable, m_Device.piDevice);
-
-    return S_OK;
+    return true;
 }
 
-HRESULT L3DEngine::_CreateTargetWindow(HWND hWnd)
+bool L3DEngine::_CreateDeivice()
 {
-    HRESULT hResult = E_FAIL;
+    UINT uCreateDeviceFlag = 0;
 
-    m_pWindow = L3DCreateWindow(m_Device.piDevice, hWnd);
-    BOOL_ERROR_EXIT(m_pWindow);
-
-    hResult = S_OK;
-Exit0:
-    return hResult;
-}
-
-HRESULT L3DEngine::_CreateDeivice()
-{
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
-
-	int nRetCode = 0;
-	UINT uCreateDeviceFlag = 0;
-
-	// Check support for SSE2
-	nRetCode = XMVerifyCPUSupport();
-	BOOL_ERROR_EXIT(nRetCode);
+    // Check support for SSE2
+    CHECK_BOOL(XMVerifyCPUSupport());
 
 #if defined(DEBUG) || defined(_DEBUG)  
-	uCreateDeviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
+    uCreateDeviceFlag |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, uCreateDeviceFlag,
-		FEATURE_LEVEL_ARRAY_0, _countof(FEATURE_LEVEL_ARRAY_0),
-		D3D11_SDK_VERSION,
-		&m_Device.piDevice, &m_Device.eFeatureLevel, &m_Device.piImmediateContext
-	);
-	HRESULT_ERROR_EXIT(hr);
+    CHECK_HRESULT(D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, uCreateDeviceFlag,
+        FEATURE_LEVEL_ARRAY_0, _countof(FEATURE_LEVEL_ARRAY_0),
+        D3D11_SDK_VERSION,
+        &m_Device.piDevice, &m_Device.eFeatureLevel, &m_Device.piImmediateContext
+    ));
 
-	hResult = S_OK;
-Exit0:
-	return hResult;
+    return true;
+}
+
+bool L3DEngine::_CreateSamplerFilter()
+{
+    for (int i = 0; i < GRAPHICS_LEVEL_COUNT; i++)
+        CHECK_HRESULT(m_Device.piDevice->CreateSamplerState(&m_SampFilter[i], &m_pSamplerState[i]));
+
+    return true;
 }

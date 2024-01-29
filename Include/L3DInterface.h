@@ -137,9 +137,9 @@ public:
     virtual ~IL3DEngine() {};
 
     virtual bool Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam) = 0;
-    virtual HRESULT Uninit() = 0;
+    virtual void Uninit() = 0;
 
-    virtual HRESULT Update(float fDeltaTime) = 0;
+    virtual void Update(float fDeltaTime) = 0;
 
     virtual ID3D11Device* GetDevice() const = 0;
 

@@ -23,9 +23,9 @@ public:
     virtual ~L3DEngine();
 
     virtual bool Init(HINSTANCE hInstance, L3D_WINDOW_PARAM& WindowParam);
-    virtual HRESULT Uninit();
+    virtual void Uninit();
     
-    virtual HRESULT Update(float fDeltaTime);
+    virtual void Update(float fDeltaTime);
 
     virtual ID3D11Device* GetDevice() const;
 
@@ -43,8 +43,7 @@ private:
         ID3D11DeviceContext *piImmediateContext = nullptr;
     } m_Device;
 
-    L3D_SHADER_TABLE* m_pShaderTable = nullptr;
-
+    std::shared_ptr<L3D_SHADER_TABLE> m_pShaderTable = nullptr;
     std::shared_ptr<L3D_STATE_TABLE> m_pStateTable = nullptr;
     std::shared_ptr<L3DWindow> m_pWindow = nullptr;
     L3DLog* m_pLog = nullptr;
@@ -82,9 +81,9 @@ private:
     ID3D11SamplerState* m_pSamplerState[GRAPHICS_LEVEL_COUNT];
 
 private:
-    HRESULT InitSamplerFilter();
 
-    HRESULT _SetupD3D();
-    HRESULT _CreateTargetWindow(HWND hWnd);
-    HRESULT _CreateDeivice();
+    bool _SetupD3D();
+    bool _CreateTargetWindow(HWND hWnd);
+    bool _CreateDeivice();
+    bool _CreateSamplerFilter();
 };

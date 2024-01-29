@@ -20,7 +20,7 @@ struct SCENE_RENDER_OPTION
     ID3D11Device* piDevice  = nullptr;
     ID3D11DeviceContext* piImmediateContext = nullptr;
 
-    L3D_SHADER_TABLE* pShaderTable = nullptr;
+    std::shared_ptr<L3D_SHADER_TABLE> pShaderTable = nullptr;
     std::shared_ptr<L3D_STATE_TABLE> pStateTable = nullptr;
 };
 

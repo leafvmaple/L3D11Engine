@@ -42,4 +42,4 @@ private:
     D3D11_VIEWPORT m_Viewport;
 };
 
-std::shared_ptr<L3DWindow> L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd);
+bool Create3DWindow(std::shared_ptr<L3DWindow>* pWindow, ID3D11Device* piDevice, HWND hWnd);

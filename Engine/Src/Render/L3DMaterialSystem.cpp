@@ -6,11 +6,13 @@
 static unsigned s_CommonCBSlot = 13;
 static unsigned s_CommonCSSlot = 15;
 
-void L3DMaterialSystem::Init(ID3D11Device* piDevice)
+int L3DMaterialSystem::Init(ID3D11Device* piDevice)
 {
     m_piDevice = piDevice;
 
-    _InitCommonConstBuffer();
+    CHECK_BOOL(_InitCommonConstBuffer());
+
+    return true;
 }
 
 void L3DMaterialSystem::SetCommonShaderData(ID3D11DeviceContext* piDeviceContext, const SHARED_SHADER_COMMON& CommonParam)
@@ -42,18 +44,18 @@ void L3DMaterialSystem::SetCommonShaderSamples(ID3D11DeviceContext* piDeviceCont
     piDeviceContext->PSSetSamplers(s_CommonCSSlot, MTLSYS_COMMON_SPL_COUNT, pSamplers);
 }
 
-void L3DMaterialSystem::_InitCommonConstBuffer()
+bool L3DMaterialSystem::_InitCommonConstBuffer()
 {
-    D3D11_BUFFER_DESC bufDesc;
+    D3D11_BUFFER_DESC bufDesc = {0};
 
     bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bufDesc.ByteWidth = sizeof(SHARED_SHADER_COMMON);
     bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    bufDesc.MiscFlags = 0;
-    bufDesc.StructureByteStride = 0;
     bufDesc.Usage = D3D11_USAGE_DYNAMIC;
 
-    m_piDevice->CreateBuffer(&bufDesc, nullptr, &m_piCommonCB);
+    CHECK_HRESULT(m_piDevice->CreateBuffer(&bufDesc, nullptr, &m_piCommonCB));
+
+    return true;
 }
 
 L3DMaterialSystem* g_pMaterialSystem = new L3DMaterialSystem;

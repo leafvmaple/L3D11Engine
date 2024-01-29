@@ -25,10 +25,10 @@ struct ANIMATION_UPDATE_INFO
 class L3DAnimation
 {
 public:
-    HRESULT LoadFromFile(const char* szAnimation);
-    HRESULT UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo);
+    bool LoadFromFile(const char* szAnimation);
+    void UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo);
 
-    HRESULT GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight);
+    void GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight);
 
     void Start(AnimationPlayType nPlayType);
     void FrameMove();
@@ -54,8 +54,8 @@ private:
     std::vector<int> m_Flags;
     std::vector<std::vector<RTS>> m_BoneRTS;
 
-    HRESULT _GetBoneMatrix(std::vector<XMMATRIX>& pResult, DWORD dwFrame, DWORD dwFrameTo, float fWeight);
-    HRESULT _UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo);
+    void _GetBoneMatrix(std::vector<XMMATRIX>& pResult, DWORD dwFrame, DWORD dwFrameTo, float fWeight);
+    void _UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo);
 
     void _UpdateToObj(std::vector<XMMATRIX>& pBoneMatrix, const std::vector<BONEINFO>& BoneInfo, unsigned int uIndex, const XMMATRIX& mBase);
 };
@@ -63,9 +63,9 @@ private:
 class L3DAnimationController
 {
 public:
-    HRESULT UpdateAnimation();
+    void UpdateAnimation();
     void SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex);
-    HRESULT StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
+    void StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority);
 
     void FrameMove();
 

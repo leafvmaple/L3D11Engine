@@ -9,9 +9,9 @@
 
 struct L3D_SHADER_TABLE
 {
-    ID3D11VertexShader* Vertex[L3D_VERTEX_SHADER_COUNT];
-    ID3D11PixelShader*  Pixel[L3D_PIXEL_SHADER_COUNT];
-    ID3D11InputLayout*  Layout[L3D_INPUT_LAYOUT_COUNT];
+    ID3D11VertexShader* Vertex[L3D_VERTEX_SHADER_COUNT] = {0};
+    ID3D11PixelShader*  Pixel[L3D_PIXEL_SHADER_COUNT]   = {0};
+    ID3D11InputLayout*  Layout[L3D_INPUT_LAYOUT_COUNT]  = {0};
 };
 
 struct _SHADER_INFO
@@ -80,4 +80,4 @@ static const struct _LAYOUT_INFO
 * Create Pixel Shader
 * Create Input Layout
 */
-L3D_SHADER_TABLE* CreateShaderTable(ID3D11Device* piDevice);
+bool CreateShaderTable(std::shared_ptr<L3D_SHADER_TABLE>* pShader, ID3D11Device* piDevice);

@@ -18,7 +18,7 @@ typedef std::unordered_map<int, ID3D11Buffer*> COMMON_CB_MAP;
 class L3DMaterialSystem
 {
 public:
-    void Init(ID3D11Device* piDevice);
+    int Init(ID3D11Device* piDevice);
 
     void SetCommonShaderData(ID3D11DeviceContext* piDeviceContext, const SHARED_SHADER_COMMON& CommonParam);
     void SetCommonShaderSamples(ID3D11DeviceContext* piDeviceContext, ID3D11SamplerState* const* pSamplers);
@@ -26,7 +26,7 @@ public:
     COMMON_CB_MAP& GetCommonCBList() { return m_Buffers; };
 
 private:
-    void _InitCommonConstBuffer();
+    bool _InitCommonConstBuffer();
 
     ID3D11Device* m_piDevice = nullptr;
     ID3D11Buffer* m_piCommonCB = nullptr;

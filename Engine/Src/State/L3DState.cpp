@@ -102,7 +102,7 @@ static const _DEPTH_STENCIL_STATE_INFO DEPTH_STENCIL_STATE_LIST[] =
     },
 };
 
-bool CreateStateTable(std::shared_ptr<L3D_STATE_TABLE>& pState, ID3D11Device* piDevice)
+bool CreateStateTable(std::shared_ptr<L3D_STATE_TABLE>* pState, ID3D11Device* piDevice)
 {
     auto pTable = std::make_shared<L3D_STATE_TABLE>();
 
@@ -115,6 +115,6 @@ bool CreateStateTable(std::shared_ptr<L3D_STATE_TABLE>& pState, ID3D11Device* pi
     for (int i = 0; i < L3D_DEPTH_WRITE_COUNT; i++)
         CHECK_HRESULT(piDevice->CreateDepthStencilState(&DEPTH_STENCIL_STATE_LIST[i].Desc, &pTable->DepthStencilState[i]));
 
-    pState = pTable;
+    *pState = pTable;
     return true;
 }

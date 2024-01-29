@@ -6,7 +6,7 @@
 
 #include "IAnimation.h"
 
-HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
+bool L3DAnimation::LoadFromFile(const char* szAnimation)
 {
     ANIMATION_DESC desc { szAnimation };
     ANIMATION_SOURCE* pSource = nullptr;
@@ -34,22 +34,21 @@ HRESULT L3DAnimation::LoadFromFile(const char* szAnimation)
     if (pSource->pFlag)
         memcpy(m_Flags.data(), pSource->pFlag, sizeof(int) * m_dwNumBone);
 
-
     m_szPath = szAnimation;
 
     SAFE_RELEASE(pSource);
 
-    return S_OK;
+    return true;
 }
 
 // 根据当前帧状态计算并骨骼相对旋转矩阵并更新到pBoneMatrix
-HRESULT L3DAnimation::UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
+void L3DAnimation::UpdateAnimation(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 {
-    return _UpdateRTSRealTime(pUpdateAniInfo);
+    _UpdateRTSRealTime(pUpdateAniInfo);
 }
 
 // 获取当前状态前后帧以及权重
-HRESULT L3DAnimation::GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight)
+void L3DAnimation::GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeight)
 {
     DWORD dwSpanTime = m_nPlayTime % m_nAnimationLen;
     DWORD dwRepeatTimes = m_nPlayTime / m_nAnimationLen;
@@ -75,8 +74,6 @@ HRESULT L3DAnimation::GetCurFrame(DWORD& dwFrame, DWORD& dwFrameTo, float& fWeig
         }
         break;
     }
-
-    return S_OK;
 }
 
 void L3DAnimation::Start(AnimationPlayType nPlayType)
@@ -121,7 +118,7 @@ void L3DAnimation::UpdateBone(ANIMATION_UPDATE_INFO* pUpdateAniInfo)
 }
 
 // 根据帧状态进行骨骼相对旋转矩阵线性插值
-HRESULT L3DAnimation::_GetBoneMatrix(std::vector<XMMATRIX>& result, DWORD dwFrame, DWORD dwFrameTo, float fWeight)
+void L3DAnimation::_GetBoneMatrix(std::vector<XMMATRIX>& result, DWORD dwFrame, DWORD dwFrameTo, float fWeight)
 {
     RTS rts;
 
@@ -130,12 +127,10 @@ HRESULT L3DAnimation::_GetBoneMatrix(std::vector<XMMATRIX>& result, DWORD dwFram
         InterpolateRTSKeyFrame(&rts, m_BoneRTS[i][dwFrame], m_BoneRTS[i][dwFrameTo], fWeight);
         L3D::RTS2Matrix(result[i], rts, m_Flags[i]);
     }
-
-    return S_OK;
 }
 
 // 根据当前帧状态计算骨骼相对旋转矩阵并更新到pBoneMatrix
-HRESULT L3DAnimation::_UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo)
+void L3DAnimation::_UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo)
 {
     DWORD dwFrame = 0;
     DWORD dwFrameTo = 0;
@@ -146,8 +141,6 @@ HRESULT L3DAnimation::_UpdateRTSRealTime(ANIMATION_UPDATE_INFO* pAnimationInfo)
     fWeight = pAnimationInfo->fWeight;
 
     _GetBoneMatrix(*pAnimationInfo->BoneAni.pBoneMatrix, dwFrame, dwFrameTo, fWeight);
-
-    return S_OK;
 }
 
 // 计算uIndex号骨骼到根骨骼的绝对旋转矩阵
@@ -162,12 +155,10 @@ void L3DAnimation::_UpdateToObj(std::vector<XMMATRIX>& BoneMatrix, const std::ve
 }
 
 // 根据当前帧状态计算骨骼绝对变换矩阵并更新到pBoneMatrix
-HRESULT L3DAnimationController::UpdateAnimation()
+void L3DAnimationController::UpdateAnimation()
 {
     m_pAnimation[m_nPriority]->UpdateAnimation(&m_UpdateAniInfo);
     m_pAnimation[m_nPriority]->UpdateBone(&m_UpdateAniInfo);
-
-    return S_OK;
 }
 
 void L3DAnimationController::SetBoneAniInfo(unsigned uBoneCount, const std::vector<BONEINFO>* pBoneInfo, unsigned int nFirsetBaseBoneIndex)
@@ -180,7 +171,7 @@ void L3DAnimationController::SetBoneAniInfo(unsigned uBoneCount, const std::vect
     m_UpdateAniInfo.BoneAni.nFirstBaseBoneIndex = nFirsetBaseBoneIndex;
 }
 
-HRESULT L3DAnimationController::StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
+void L3DAnimationController::StartAnimation(L3DAnimation* pAnimation, AnimationPlayType nPlayType, ANIMATION_CONTROLLER_PRIORITY nPriority)
 {
     if (m_nPriority < nPriority)
         m_nPriority = nPriority;
@@ -190,8 +181,6 @@ HRESULT L3DAnimationController::StartAnimation(L3DAnimation* pAnimation, Animati
 
     m_pAnimation[nPriority] = pAnimation;
     pAnimation->Start(nPlayType);
-
-    return S_OK;
 }
 
 void L3DAnimationController::FrameMove()

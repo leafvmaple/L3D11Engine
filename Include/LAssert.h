@@ -52,13 +52,13 @@
         return false;         \
     }
 
-#define CHECK_HRESULT(hr) \
-    if (!SUCCEEDED(hr)) { \
-        return false;     \
+#define CHECK_HRESULT(hr)     \
+    if (!SUCCEEDED(((hr)))) { \
+        return false;         \
     }
 
 #define CHECK_HRESULT_RET(hr, Ret) \
-    if (!SUCCEEDED(hr)) {          \
+    if (!SUCCEEDED((hr))) {        \
         return Ret;                \
     }
 

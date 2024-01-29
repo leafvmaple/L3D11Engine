@@ -216,20 +216,12 @@ void L3DWindow::_UpdateAll3DScene(const SCENE_RENDER_OPTION& RenderOption)
         scene->Update(RenderOption);
 }
 
-std::shared_ptr<L3DWindow> L3DCreateWindow(ID3D11Device* piDevice, HWND hWnd)
+bool Create3DWindow(std::shared_ptr<L3DWindow>* pWindow, ID3D11Device* piDevice, HWND hWnd)
 {
-    HRESULT hr      = E_FAIL;
-    HRESULT hResult = E_FAIL;
+    auto pointer = std::make_shared<L3DWindow>();
 
-    std::shared_ptr<L3DWindow> pWindow(new L3DWindow);
-    BOOL_ERROR_EXIT(pWindow);
-
-    hr = pWindow->Init(piDevice, hWnd);
-    HRESULT_ERROR_EXIT(hr);
-
-    hResult = S_OK;
-Exit0:
-    if (FAILED(hResult))
-        pWindow.reset();
-    return pWindow;
+    CHECK_HRESULT(pointer->Init(piDevice, hWnd));
+    
+    *pWindow = pointer;
+    return true;
 }
