@@ -75,7 +75,6 @@ HRESULT L3DEffect::Create(ID3D11Device* piDevice, const char* szMaterial, RUNTIM
     DWORD dwShaderFlags = 0;
     ID3DBlob* pCompiledShader = nullptr;
     ID3DBlob* pCompilationMsgs = nullptr;
-    ID3DX11Effect* pEffect = nullptr;
     ID3DX11EffectVariable* pVariable = nullptr;
     ID3DX11EffectShaderResourceVariable* pSRVariable = nullptr;
     ID3DX11EffectType* pType = nullptr;

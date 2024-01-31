@@ -18,10 +18,6 @@ namespace L3D
             _to_lower();
         }
 
-        bool flexible_bone() const {
-            return this->starts_with("fbr");
-        }
-
     private:
         void _to_lower() {
             std::transform(this->begin(), this->end(), this->begin(), tolower);
@@ -31,9 +27,6 @@ namespace L3D
     class path : public std::filesystem::path
     {
     public:
-        lower_string base;
-        lower_string ext;
-
         path() {}
         path(const std::filesystem::path& r) : std::filesystem::path(r) {
             _flush();
@@ -42,22 +35,29 @@ namespace L3D
             _flush();
         }
 
+        const lower_string& lower_extension() {
+            return _extension;
+        }
+
         bool try_replace_extension(const char* ext) {
             std::filesystem::path tmp = *this;
 
             tmp.replace_extension(ext);
             CHECK_BOOL(std::filesystem::exists(tmp));
-            this->replace_extension(ext);
 
+            replace_extension(ext);
             _flush();
 
             return true;
         }
 
     private:
+        lower_string _base;
+        lower_string _extension;
+
         void _flush() {
-            base = this->stem().string();
-            ext = this->extension().string();
+            _base = stem().string();
+            _extension = extension().string();
         }
     };
 }

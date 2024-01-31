@@ -26,7 +26,7 @@ bool L3DModel::Create(ID3D11Device* piDevice, const char* szFileName)
     m_Path = std::filesystem::absolute(szFileName);
 
     ResetTransform();
-    CHECK_BOOL(m_InitFuncs[m_Path.ext](piDevice, szFileName));
+    CHECK_BOOL(m_InitFuncs[m_Path.lower_extension()](piDevice, szFileName));
 
     return true;
 }
@@ -48,8 +48,8 @@ void L3DModel::BindToSocket(L3DModel* pModel, const char* szSocketName)
     m_BindInfo.eBindType = BIND_TO_SOCKET;
     m_BindInfo.sBindTarget = szSocketName;
 
-    pModel->_FindSocket(szSocketName, m_BindInfo.extraInfo);
-    m_BindInfo.extraInfo.pModel->m_ChildList.emplace_back(this);
+    if (pModel->_FindSocket(szSocketName, m_BindInfo.extraInfo));
+        m_BindInfo.extraInfo.pModel->m_ChildList.emplace_back(this);
 }
 
 void L3DModel::GetAllModel(std::vector<L3DModel*>& models)
@@ -405,25 +405,25 @@ void L3DModel::_InitRenderUnits()
     }
 }
 
-HRESULT L3DModel::_FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& BindExtraInfo)
+bool L3DModel::_FindSocket(const L3D::lower_string& sockeName, L3D_BIND_EXTRA_INFO& BindExtraInfo)
 {
     if (m_p3DMesh)
     {
         for (int i = 0; i < m_p3DMesh->m_pL3DBone->m_Socket.size(); i++)
         {
             const auto& socket = m_p3DMesh->m_pL3DBone->m_Socket[i];
-            if (szSocketName == socket.sSocketName)
+            if (sockeName == socket.sSocketName)
             {
                 BindExtraInfo.pModel = this;
                 BindExtraInfo.nBindIndex = i;
-                return S_OK;
+                return true;
             }
         }
     }
 
     for (const auto& child : m_ChildList)
-        if (SUCCEEDED(child->_FindSocket(szSocketName, BindExtraInfo)))
-            return S_OK;
+        if (child->_FindSocket(sockeName, BindExtraInfo))
+            return true;
 
-    return E_FAIL;
+    return false;
 }

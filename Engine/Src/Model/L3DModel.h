@@ -121,7 +121,7 @@ private:
 
     void _InitRenderUnits();
 
-    HRESULT _FindSocket(const char* szSocketName, L3D_BIND_EXTRA_INFO& BindExtraInfo);
+    bool _FindSocket(const L3D::lower_string& sockeName, L3D_BIND_EXTRA_INFO& BindExtraInfo);
 
     RENDER_DATA m_RenderData;
 

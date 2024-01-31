@@ -10,7 +10,7 @@ void L3DFlexible::Init(const L3DMesh* const pMesh)
     for (int nBoneIndex = 0; nBoneIndex < pMesh->m_dwBoneCount; nBoneIndex++) 
     {
         const auto& boneInfo = pMesh->m_pL3DBone->m_BoneInfo[nBoneIndex];
-        if (boneInfo.sBoneName.flexible_bone())
+        if (boneInfo.sBoneName.starts_with("fbr"))
         {
             int nParentIndex = boneInfo.uParentIndex;
             const auto& parentInfo = pMesh->m_pL3DBone->m_BoneInfo[nParentIndex];
