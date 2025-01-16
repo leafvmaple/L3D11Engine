@@ -1,5 +1,7 @@
 #pragma once
 
+#define FMT_UNICODE 0
+
 #include <assert.h>
 #include "spdlog/spdlog.h"
 

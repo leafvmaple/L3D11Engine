@@ -1,6 +1,7 @@
 #pragma once
 
 #include <winsock2.h>
+#include <unknwn.h>
 
 enum ENCODE_DECODE_MODE
 {

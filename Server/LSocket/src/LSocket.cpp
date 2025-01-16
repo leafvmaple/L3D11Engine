@@ -1,4 +1,4 @@
-#include "LAssert.h"
+ï»¿#include "LAssert.h"
 #include "LSocket.h"
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS 1
@@ -17,7 +17,7 @@ public:
 	{
 		WSACleanup();
 	}
-} g_WinSock; // Õâ¸öÈ«¾Ö±äÁ¿´æÔÚµÄÒâÒåÊÇµ±Ä£¿é±»ÒıÓÃÊ±´¥·¢Ò»´Î¹¹Ôìº¯ÊıÖĞµÄWSAStartup
+} g_WinSock; // The significance of this global variable is to trigger WSAStartup in the constructor once when the module is referenced
 
 LSocketServerAcceptor::LSocketServerAcceptor()
 {
