@@ -29,8 +29,8 @@ private:
 
     BOOL m_bActive = true;
 
-    LScene* m_pScene = nullptr;
-    LInput* m_pInput = nullptr;
+    std::unique_ptr<LScene> m_pScene {};
+    std::unique_ptr<LInput> m_pInput {};
 
     LRESULT	MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void InitL3DWindow(HINSTANCE hInstance, L3D_WINDOW_PARAM& m_WindowParam);
@@ -38,4 +38,4 @@ private:
     void _UpdateMessage();
 };
 
-extern LClient* g_pClient;
+extern std::unique_ptr<LClient> g_pClient;

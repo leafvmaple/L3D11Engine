@@ -7,134 +7,89 @@
 
 BOOL LFileReader::IsExist(LPCWSTR cszFileName)
 {
-	return _waccess(cszFileName, 0) != -1;
+    return _waccess(cszFileName, 0) != -1;
 }
 
 HRESULT LFileReader::Read(LPCWSTR cszFileName, BYTE** ppBuffer, size_t* puLen)
 {
-	HRESULT hResult = E_FAIL;
-	FILE* pFile = NULL;
-	BYTE* pBuffer = NULL;
-	size_t uFileLen;
+    if (!ppBuffer) return E_FAIL;
 
-	do
-	{
-		BOOL_ERROR_BREAK(ppBuffer);
+    FILE* pFileRaw = nullptr;
+    _wfopen_s(&pFileRaw, cszFileName, L"rb");
+    std::unique_ptr<FILE, decltype(&fclose)> pFile(pFileRaw, fclose);
+    if (!pFile) return E_FAIL;
 
-		_wfopen_s(&pFile, cszFileName, L"rb");
-		BOOL_ERROR_BREAK(pFile);
+    fseek(pFile.get(), 0, SEEK_END);
+    size_t uFileLen = ftell(pFile.get());
+    fseek(pFile.get(), 0, SEEK_SET);
 
-		fseek(pFile, 0, SEEK_END);
-		uFileLen = ftell(pFile);
-		fseek(pFile, 0, SEEK_SET);
+    auto pBuffer = std::make_unique<BYTE[]>(uFileLen);
+    if (!pBuffer) return E_FAIL;
 
-		pBuffer = new BYTE[uFileLen];
-		BOOL_ERROR_BREAK(pBuffer);
+    *puLen = fread(pBuffer.get(), 1, uFileLen, pFile.get());
+    if (*puLen != uFileLen) return E_FAIL;
 
-		*puLen = fread(pBuffer, 1, uFileLen, pFile);
-		BOOL_ERROR_BREAK(*puLen);
-
-		*ppBuffer = pBuffer;
-
-		hResult = S_OK;
-	} while (0);
-
-	if (pFile)
-		fclose(pFile);
-
-	return hResult;
+    *ppBuffer = pBuffer.release();
+    return S_OK;
 }
 
 HRESULT LFileReader::ReadJson(const wchar_t* szFileName, rapidjson::Document& JsonDocument)
 {
-    HRESULT hr = E_FAIL;
-    HRESULT hResult = E_FAIL;
-
     BYTE* pData = nullptr;
     size_t uSize = 0;
 
-    LFileReader::Read(szFileName, &pData, &uSize);
-    BOOL_ERROR_EXIT(pData);
+    if (FAILED(LFileReader::Read(szFileName, &pData, &uSize)) || !pData) return E_FAIL;
 
-    JsonDocument.Parse((char*)pData, uSize);
-    BOOL_ERROR_EXIT(!JsonDocument.HasParseError());
+    std::unique_ptr<BYTE[]> dataGuard(pData);
+    JsonDocument.Parse(reinterpret_cast<char*>(pData), uSize);
+    if (JsonDocument.HasParseError()) return E_FAIL;
 
-    hResult = S_OK;
-Exit0:
-    SAFE_DELETE(pData);
-    return hResult;
+    return S_OK;
 }
 
 HRESULT LFileReader::ReadJson(const char* szFileName, rapidjson::Document& JsonDocument)
 {
-	HRESULT hr = E_FAIL;
-	HRESULT hResult = E_FAIL;
+    BYTE* pData = nullptr;
+    size_t uSize = 0;
 
-	BYTE* pData = nullptr;
-	size_t uSize = 0;
+    if (FAILED(LFileReader::Read(szFileName, &pData, &uSize)) || !pData) return E_FAIL;
 
-	LFileReader::Read(szFileName, &pData, &uSize);
-	BOOL_ERROR_EXIT(pData);
+    std::unique_ptr<BYTE[]> dataGuard(pData);
+    JsonDocument.Parse(reinterpret_cast<char*>(pData), uSize);
+    if (JsonDocument.HasParseError()) return E_FAIL;
 
-	JsonDocument.Parse((char*)pData, uSize);
-	BOOL_ERROR_EXIT(!JsonDocument.HasParseError());
-
-	hResult = S_OK;
-Exit0:
-	SAFE_DELETE(pData);
-	return hResult;
+    return S_OK;
 }
 
 HRESULT LFileReader::ReadIni(const wchar_t* szFileName, CSimpleIniA& Ini)
 {
-	HRESULT hResult = E_FAIL;
-
-	SI_Error rc = Ini.LoadFile(szFileName);
-	BOOL_ERROR_EXIT(rc >= 0);
-
-	hResult = S_OK;
-Exit0:
-	return hResult;
+    return Ini.LoadFile(szFileName) >= 0 ? S_OK : E_FAIL;
 }
 
 HRESULT LBinaryReader::Init(const char* szFileName)
 {
-	USES_CONVERSION;
-	return Init(A2CW((LPCSTR)szFileName));
+    USES_CONVERSION;
+    return Init(A2CW((LPCSTR)szFileName));
 }
 
 HRESULT LBinaryReader::Init(LPCWSTR cszFileName)
 {
-	HRESULT hResult = E_FAIL;
-	FILE* pFile = nullptr;
-	size_t nFileLen = 0;
+    FILE* pFileRaw = nullptr;
+    _wfopen_s(&pFileRaw, cszFileName, L"rb");
+    std::unique_ptr<FILE, decltype(&fclose)> pFile(pFileRaw, fclose);
+    if (!pFile) return E_FAIL;
 
-	_wfopen_s(&pFile, cszFileName, L"rb");
-	BOOL_ERROR_EXIT(pFile);
+    fseek(pFile.get(), 0, SEEK_END);
+    size_t nFileLen = ftell(pFile.get());
+    fseek(pFile.get(), 0, SEEK_SET);
 
-	fseek(pFile, 0, SEEK_END);
-	nFileLen = ftell(pFile);
-	fseek(pFile, 0, SEEK_SET);
+    m_pBuffer = std::make_unique<BYTE[]>(nFileLen).release();
+    if (!m_pBuffer) return E_FAIL;
 
-	m_pBuffer = new (std::nothrow) BYTE[nFileLen];
-	BOOL_ERROR_EXIT(m_pBuffer);
+    m_nLength = fread(m_pBuffer, 1, nFileLen, pFile.get());
+    if (m_nLength != nFileLen) return E_FAIL;
 
-	m_nLength = fread(m_pBuffer, 1, nFileLen, pFile);
-	BOOL_ERROR_EXIT(m_nLength);
-	BOOL_ERROR_EXIT(m_nLength == nFileLen);
-
-	m_pCursor = m_pBuffer;
-
-	hResult = S_OK;
-Exit0:
-	if (pFile)
-		fclose(pFile);
-	if (FAILED(hResult))
-	{
-		SAFE_DELETE(m_pBuffer);
-		m_nLength = 0;
-	}
-
-	return hResult;
+    m_pCursor = m_pBuffer;
+    return S_OK;
 }
 

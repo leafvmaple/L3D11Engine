@@ -23,10 +23,13 @@ static const char* PIXEL_SHADER_ID_NAME[] =
 
 bool LoadShader(const char* szFileName, const char* szType, BYTE** ppByteCode, size_t* puSize)
 {
-    char szFilePath[MAX_PATH] = { 0 };
+    char szFilePath[MAX_PATH] {};
 
-    CHECK_BOOL(sprintf_s(szFilePath, FXO_PATH, szType, szFileName));
-    CHECK_HRESULT(LFileReader::Read(szFilePath, ppByteCode, puSize));
+    if (sprintf_s(szFilePath, FXO_PATH, szType, szFileName) < 0)
+        return false;
+
+    if (FAILED(LFileReader::Read(szFilePath, ppByteCode, puSize)))
+        return false;
 
     *puSize -= sizeof(GUID);
 
@@ -35,47 +38,60 @@ bool LoadShader(const char* szFileName, const char* szType, BYTE** ppByteCode, s
 
 bool CreateShaderTable(std::shared_ptr<L3D_SHADER_TABLE>* pShader, ID3D11Device* piDevice)
 {
-    BYTE*   pByte   = nullptr;
-    size_t  uSize   = 0;
     std::shared_ptr<L3D_SHADER_TABLE> pShaderTable = std::make_shared<L3D_SHADER_TABLE>();
+    if (!pShaderTable)
+        return false;
 
     struct _SHADER_INFO
     {
-        BYTE*  pByte;
+        std::unique_ptr<BYTE[]> pByte;
         size_t nSize;
-    } VertexShaderInfos[L3D_VERTEX_SHADER_COUNT] = { 0 };
+    };
 
-    CHECK_BOOL(pShaderTable);
+    std::array<_SHADER_INFO, L3D_VERTEX_SHADER_COUNT> VertexShaderInfos;
 
     // Vertex Shader
-    for (int i = 0; i < L3D_VERTEX_SHADER_COUNT; i++)
+    for (int i = 0; i < L3D_VERTEX_SHADER_COUNT; ++i)
     {
-        _SHADER_INFO& ShaderInfo = VertexShaderInfos[i];
+        auto& ShaderInfo = VertexShaderInfos[i];
+        BYTE* pByte = nullptr;
 
-        CHECK_BOOL(LoadShader(VERTEX_SHADER_ID_NAME[i], "vs", &ShaderInfo.pByte, &ShaderInfo.nSize));
-        CHECK_HRESULT(piDevice->CreateVertexShader(ShaderInfo.pByte, ShaderInfo.nSize, nullptr, &pShaderTable->Vertex[i]));
+        if (!LoadShader(VERTEX_SHADER_ID_NAME[i], "vs", &pByte, &ShaderInfo.nSize))
+            return false;
+
+        ShaderInfo.pByte.reset(pByte);
+        if (FAILED(piDevice->CreateVertexShader(ShaderInfo.pByte.get(), ShaderInfo.nSize, nullptr, &pShaderTable->Vertex[i])))
+            return false;
     }
 
     // Pixel Shader
-    for (int i = L3D_PIXEL_SHADER_NULL + 1; i < L3D_PIXEL_SHADER_COUNT; i++)
+    for (int i = L3D_PIXEL_SHADER_NULL + 1; i < L3D_PIXEL_SHADER_COUNT; ++i)
     {
-        CHECK_BOOL(LoadShader(PIXEL_SHADER_ID_NAME[i], "ps", &pByte, &uSize));
-        CHECK_HRESULT(piDevice->CreatePixelShader(pByte, uSize, nullptr, &pShaderTable->Pixel[i]));
+        BYTE* pByte = nullptr;
+        size_t uSize = 0;
+
+        if (!LoadShader(PIXEL_SHADER_ID_NAME[i], "ps", &pByte, &uSize))
+            return false;
+
+        std::unique_ptr<BYTE[]> pByteGuard(pByte);
+        if (FAILED(piDevice->CreatePixelShader(pByte, uSize, nullptr, &pShaderTable->Pixel[i])))
+            return false;
     }
 
     // Input Layer
-    for (int i = 0; i < L3D_INPUT_LAYOUT_COUNT; i++)
+    for (int i = 0; i < L3D_INPUT_LAYOUT_COUNT; ++i)
     {
-        const _LAYOUT_INFO& LayoutInfo = INPUT_LAYOUT_LIST[i];
+        const auto& LayoutInfo = INPUT_LAYOUT_LIST[i];
+        const auto& ShaderInfo = VertexShaderInfos[LayoutInfo.eVertexShader];
 
-        CHECK_HRESULT(piDevice->CreateInputLayout(LayoutInfo.DescArr,
+        if (FAILED(piDevice->CreateInputLayout(LayoutInfo.DescArr,
             LayoutInfo.uDescCount,
-            VertexShaderInfos[LayoutInfo.eVertexShader].pByte,
-            VertexShaderInfos[LayoutInfo.eVertexShader].nSize,
-            &pShaderTable->Layout[i]
-        ));
+            ShaderInfo.pByte.get(),
+            ShaderInfo.nSize,
+            &pShaderTable->Layout[i])))
+            return false;
     }
-    *pShader = std::move(pShaderTable);
 
+    *pShader = std::move(pShaderTable);
     return true;
 }
