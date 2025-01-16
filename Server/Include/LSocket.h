@@ -36,7 +36,7 @@ struct KG_SOCKET_EVENT
 class LSocketServerAcceptor
 {
 public:
-	LSocketServerAcceptor();
+	LSocketServerAcceptor() = default;
 
 	int Init(const char szIP[], int nPort, int nMaxAcceptEachWait, int nMaxRecvBufSize, int nMaxSendBufSize, ENCODE_DECODE_MODE EncodeDecodeMode, void* pvContext);
 	void Uninit();
@@ -44,7 +44,7 @@ public:
 	int Wait(int nEventCount, KG_SOCKET_EVENT* pEvent, int* pRetCount);
 
 private:
-	int m_nListenSocket = 0;
+	SOCKET m_nListenSocket = INVALID_SOCKET;
 
 	int _WaitProcessAccept(int nEventCount, KG_SOCKET_EVENT* pEvent, int* pRetCount);
 };
@@ -52,10 +52,10 @@ private:
 class LSocketConnector
 {
 public:
-	LSocketConnector();
+	LSocketConnector() = default;
 
 	IKG_SocketStream* Connect(const char szIP[], int nPort);
 
 private:
-	struct sockaddr_in m_SocketAddress;
+	sockaddr_in m_SocketAddress {};
 };
