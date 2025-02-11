@@ -9,34 +9,32 @@
 bool L3DAnimation::LoadFromFile(const char* szAnimation)
 {
     ANIMATION_DESC desc { szAnimation };
-    ANIMATION_SOURCE* pSource = nullptr;
+    ANIMATION_SOURCE source{};
 
-    LoadAnimation(&desc, pSource);
+    LoadAnimation(&desc, &source);
 
-    m_dwNumBone = pSource->nBonesCount;
-    m_dwNumFrames = pSource->nFrameCount;
-    m_fFrameLength = pSource->fFrameLength;
-    m_nAnimationLen = pSource->nAnimationLength;
+    m_dwNumBone = source.nBonesCount;
+    m_dwNumFrames = source.nFrameCount;
+    m_fFrameLength = source.fFrameLength;
+    m_nAnimationLen = source.nAnimationLength;
 
     m_BoneNames.resize(m_dwNumBone);
     for (unsigned int i = 0; i < m_dwNumBone; i++)
-        m_BoneNames[i] = std::move(pSource->pBoneNames[i]);
+        m_BoneNames[i] = std::move(source.pBoneNames[i]);
 
     m_BoneRTS.resize(m_dwNumBone);
     for (unsigned int i = 0; i < m_dwNumBone; i++)
     {
         m_BoneRTS[i].resize(m_dwNumFrames);
         for (unsigned int j = 0; j < m_dwNumFrames; j++)
-            m_BoneRTS[i][j] = std::move(pSource->pBoneRTS[i][j]);
+            m_BoneRTS[i][j] = std::move(source.pBoneRTS[i][j]);
     }
 
     m_Flags.resize(m_dwNumBone);
-    if (pSource->pFlag)
-        memcpy(m_Flags.data(), pSource->pFlag, sizeof(int) * m_dwNumBone);
+    if (source.pFlag)
+        std::copy(source.pFlag, source.pFlag + m_dwNumBone, m_Flags.begin());
 
     m_Path = szAnimation;
-
-    SAFE_RELEASE(pSource);
 
     return true;
 }

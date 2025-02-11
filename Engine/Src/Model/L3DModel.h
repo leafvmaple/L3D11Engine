@@ -102,6 +102,10 @@ private:
     };
 
     void _UpdateTransform();
+    void _UpdateTransformBindToSocket();
+	void _UpdateTransformAttachToActor();
+    void _UpdateTransformDefault();
+
     void _LoadMaterialFromJson(ID3D11Device* piDevice, const wchar_t* szFileName);
 
     void _UpdateModelSharedConsts(std::vector<XMMATRIX>& BoneMatrix, const MESH_SHARED_CB& MeshCB);

@@ -213,30 +213,40 @@ void L3DModel::GetRenderUnit(SCENE_RENDER_QUEUES& RenderQueue)
 
 void L3DModel::_UpdateTransform()
 {
-    switch (m_BindInfo.eBindType)
+    if (m_BindInfo.eBindType == BIND_TO_SOCKET)
     {
-    case BIND_TO_SOCKET:
+        _UpdateTransformBindToSocket();
+    }
+    else if (m_BindInfo.eBindType == ATTACH_TO_ACTOR)
     {
-        m_BindInfo.extraInfo.pModel->GetSocketMatrix(&m_World, m_BindInfo.extraInfo.nBindIndex);
-        break;
+        _UpdateTransformAttachToActor();
     }
-    case ATTACH_TO_ACTOR:
+    else
     {
-        m_BindInfo.extraInfo.pModel->GetWorldMatrix(&m_World);
-        break;
+        _UpdateTransformDefault();
     }
-    default:
-    {
-        XMStoreFloat4x4(&m_World, XMMatrixTransformation(
-            g_XMZero,
-            g_XMIdentityR3,
-            XMLoadFloat3(&m_Scale),
-            g_XMZero,
-            XMLoadFloat4(&m_Rotation),
-            XMLoadFloat3(&m_Translation)
-        ));
-    }
-    }
+}
+
+void L3DModel::_UpdateTransformBindToSocket()
+{
+    m_BindInfo.extraInfo.pModel->GetSocketMatrix(&m_World, m_BindInfo.extraInfo.nBindIndex);
+}
+
+void L3DModel::_UpdateTransformAttachToActor()
+{
+    m_BindInfo.extraInfo.pModel->GetWorldMatrix(&m_World);
+}
+
+void L3DModel::_UpdateTransformDefault()
+{
+    XMStoreFloat4x4(&m_World, XMMatrixTransformation(
+        g_XMZero,
+        g_XMIdentityR3,
+        XMLoadFloat3(&m_Scale),
+        g_XMZero,
+        XMLoadFloat4(&m_Rotation),
+        XMLoadFloat3(&m_Translation)
+    ));
 }
 
 void L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const wchar_t* szFileName)
