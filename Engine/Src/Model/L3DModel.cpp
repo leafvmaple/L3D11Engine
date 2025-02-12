@@ -249,7 +249,7 @@ void L3DModel::_UpdateTransformDefault()
     ));
 }
 
-void L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const wchar_t* szFileName)
+void L3DModel::_LoadMaterialFromJson(ID3D11Device* piDevice, const char* szFileName)
 {
     RUNTIME_MACRO eMacro = RUNTIME_MACRO_MESH;
     if (m_p3DMesh->m_dwBoneCount > 0)
@@ -373,7 +373,7 @@ bool L3DModel::_InitMesh(ID3D11Device* piDevice, const char* szFileName)
     CHECK_BOOL(m_p3DMesh->Create(piDevice, m_Path.string().c_str()));
 
     if (std::filesystem::exists(materialPath))
-        _LoadMaterialFromJson(piDevice, materialPath.c_str());
+        _LoadMaterialFromJson(piDevice, materialPath.string().c_str());
 
     _CreateBoneMatrix();
     _InitRenderUnits();

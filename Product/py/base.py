@@ -1,4 +1,6 @@
 import ctypes
+import os
+import json
 from ctypes import c_char, c_int, c_float, c_byte, c_ushort, c_ulong, POINTER
 
 class Structure(ctypes.Structure):
@@ -60,5 +62,12 @@ def pointer_to_array(pointer: ctypes._Pointer, *args):
               for i in range(length)]
 
     return result
-    
 
+
+def save_json(data, file_path):
+    # work_path = os.getcwd()
+    base_name = os.path.basename(file_path)
+    if not os.path.exists('json'):
+        os.mkdir('json')
+    with open(os.path.join('json', base_name + '.json'), 'w') as file:
+        json.dump(data, file, indent=2)

@@ -41,6 +41,10 @@
 .vs
 *.user
 
+*.pyc
+
+json
+
 **/Debug/*
 **/Release/*
 **/logs/*

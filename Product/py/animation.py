@@ -1,6 +1,6 @@
 import ctypes
 from ctypes import wintypes, POINTER, c_char, c_int, c_float, c_char_p, c_void_p
-from .base import Structure, CHAR30, XMFLOAT3, XMFLOAT4, pointer_to_array
+from .base import Structure, CHAR30, XMFLOAT3, XMFLOAT4, pointer_to_array, save_json
 import json
 import os
 
@@ -83,10 +83,8 @@ def load_animation(dll, file_path):
     source = ANIMATION_SOURCE()
 
     LoadAnimation(ctypes.byref(desc), ctypes.byref(source))
-
     data = source.to_dict()
-
-    with open('animation.json', 'w') as file:
-        json.dump(data, file, indent=4)
+    
+    save_json(data, file_path)
 
     return data

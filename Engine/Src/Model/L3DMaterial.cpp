@@ -249,17 +249,17 @@ void L3DMaterial::_UpdateCommonCB()
         m_pEffect->GetConstantBufferByRegister(cb.first)->SetConstantBuffer(cb.second);
 }
 
-void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro)
+void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro)
 {
     MODEL_MATERIAL_DESC desc;
-    MODEL_MATERIAL_SOURCE* pSource = nullptr;
+    MODEL_MATERIAL_SOURCE source;
 
     desc.szFileName = szFileName;
-    LoadModelMaterial(&desc, pSource);
+    LoadModelMaterial(&desc, &source);
 
-    assert(pSource->nLOD > 0 && pSource->pLOD[0].nGroup > 0);
+    assert(source.nLOD > 0 && source.pLOD[0].nGroup > 0);
 
-    const auto& Group = pSource->pLOD[0].pGroup[0];
+    const auto& Group = source.pLOD[0].pGroup[0];
     InstancePack.resize(Group.nSubset);
 #pragma omp parallel for
     for (int i = 0; i < Group.nSubset; i++)
@@ -269,6 +269,4 @@ void L3DMaterialPack::LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& Inst
 
         Instance.Create(piDevice, Subset, eMacro);
     }
-
-    pSource->Release();
 }

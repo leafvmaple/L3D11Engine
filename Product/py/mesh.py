@@ -1,4 +1,4 @@
-from .base import Structure, XMFLOAT2, XMFLOAT3, XMFLOAT4, XMFLOAT4X4, CHAR30, pointer_to_array
+from .base import Structure, XMFLOAT2, XMFLOAT3, XMFLOAT4, XMFLOAT4X4, CHAR30, pointer_to_array, save_json
 import ctypes
 from ctypes import c_char_p, c_int, c_float, c_byte, c_ushort, c_ulong, POINTER
 import json
@@ -25,6 +25,12 @@ class BONE_SOURCE(Structure):
         ("mInvPxPose", XMFLOAT4X4),
         ("BoundingBox", BOUND_BOX)
     ]
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['pChildNames'] = pointer_to_array(self.pChildNames, self.nChildCount)
+
+        return data
 
 class SOCKET_SOURCE(Structure):
     _pack_ = 8
@@ -70,7 +76,7 @@ class MESH_SOURCE(Structure):
         data['pIndices'] = pointer_to_array(self.pIndices, self.nIndexCount)
         data['pBones'] = pointer_to_array(self.pBones, self.nBonesCount)
         data['pSockets'] = pointer_to_array(self.pSockets, self.nSocketCount)
-        data['pSubsetVertexCount'] = pointer_to_array(self.pSockets, self.nSubsetCount)
+        data['pSubsetVertexCount'] = pointer_to_array(self.pSubsetVertexCount, self.nSubsetCount)
 
         return data
 
@@ -83,9 +89,8 @@ def load_mesh(dll, file_path):
     source = MESH_SOURCE()
 
     dll.LoadMesh(ctypes.byref(desc), ctypes.byref(source))
-
     data = source.to_dict()
-    with open('mesh.json', 'w') as file:
-        json.dump(data, file, indent=4)
+
+    save_json(data, file_path)
 
     return data

@@ -102,5 +102,5 @@ private:
 typedef std::vector<L3DMaterial> MODEL_MATERIALS;
 
 namespace L3DMaterialPack {
-    void LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const wchar_t* szFileName, RUNTIME_MACRO eMacro);
+    void LoadFromJson(ID3D11Device* piDevice, MODEL_MATERIALS& InstancePack, const char* szFileName, RUNTIME_MACRO eMacro);
 };
