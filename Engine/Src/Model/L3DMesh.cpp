@@ -13,14 +13,12 @@
 bool L3DMesh::Create(ID3D11Device* piDevice, const char* szFileName)
 {
     MESH_DESC desc = { szFileName };
-    MESH_SOURCE* pSource;
+    MESH_SOURCE source;
 
-    LoadMesh(&desc, pSource);
+    LoadMesh(&desc, &source);
 
-    CHECK_BOOL(_CreateMesh(piDevice, pSource));
-    CHECK_BOOL(_CreateBone(pSource));
-
-    pSource->Release();
+    CHECK_BOOL(_CreateMesh(piDevice, &source));
+    CHECK_BOOL(_CreateBone(&source));
 
     m_sName = szFileName;
 
