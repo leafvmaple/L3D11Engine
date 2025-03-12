@@ -1,7 +1,8 @@
 from .base import Structure, XMFLOAT2, XMFLOAT3, XMFLOAT4, XMFLOAT4X4, CHAR30, pointer_to_array, save_json
+from .base import rotate, scale_rotate
 import ctypes
 from ctypes import c_char_p, c_int, c_float, c_byte, c_ushort, c_ulong, POINTER
-import json
+import os
 
 class BOUND_BOX(Structure):
     _pack_ = 8
@@ -94,3 +95,73 @@ def load_mesh(dll, file_path):
     save_json(data, file_path)
 
     return data
+
+def convert_vertex(vertex):
+    position = scale_rotate([vertex["Position"]["x"], vertex["Position"]["y"], vertex["Position"]["z"]])
+    normal = rotate([vertex["Normal"]["x"], vertex["Normal"]["y"], vertex["Normal"]["z"]])
+    tangent = rotate([vertex["Tangent"]["x"], vertex["Tangent"]["y"], vertex["Tangent"]["z"]])
+    return {
+            "px" : position[0],
+            "py" : position[1],
+            "pz" : position[2],
+            "nx" : normal[0],
+            "ny" : normal[1],
+            "nz" : normal[2],
+            "tx" : tangent[0],
+            "ty" : tangent[1],
+            "tz" : tangent[2],
+            "u": vertex["TexCoords"]["x"],
+            "v": vertex["TexCoords"]["y"]
+        }
+
+def convert_index(index):
+    return index
+
+def convert_mesh(dll, file_path):
+    data = load_mesh(dll, file_path)
+    vertex_res = {
+        "vertex_buffer": [],
+        "index_buffer": data["pIndices"],
+        "bind": [],
+    }
+    for vertex in data["pVertices"]:
+        vertex_res["vertex_buffer"].append(convert_vertex(vertex))
+        bind = {}
+        cnt = 0
+        for i in range(4):
+            if vertex["BoneIndices"][i] >= 0:
+                bind[f"index{cnt}"] = vertex["BoneIndices"][i]
+                bind[f"weight{cnt}"] = vertex["BoneWeights"][i]
+                cnt += 1
+        vertex_res["bind"].append(bind)
+
+    name, _ = os.path.splitext(file_path)
+    save_json(vertex_res, f"{name}.mesh_bind")
+
+    bone_res = {
+        "bones_map": []
+    }
+    for i in range(len(data["pBones"])):
+        bone = data["pBones"][i]
+        tpose_matrix = {}
+        for j in range(4):
+            for k in range(3):
+                tpose_matrix[f"v{j * 3 + k }"] = bone["mInvPxPose"][f"_{j+1}{k+1}"]
+        binding_pose = {
+            "position": {
+                "x": bone["mOffset"]["_14"],
+                "y": bone["mOffset"]["_24"],
+                "z": bone["mOffset"]["_34"],
+            },
+        }
+
+        bone_res["bones_map"].append({
+            "name": bone["szName"],
+            "index": i,
+            "binding_pose": binding_pose,
+            "tpose_matrix": tpose_matrix
+        })
+
+    save_json(bone_res, f"{name}.skeleton")
+
+    

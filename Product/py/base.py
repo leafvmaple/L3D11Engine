@@ -1,6 +1,8 @@
 import ctypes
 import os
 import json
+import math
+import numpy as np
 from ctypes import c_char, c_int, c_float, c_byte, c_ushort, c_ulong, POINTER
 
 class Structure(ctypes.Structure):
@@ -63,6 +65,22 @@ def pointer_to_array(pointer: ctypes._Pointer, *args):
 
     return result
 
+scale_factor = 1 / 20
+angle = math.radians(90)  # 例如旋转 30 度
+
+# 构造绕 x 轴的旋转矩阵
+rotation_matrix = np.array([
+    [1, 0, 0],
+    [0, math.cos(angle), -math.sin(angle)],
+    [0, math.sin(angle), math.cos(angle)]
+])
+scale_rotation_matrix = rotation_matrix * scale_factor
+
+def rotate(vector):
+    return np.dot(scale_rotation_matrix, np.array(vector))
+
+def scale_rotate(vector):
+    return np.dot(scale_rotation_matrix, np.array(vector))
 
 def save_json(data, file_path):
     # work_path = os.getcwd()
