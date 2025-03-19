@@ -43,26 +43,6 @@ enum BlendMode
     BLEND_SOFTMASKED = 5,
 };
 
-class L3DMaterialData
-{
-public:
-    HRESULT Create(const char* szFileName);
-    HRESULT GetTextureVariables(ID3D11Device* piDevice, std::vector<TEXTURE_DATA>& Variables);
-
-    char m_szShaderName[256] = { 0 };
-private:
-    char m_szName[256] = { 0 };
-
-    struct MaterialTextureTable
-    {
-        std::string hsRepresentName;
-        std::string hsRegisterName;
-        std::string tValue;
-    };
-
-    std::vector<MaterialTextureTable> m_vecTexture;
-};
-
 // KG3D_MATERIAL_INSTANCE_DATA
 class L3DMaterial
 {
